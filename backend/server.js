@@ -11,6 +11,9 @@ app.use(cors());
 app.use(express.json());
 app.use(express.static(path.join(__dirname, '../frontend')));
 
+// ===== CONFIG =====
+const API_SPORTS_KEY = process.env.API_SPORTS_KEY;
+
 // ===== CACHE =====
 const CACHE = {};
 const isFresh = (key, ttl) =>
@@ -35,7 +38,7 @@ async function getPrices() {
   }
 }
 
-// ===== QUFC PRICE =====
+// ===== QUFC =====
 async function getQUFCPrice() {
   if (isFresh('qufc', 60000)) return CACHE.qufc.data;
 
@@ -44,7 +47,11 @@ async function getQUFCPrice() {
     const d = await r.json();
 
     const price = d?.issuances?.[0]?.price || 0.0000001;
-    const data = { usd: price, usd_24h_change: 0 };
+
+    const data = {
+      usd: price,
+      usd_24h_change: 0
+    };
 
     CACHE.qufc = { data, at: Date.now() };
     return data;
@@ -81,12 +88,13 @@ app.get('/api/status', (req, res) => {
   res.json({
     ok: true,
     project: 'QUFC ARENA',
-    status: 'running'
+    status: 'running',
+    apiSports: !!API_SPORTS_KEY
   });
 });
 
 // ===== START =====
 app.listen(PORT, "0.0.0.0", () => {
-  console.log(`🥊 QUFC ARENA RUNNING`);
-  console.log(`http://localhost:${PORT}`);
+  console.log(`\n🥊 QUFC ARENA RUNNING`);
+  console.log(`🌐 http://localhost:${PORT}`);
 });
