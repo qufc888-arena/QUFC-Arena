@@ -9,67 +9,84 @@ const PORT = process.env.PORT || 3001;
 
 app.use(cors());
 app.use(express.json());
-// Fixed pathing for Railway deployment
 app.use(express.static(path.join(__dirname, '../frontend')));
 
-const API_SPORTS_KEY = process.env.API_SPORTS_KEY;
-const ODDS_API_KEY = process.env.ODDS_API_KEY;
-
-// CACHE Logic
+// ===== CACHE =====
 const CACHE = {};
-const isFresh = (key, ttl) => CACHE[key] && Date.now() - CACHE[key].at < ttl;
+const isFresh = (key, ttl) =>
+  CACHE[key] && Date.now() - CACHE[key].at < ttl;
 
-// ══ COINGECKO — GLOBAL CRYPTO PRICES ══
+// ===== PRICES =====
 async function getPrices() {
-    if (isFresh('prices', 60000)) return CACHE.prices.data;
-    try {
-        const url = 'https://api.coingecko.com/api/v3/simple/price?ids=bitcoin,ethereum,solana,binancecoin,dogecoin,qubic-network&vs_currencies=usd&include_24hr_change=true';
-        const r = await fetch(url);
-        const data = await r.json();
-        CACHE.prices = { data, at: Date.now() };
-        return data;
-    } catch(e) {
-        console.error("Price Fetch Error:", e.message);
-        return CACHE.prices?.data || {};
-    }
+  if (isFresh('prices', 60000)) return CACHE.prices.data;
+
+  try {
+    const url =
+      'https://api.coingecko.com/api/v3/simple/price?ids=bitcoin,ethereum,solana,binancecoin,dogecoin,qubic-network&vs_currencies=usd&include_24hr_change=true';
+
+    const r = await fetch(url);
+    const data = await r.json();
+
+    CACHE.prices = { data, at: Date.now() };
+    return data;
+  } catch (e) {
+    console.error("Price error:", e.message);
+    return CACHE.prices?.data || {};
+  }
 }
 
-// ══ QUFC PRICE FROM QUBIC RPC ══
+// ===== QUFC PRICE =====
 async function getQUFCPrice() {
-    if (isFresh('qufc', 60000)) return CACHE.qufc.data;
-    try {
-        const r = await fetch('https://rpc.qubic.org/v1/assets/QUFC/issuances');
-        const d = await r.json();
-        const price = d?.issuances?.[0]?.price || 0.0000001;
-        const data = { usd: price, usd_24h_change: 0 };
-        CACHE.qufc = { data, at: Date.now() };
-        return data;
-    } catch(e) {
-        return { usd: 0.0000001, usd_24h_change: 0 };
-    }
+  if (isFresh('qufc', 60000)) return CACHE.qufc.data;
+
+  try {
+    const r = await fetch('https://rpc.qubic.org/v1/assets/QUFC/issuances');
+    const d = await r.json();
+
+    const price = d?.issuances?.[0]?.price || 0.0000001;
+    const data = { usd: price, usd_24h_change: 0 };
+
+    CACHE.qufc = { data, at: Date.now() };
+    return data;
+  } catch {
+    return { usd: 0.0000001, usd_24h_change: 0 };
+  }
 }
 
-// ══ GLOBAL ROUTES ══
+// ===== ROUTES =====
 app.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname, '../frontend', 'index.html'));
+  res.sendFile(path.join(__dirname, '../frontend', 'index.html'));
+});
+
+app.get('/api/prices', async (req, res) => {
+  try {
+    const [prices, qufc] = await Promise.all([
+      getPrices(),
+      getQUFCPrice()
+    ]);
+
+    res.json({
+      ok: true,
+      data: {
+        ...prices,
+        qufc
+      }
+    });
+  } catch (e) {
+    res.status(500).json({ ok: false, error: e.message });
+  }
 });
 
 app.get('/api/status', (req, res) => {
-    res.json({
-        ok: true,
-        project: 'QUFC ARENA GLOBAL',
-        environment: 'Production',
-        apis: {
-            coingecko: true,
-            apiSports: !!API_SPORTS_KEY,
-            qubicRpc: true
-        }
-    });
+  res.json({
+    ok: true,
+    project: 'QUFC ARENA',
+    status: 'running'
+  });
 });
 
-// ... Keep your Match and Bet logic below, ensuring all text is English ...
-
+// ===== START =====
 app.listen(PORT, "0.0.0.0", () => {
-    console.log(`\n🥊 QUFC ARENA - GLOBAL VERSION`);
-    console.log(`✅ Live at: http://0.0.0.0:${PORT}`);
-    console.log(`🔑 API-Sports: ${API_SPORTS_KEY ? 'CONNECTED' : 'MISSING'}`);
+  console.log(`🥊 QUFC ARENA RUNNING`);
+  console.log(`http://localhost:${PORT}`);
+});
