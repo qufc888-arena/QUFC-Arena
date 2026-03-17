@@ -19,10 +19,12 @@ const fresh = (k, ttl) => CACHE[k] && Date.now() - CACHE[k].at < ttl;
 
 // ══ COINGECKO — BTC ETH SOL BNB QUBIC ══
 async function getPrices() {
-  if (fresh('prices', 60000)) return CACHE.prices.data;
+  if (fresh('prices', 600000)) return CACHE.prices.data;
   try {
     const r = await fetch(
-      'https://api.coingecko.com/api/v3/simple/price?ids=bitcoin,ethereum,solana,binancecoin,dogecoin,qubic-network&vs_currencies=usd&include_24hr_change=true'
+      'https://api.coingecko.com/api/v3/simple/price?ids=bitcoin,ethereum,solana,binancecoin,dogecoin,qubic-network&vs_currencies=usd&include_24hr_change=true'const r = await fetch(url, {
+  headers: { 'Cache-Control': 'no-cache' }
+});
     );
     const data = await r.json();
     CACHE.prices = { data, at: Date.now() };
