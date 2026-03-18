@@ -8,7 +8,8 @@
 <style>
 :root{
   --red:#e74c3c;--blood:#c0392b;--dred:#7b0000;
-  --gold:#f39c12;--blue:#2980b9;--lblue:#3498db;
+  --gold:#f39c12;--dgold:#b8860b;
+  --blue:#2980b9;--lblue:#3498db;
   --green:#27ae60;--lgreen:#2ecc71;
   --purple:#8e44ad;--lpurple:#a569bd;
   --dark:#04040c;--panel:#09091a;--panel2:#0d0d20;
@@ -16,27 +17,24 @@
   --text:#eeeeff;--muted:#55557a;
 }
 *{box-sizing:border-box;margin:0;padding:0;}
-html,body{height:100%;}
+html,body{min-height:100%;}
 body{background:var(--dark);color:var(--text);font-family:'Barlow Condensed',sans-serif;
-  overflow-x:hidden;max-width:480px;margin:0 auto;min-height:100vh;}
+  overflow-x:hidden;max-width:480px;margin:0 auto;}
 body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:9999;
-  background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,.05) 2px,rgba(0,0,0,.05) 4px);}
+  background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,.04) 2px,rgba(0,0,0,.04) 4px);}
 
 /* ── WALLET BAR ── */
-.wbar{background:rgba(4,4,12,.95);border-bottom:1px solid rgba(52,152,219,.2);
-  padding:7px 14px;display:flex;align-items:center;justify-content:space-between;}
-.wb-l{display:flex;align-items:center;gap:7px;}
-.wdot{width:7px;height:7px;border-radius:50%;background:var(--muted);transition:all .3s;}
+.wbar{background:rgba(4,4,12,.97);border-bottom:1px solid rgba(52,152,219,.18);
+  padding:7px 14px;display:flex;align-items:center;justify-content:space-between;gap:8px;}
+.wdot{width:7px;height:7px;border-radius:50%;background:var(--muted);transition:all .3s;flex-shrink:0;}
 .wdot.on{background:var(--lgreen);box-shadow:0 0 8px rgba(46,204,113,.6);}
 .waddr{font-family:'Bebas Neue';font-size:11px;letter-spacing:1px;color:var(--muted);}
 .waddr.on{color:var(--text);}
-.wbals{display:none;gap:10px;}
-.wbal{font-family:'Bebas Neue';font-size:12px;}
-.wq{color:var(--gold);}
-.wqb{color:var(--lblue);}
+.wbal-wrap{display:none;gap:8px;align-items:center;}
+.wbal{font-family:'Bebas Neue';font-size:12px;color:var(--gold);}
 .wbtn{font-family:'Bebas Neue';font-size:10px;letter-spacing:2px;padding:5px 12px;
   background:linear-gradient(135deg,var(--blue),var(--lblue));color:#fff;border:none;
-  cursor:pointer;border-radius:3px;white-space:nowrap;transition:all .2s;}
+  cursor:pointer;border-radius:3px;white-space:nowrap;transition:all .2s;flex-shrink:0;}
 .wbtn:hover{transform:scale(1.04);}
 .wbtn.on{background:linear-gradient(135deg,#0d3b6e,var(--blue));}
 
@@ -47,350 +45,349 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:9999;
 .brand{display:flex;align-items:center;gap:7px;cursor:pointer;}
 .bname{font-family:'Bebas Neue';font-size:22px;letter-spacing:5px;color:#fff;
   text-shadow:0 0 20px rgba(231,76,60,.8),2px 2px 0 var(--blood);}
-.btag{font-size:7px;letter-spacing:4px;color:var(--blood);border:1px solid rgba(192,57,43,.4);padding:2px 6px;border-radius:3px;font-weight:700;}
-.back-btn{display:none;align-items:center;gap:6px;cursor:pointer;
-  font-family:'Bebas Neue';font-size:13px;letter-spacing:2px;color:var(--muted);transition:color .2s;}
+.btag{font-size:7px;letter-spacing:4px;color:var(--blood);border:1px solid rgba(192,57,43,.4);
+  padding:2px 6px;border-radius:3px;font-weight:700;}
+.back-btn{display:none;align-items:center;gap:5px;cursor:pointer;
+  font-family:'Bebas Neue';font-size:13px;letter-spacing:2px;color:var(--muted);}
 .back-btn:hover{color:#fff;}
-.top-r{display:flex;align-items:center;gap:7px;}
 .chain-pill{display:flex;align-items:center;gap:4px;font-size:9px;letter-spacing:1px;
   color:var(--lblue);background:rgba(52,152,219,.07);border:1px solid rgba(52,152,219,.18);
   padding:3px 8px;border-radius:20px;}
 .cpulse{width:5px;height:5px;border-radius:50%;background:var(--lblue);animation:pulse 1.5s infinite;}
 @keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
 
+/* ── PRICE STRIP ── */
+.price-strip{background:linear-gradient(135deg,rgba(41,128,185,.1),rgba(41,128,185,.04));
+  border-bottom:1px solid rgba(52,152,219,.18);padding:6px 14px;
+  display:flex;align-items:center;justify-content:space-around;}
+.ps-item{text-align:center;}
+.ps-sym{font-size:8px;letter-spacing:2px;color:var(--muted);font-weight:700;}
+.ps-price{font-family:'Bebas Neue';font-size:15px;line-height:1;}
+.ps-chg{font-size:8px;font-weight:700;}
+.ps-div{width:1px;height:32px;background:rgba(52,152,219,.2);}
+.tup{color:var(--lgreen);}
+.tdn{color:var(--red);}
+
 /* ── TICKER ── */
-.ticker{background:rgba(0,0,0,.4);border-bottom:1px solid var(--border);overflow:hidden;padding:6px 0;position:relative;}
+.ticker{background:rgba(0,0,0,.4);border-bottom:1px solid var(--border);overflow:hidden;padding:5px 0;position:relative;}
 .tlbl{position:absolute;left:0;top:0;bottom:0;z-index:2;
   background:linear-gradient(135deg,var(--dred),var(--blood));
-  display:flex;align-items:center;padding:0 16px 0 11px;
+  display:flex;align-items:center;padding:0 14px 0 10px;
   font-family:'Bebas Neue';font-size:8px;letter-spacing:3px;color:#fff;
   clip-path:polygon(0 0,100% 0,calc(100% - 7px) 100%,0 100%);}
 .tfade{position:absolute;right:0;top:0;bottom:0;z-index:1;width:40px;
   background:linear-gradient(270deg,rgba(0,0,0,.8),transparent);}
-.tscroll{display:flex;animation:ts 30s linear infinite;white-space:nowrap;padding-left:78px;}
+.tscroll{display:flex;animation:ts 30s linear infinite;white-space:nowrap;padding-left:72px;}
 .tscroll:hover{animation-play-state:paused;}
 @keyframes ts{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
-.ti{display:inline-flex;align-items:center;gap:4px;padding:0 12px;font-size:11px;border-right:1px solid var(--border);}
-.ts{color:var(--muted);font-weight:700;font-size:8px;letter-spacing:2px;}
-.tp{font-family:'Bebas Neue';font-size:13px;}
-.tu{color:var(--lgreen);font-size:9px;font-weight:700;}
-.td{color:var(--red);font-size:9px;font-weight:700;}
-
-/* ── QUBIC PRICE STRIP ── */
-.qubic-strip{
-  background:linear-gradient(135deg,rgba(41,128,185,.12),rgba(41,128,185,.05));
-  border-bottom:1px solid rgba(52,152,219,.2);
-  padding:6px 14px;display:flex;align-items:center;justify-content:space-between;gap:6px;
-}
-.qs-item{display:flex;align-items:center;gap:6px;flex:1;justify-content:center;}
-.qs-div{width:1px;height:28px;background:rgba(52,152,219,.2);}
-.qs-icon{font-size:16px;}
-.qs-info{text-align:center;}
-.qs-sym{font-size:8px;letter-spacing:2px;color:var(--lblue);font-weight:700;}
-.qs-price{font-family:'Bebas Neue';font-size:16px;color:#fff;line-height:1;}
-.qs-chg{font-size:8px;font-weight:700;margin-top:1px;}
-.qs-src{font-size:7px;letter-spacing:1px;color:var(--muted);}
+.ti{display:inline-flex;align-items:center;gap:4px;padding:0 12px;font-size:10px;border-right:1px solid var(--border);}
+.tsm{color:var(--muted);font-weight:700;font-size:8px;letter-spacing:1px;}
+.tp{font-family:'Bebas Neue';font-size:12px;}
 
 /* ── PAGES ── */
-.page{display:none;min-height:calc(100vh - 120px);}
+.page{display:none;min-height:calc(100vh - 130px);}
 .page.show{display:block;animation:fi .25s ease;}
-@keyframes fi{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+@keyframes fi{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:translateY(0)}}
 
-/* ════════════════════════════════
+/* ══════════════════════════
    LOBBY
-════════════════════════════════ */
-.lobby{padding:14px;}
+══════════════════════════ */
+.lobby{padding:12px;}
 
-/* HERO */
 .lobby-hero{position:relative;overflow:hidden;border-radius:12px;
   background:linear-gradient(135deg,#08000a,#0d0020);
-  border:1px solid rgba(192,57,43,.2);padding:20px 16px;margin-bottom:14px;text-align:center;}
+  border:1px solid rgba(192,57,43,.2);padding:18px 14px;margin-bottom:12px;text-align:center;}
 .lhbg{position:absolute;inset:0;
   background:radial-gradient(ellipse 80% 60% at 50% 0%,rgba(192,57,43,.18),transparent 65%),
-    radial-gradient(ellipse 40% 30% at 10% 90%,rgba(41,128,185,.1),transparent);}
+    radial-gradient(ellipse 40% 30% at 10% 90%,rgba(142,68,173,.1),transparent);}
 .lhgrid{position:absolute;inset:0;opacity:.03;
   background-image:linear-gradient(rgba(231,76,60,.8) 1px,transparent 1px),
     linear-gradient(90deg,rgba(231,76,60,.8) 1px,transparent 1px);
   background-size:40px 40px;}
 .lhoct{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
-  width:220px;height:220px;border:1px solid rgba(192,57,43,.06);
+  width:200px;height:200px;border:1px solid rgba(192,57,43,.06);
   clip-path:polygon(30% 0%,70% 0%,100% 30%,100% 70%,70% 100%,30% 100%,0% 70%,0% 30%);
   animation:opu 5s ease-in-out infinite;}
-@keyframes opu{0%,100%{opacity:.4;transform:translate(-50%,-50%) scale(1)}50%{opacity:.7;transform:translate(-50%,-50%) scale(1.04)}}
+@keyframes opu{0%,100%{opacity:.4;transform:translate(-50%,-50%) scale(1)}
+  50%{opacity:.7;transform:translate(-50%,-50%) scale(1.04)}}
 .lhc{position:relative;z-index:2;}
-.lhbrow{font-size:8px;letter-spacing:5px;color:var(--gold);
+.lhbrow{font-size:8px;letter-spacing:4px;color:var(--gold);
   background:rgba(243,156,18,.07);border:1px solid rgba(243,156,18,.18);
-  padding:3px 12px;border-radius:20px;display:inline-block;margin-bottom:10px;}
-.lhtitle{font-family:'Bebas Neue';font-size:clamp(40px,12vw,64px);letter-spacing:4px;line-height:.95;
-  background:linear-gradient(135deg,var(--red) 0%,#fff 45%,var(--lblue) 100%);
+  padding:3px 12px;border-radius:20px;display:inline-block;margin-bottom:8px;}
+.lhtitle{font-family:'Bebas Neue';font-size:clamp(38px,11vw,58px);letter-spacing:4px;line-height:.95;
+  background:linear-gradient(135deg,var(--red) 0%,#fff 45%,var(--lpurple) 100%);
   -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:4px;}
-.lhsub{font-size:11px;letter-spacing:4px;color:var(--muted);margin-bottom:14px;}
+.lhsub{font-size:10px;letter-spacing:3px;color:var(--muted);margin-bottom:12px;}
 .lhstats{display:inline-flex;border:1px solid var(--border);border-radius:5px;overflow:hidden;background:rgba(0,0,0,.3);}
-.lhs{padding:7px 13px;text-align:center;border-right:1px solid var(--border);}
+.lhs{padding:6px 12px;text-align:center;border-right:1px solid var(--border);}
 .lhs:last-child{border-right:none;}
-.lhsv{font-family:'Bebas Neue';font-size:16px;color:var(--gold);}
+.lhsv{font-family:'Bebas Neue';font-size:15px;color:var(--gold);}
 .lhsl{font-size:7px;letter-spacing:2px;color:var(--muted);}
 
 /* GAME GRID */
-.game-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px;}
-.game-card{border-radius:10px;overflow:hidden;cursor:pointer;transition:all .25s;position:relative;
-  border:1px solid var(--border);}
-.game-card:hover{transform:translateY(-3px);box-shadow:0 12px 36px rgba(0,0,0,.6);}
-.game-card:active{transform:scale(.97);}
-.game-card.wide{grid-column:1/-1;}
-.game-card.featured{border-color:rgba(243,156,18,.25);}
-
+.game-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.gc{border-radius:10px;overflow:hidden;cursor:pointer;transition:all .25s;
+  position:relative;border:1px solid var(--border);}
+.gc:hover{transform:translateY(-3px);box-shadow:0 12px 36px rgba(0,0,0,.6);}
+.gc:active{transform:scale(.97);}
+.gc.wide{grid-column:1/-1;}
 .gc-bg{position:absolute;inset:0;}
-.gc-flip-bg{background:linear-gradient(135deg,rgba(192,57,43,.25),rgba(7,0,10,.95));}
-.gc-binary-bg{background:linear-gradient(135deg,rgba(41,128,185,.25),rgba(0,7,15,.95));}
-.gc-eo-bg{background:linear-gradient(135deg,rgba(39,174,96,.2),rgba(0,10,5,.95));}
-.gc-duel-bg{background:linear-gradient(135deg,rgba(142,68,173,.25),rgba(7,0,14,.95));}
-.gc-swap-bg{background:linear-gradient(135deg,rgba(39,174,96,.18),rgba(41,128,185,.18),rgba(0,8,12,.95));}
+.bg-crash{background:linear-gradient(135deg,rgba(41,128,185,.3),rgba(0,7,15,.95));}
+.bg-plinko{background:linear-gradient(135deg,rgba(155,89,182,.3),rgba(7,0,14,.95));}
+.bg-mines{background:linear-gradient(135deg,rgba(192,57,43,.3),rgba(7,0,10,.95));}
+.bg-hilo{background:linear-gradient(135deg,rgba(39,174,96,.25),rgba(0,10,5,.95));}
+.bg-slots{background:linear-gradient(135deg,rgba(243,156,18,.25),rgba(10,7,0,.95));}
+.bg-wheel{background:linear-gradient(135deg,rgba(243,156,18,.2),rgba(155,89,182,.2),rgba(0,8,12,.95));}
+.gc-body{position:relative;z-index:2;padding:13px 11px;}
+.gc-icon{font-size:28px;margin-bottom:5px;display:block;}
+.gc-name{font-family:'Bebas Neue';font-size:17px;letter-spacing:2px;margin-bottom:2px;}
+.gc-desc{font-size:9px;color:rgba(255,255,255,.5);margin-bottom:7px;line-height:1.4;}
+.gc-tags{display:flex;gap:3px;flex-wrap:wrap;}
+.gtag{font-size:7px;letter-spacing:1px;padding:2px 5px;border-radius:3px;font-weight:700;}
+.t-live{background:rgba(231,76,60,.15);color:var(--red);border:1px solid rgba(231,76,60,.3);}
+.t-hot{background:rgba(243,156,18,.15);color:var(--gold);border:1px solid rgba(243,156,18,.3);}
+.t-fair{background:rgba(52,152,219,.12);color:var(--lblue);border:1px solid rgba(52,152,219,.25);}
+.t-new{background:rgba(46,204,113,.12);color:var(--lgreen);border:1px solid rgba(46,204,113,.25);}
+.gc-arrow{position:absolute;bottom:10px;right:10px;font-size:14px;opacity:.3;transition:opacity .2s;}
+.gc:hover .gc-arrow{opacity:.8;}
+.gc-pool{position:absolute;top:8px;right:8px;font-family:'Bebas Neue';font-size:9px;
+  color:var(--gold);background:rgba(0,0,0,.5);padding:2px 6px;border-radius:3px;}
 
-.gc-body{position:relative;z-index:2;padding:14px 12px;}
-.gc-icon{font-size:30px;margin-bottom:6px;display:block;}
-.gc-name{font-family:'Bebas Neue';font-size:18px;letter-spacing:2px;margin-bottom:2px;}
-.gc-desc{font-size:10px;color:rgba(255,255,255,.5);margin-bottom:8px;line-height:1.4;}
-.gc-tags{display:flex;gap:4px;flex-wrap:wrap;}
-.gc-tag{font-size:7px;letter-spacing:1px;padding:2px 6px;border-radius:3px;font-weight:700;}
-.gc-live{background:rgba(231,76,60,.15);color:var(--red);border:1px solid rgba(231,76,60,.3);}
-.gc-sc{background:rgba(52,152,219,.12);color:var(--lblue);border:1px solid rgba(52,152,219,.25);}
-.gc-free{background:rgba(39,174,96,.12);color:var(--lgreen);border:1px solid rgba(39,174,96,.25);}
-.gc-new{background:rgba(243,156,18,.15);color:var(--gold);border:1px solid rgba(243,156,18,.3);}
-.gc-arrow{position:absolute;bottom:12px;right:12px;font-size:16px;opacity:.3;transition:opacity .2s;}
-.game-card:hover .gc-arrow{opacity:.8;}
-.gc-pool{position:absolute;top:10px;right:10px;font-family:'Bebas Neue';font-size:10px;
-  color:var(--gold);background:rgba(0,0,0,.4);padding:2px 6px;border-radius:3px;letter-spacing:1px;}
+/* WIDE CARD */
+.gc-body.wide{display:flex;align-items:center;gap:10px;padding:11px 13px;}
+.gc-wide-r{flex:1;}
+.gc-wide-name{font-family:'Bebas Neue';font-size:18px;letter-spacing:2px;margin-bottom:2px;}
+.gc-wide-desc{font-size:9px;color:rgba(255,255,255,.5);margin-bottom:5px;}
 
-/* WIDE CARD LAYOUT */
-.gc-body.wide-layout{display:flex;align-items:center;gap:12px;padding:12px 14px;}
-.gc-wide-left{flex-shrink:0;}
-.gc-wide-right{flex:1;}
-.gc-wide-name{font-family:'Bebas Neue';font-size:20px;letter-spacing:2px;margin-bottom:3px;}
-.gc-wide-desc{font-size:10px;color:rgba(255,255,255,.5);margin-bottom:6px;}
-
-/* ════════════════════════════════
-   GAME PAGES
-════════════════════════════════ */
-.game-wrap{padding:14px;}
-
-/* GAME HEADER */
-.game-hdr{display:flex;align-items:center;gap:10px;padding:12px 14px;
-  background:rgba(0,0,0,.3);border:1px solid var(--border);border-radius:8px;margin-bottom:14px;}
-.gh-icon{font-size:26px;}
+/* ══════════════════════════
+   GAME PAGES — SHARED
+══════════════════════════ */
+.game-wrap{padding:12px;}
+.game-hdr{display:flex;align-items:center;gap:10px;padding:10px 12px;
+  background:rgba(0,0,0,.3);border:1px solid var(--border);border-radius:8px;margin-bottom:12px;}
+.gh-icon{font-size:24px;}
 .gh-info{flex:1;}
-.gh-name{font-family:'Bebas Neue';font-size:18px;letter-spacing:2px;}
+.gh-name{font-family:'Bebas Neue';font-size:17px;letter-spacing:2px;}
 .gh-sc{font-size:9px;letter-spacing:1px;color:var(--lblue);}
-.gh-live{font-size:8px;background:rgba(231,76,60,.12);color:var(--red);
-  border:1px solid rgba(231,76,60,.28);padding:3px 8px;border-radius:3px;animation:lp 1.5s infinite;}
+.gh-badge{font-size:8px;padding:3px 8px;border-radius:3px;animation:lp 1.5s infinite;}
+.gh-badge.live{background:rgba(231,76,60,.12);color:var(--red);border:1px solid rgba(231,76,60,.28);}
+.gh-badge.fair{background:rgba(52,152,219,.1);color:var(--lblue);border:1px solid rgba(52,152,219,.2);animation:none;}
 @keyframes lp{0%,100%{opacity:1}50%{opacity:.4}}
 
-/* TIMER BIG */
-.timer-big{font-family:'Bebas Neue';font-size:72px;line-height:1;letter-spacing:4px;
-  color:var(--gold);text-shadow:0 0 28px rgba(243,156,18,.5);
-  text-align:center;padding:10px 0 4px;transition:all .3s;}
-.timer-big.urgent{color:var(--red);text-shadow:0 0 28px rgba(231,76,60,.6);animation:tbu .4s infinite;}
-@keyframes tbu{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.7;transform:scale(1.04)}}
-.timer-lbl{font-size:8px;letter-spacing:4px;color:var(--muted);text-align:center;margin-bottom:16px;}
-
-/* SIDES */
-.sides2{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px;}
-.side{background:var(--panel2);border:2px solid var(--border2);border-radius:8px;
-  padding:14px 8px;text-align:center;cursor:pointer;transition:all .2s;position:relative;}
-.side:hover{transform:translateY(-2px);}
-.side.gold{border-color:var(--gold);background:rgba(243,156,18,.07);box-shadow:0 0 16px rgba(243,156,18,.12);}
-.side.red{border-color:var(--red);background:rgba(231,76,60,.07);box-shadow:0 0 16px rgba(231,76,60,.12);}
-.side.green{border-color:var(--lgreen);background:rgba(46,204,113,.07);box-shadow:0 0 16px rgba(46,204,113,.1);}
-.side.blue{border-color:var(--lblue);background:rgba(52,152,219,.07);box-shadow:0 0 16px rgba(52,152,219,.1);}
-.side-ic{font-size:34px;margin-bottom:6px;}
-.side-nm{font-family:'Bebas Neue';font-size:17px;letter-spacing:2px;}
-.side-pl{font-size:9px;color:var(--muted);margin-top:3px;}
-.side-od{font-family:'Bebas Neue';font-size:13px;color:var(--gold);margin-top:2px;}
-
-/* POOL BAR */
-.pbar-wrap{margin-bottom:14px;}
-.pbar{height:5px;background:#0f0f20;border-radius:3px;overflow:hidden;position:relative;margin:4px 0;}
-.pbr{position:absolute;left:0;top:0;height:100%;background:linear-gradient(90deg,#7b6000,var(--gold));transition:width .5s;}
-.pbl{position:absolute;right:0;top:0;height:100%;background:linear-gradient(270deg,var(--dred),var(--red));transition:width .5s;}
-.pbar-pcts{display:flex;justify-content:space-between;font-size:10px;font-weight:700;}
-
-/* STAKE */
-.stake-box{margin-bottom:10px;}
-.stake-row{display:flex;gap:6px;align-items:center;margin-bottom:7px;}
-.sinp{flex:1;background:rgba(0,0,0,.3);border:1px solid var(--border2);color:var(--text);
-  padding:10px 11px;border-radius:5px;font-family:'Bebas Neue';font-size:16px;letter-spacing:1px;}
-.sinp:focus{outline:none;border-color:var(--gold);}
-.sqrow{display:flex;gap:4px;}
-.sq{font-family:'Bebas Neue';font-size:11px;padding:6px 8px;
+/* BET CONTROLS */
+.bet-ctrl{background:var(--panel);border:1px solid var(--border);border-radius:10px;padding:12px;}
+.ctrl-lbl{font-size:8px;letter-spacing:2px;color:var(--muted);margin-bottom:5px;font-weight:700;}
+.ctrl-inp{width:100%;background:rgba(0,0,0,.3);border:1px solid var(--border2);color:var(--text);
+  padding:9px 10px;border-radius:5px;font-family:'Bebas Neue';font-size:15px;letter-spacing:1px;margin-bottom:6px;}
+.ctrl-inp:focus{outline:none;border-color:var(--gold);}
+.ctrl-qrow{display:flex;gap:4px;margin-bottom:10px;}
+.cq{font-family:'Bebas Neue';font-size:10px;padding:5px 8px;
   background:rgba(0,0,0,.3);border:1px solid var(--border2);color:var(--muted);
   cursor:pointer;border-radius:3px;transition:all .15s;}
-.sq:hover{border-color:var(--blood);color:#fff;}
-.pay-info{text-align:center;font-size:11px;color:var(--muted);margin-bottom:10px;letter-spacing:1px;}
-.pay-val{font-family:'Bebas Neue';font-size:16px;}
+.cq:hover{border-color:var(--blood);color:#fff;}
+.ctrl-info{display:flex;justify-content:space-between;margin-bottom:8px;font-size:10px;color:var(--muted);}
+.ci-val{color:var(--text);font-family:'Bebas Neue';font-size:13px;}
 
-/* ACTION BTN */
-.abtn{width:100%;padding:13px;font-family:'Bebas Neue';font-size:16px;letter-spacing:3px;
-  color:#fff;border:none;cursor:pointer;border-radius:6px;transition:all .2s;margin-bottom:8px;}
+/* ACTION BUTTONS */
+.abtn{width:100%;padding:12px;font-family:'Bebas Neue';font-size:15px;letter-spacing:3px;
+  color:#fff;border:none;cursor:pointer;border-radius:6px;transition:all .2s;margin-bottom:6px;}
 .abtn:hover:not(:disabled){transform:translateY(-1px);}
-.abtn:disabled{opacity:.3;cursor:not-allowed;}
+.abtn:disabled{opacity:.3;cursor:not-allowed;transform:none!important;}
 .abtn.red{background:linear-gradient(135deg,var(--dred),var(--blood));border-top:2px solid var(--red);}
 .abtn.blue{background:linear-gradient(135deg,#0d3b6e,var(--blue));border-top:2px solid var(--lblue);}
 .abtn.green{background:linear-gradient(135deg,#0d4a0d,var(--green));border-top:2px solid var(--lgreen);}
 .abtn.purple{background:linear-gradient(135deg,#4a1060,var(--purple));border-top:2px solid var(--lpurple);}
-.abtn.gold{background:linear-gradient(135deg,#7b5c00,var(--gold));border-top:2px solid var(--gold);color:#111;}
+.abtn.gold{background:linear-gradient(135deg,var(--dgold),var(--gold));border-top:2px solid var(--gold);color:#111;}
+.abtn.cashout{background:linear-gradient(135deg,var(--dgold),var(--gold));border-top:2px solid var(--gold);
+  color:#111;animation:pgold 1s infinite;}
+@keyframes pgold{0%,100%{box-shadow:0 0 8px rgba(243,156,18,.2)}50%{box-shadow:0 0 22px rgba(243,156,18,.7)}}
 
-/* SC INFO */
-.sc-info{padding:8px 10px;background:rgba(52,152,219,.04);
-  border:1px solid rgba(52,152,219,.12);border-radius:5px;
-  font-size:9px;color:var(--muted);letter-spacing:1px;text-align:center;}
+.sc-info{padding:6px 10px;background:rgba(52,152,219,.04);border:1px solid rgba(52,152,219,.1);
+  border-radius:5px;font-size:9px;color:var(--muted);letter-spacing:1px;text-align:center;margin-top:8px;}
+.bal-row{display:flex;justify-content:space-between;margin-top:7px;font-size:10px;color:var(--muted);padding:0 2px;}
+.bv{color:var(--gold);font-family:'Bebas Neue';font-size:13px;}
 
-/* COIN FLIP COIN */
-.coin-c{display:flex;flex-direction:column;align-items:center;margin-bottom:16px;}
-.coin{width:110px;height:110px;position:relative;transform-style:preserve-3d;}
-.coin.flip{animation:cf .8s ease-in-out;}
-@keyframes cf{0%{transform:rotateY(0)}50%{transform:rotateY(900deg)}100%{transform:rotateY(1800deg)}}
-.cface{position:absolute;width:100%;height:100%;border-radius:50%;
-  display:flex;align-items:center;justify-content:center;font-size:48px;
-  backface-visibility:hidden;border:3px solid;}
-.ch{background:radial-gradient(circle,rgba(243,156,18,.28),rgba(243,156,18,.04));border-color:var(--gold);}
-.ct{background:radial-gradient(circle,rgba(192,57,43,.28),rgba(192,57,43,.04));border-color:var(--blood);transform:rotateY(180deg);}
+/* ══ CRASH ══ */
+.crash-graph{background:rgba(0,0,0,.4);border:1px solid var(--border);border-radius:10px;
+  position:relative;overflow:hidden;height:200px;margin-bottom:10px;}
+.crash-canvas{width:100%;height:100%;}
+.crash-ov{position:absolute;inset:0;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;pointer-events:none;}
+.cm{font-family:'Bebas Neue';font-size:64px;letter-spacing:4px;line-height:1;
+  text-shadow:0 0 30px currentColor;transition:color .1s;}
+.cm.safe{color:var(--lgreen);}
+.cm.warn{color:var(--gold);}
+.cm.danger{color:var(--red);}
+.cm.crashed{color:var(--red);animation:shake .3s ease;}
+@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-5px)}75%{transform:translateX(5px)}}
+.cs{font-size:10px;letter-spacing:2px;margin-top:3px;}
+.ct{font-size:8px;color:var(--muted);margin-top:2px;letter-spacing:1px;}
+.crash-hist{display:flex;gap:5px;margin-bottom:8px;overflow-x:auto;scrollbar-width:none;}
+.crash-hist::-webkit-scrollbar{display:none;}
+.ch-i{font-family:'Bebas Neue';font-size:11px;padding:3px 7px;border-radius:4px;
+  white-space:nowrap;flex-shrink:0;border:1px solid;}
+.ch-l{color:var(--red);background:rgba(231,76,60,.1);border-color:rgba(231,76,60,.3);}
+.ch-m{color:var(--gold);background:rgba(243,156,18,.1);border-color:rgba(243,156,18,.3);}
+.ch-h{color:var(--lgreen);background:rgba(46,204,113,.1);border-color:rgba(46,204,113,.3);}
+.crash-bet-row{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px;}
 
-/* BINARY PRICE DISPLAY */
-.bin-price-card{background:rgba(0,0,0,.3);border:1px solid var(--border2);border-radius:8px;
-  padding:14px;margin-bottom:14px;text-align:center;}
-.bin-coin-sel{display:flex;gap:6px;justify-content:center;flex-wrap:wrap;margin-bottom:12px;}
-.bcs{font-family:'Bebas Neue';font-size:12px;letter-spacing:1px;padding:5px 10px;
-  background:var(--panel2);border:1px solid var(--border2);color:var(--muted);
-  cursor:pointer;border-radius:5px;transition:all .15s;}
-.bcs:hover{border-color:var(--lblue);color:#fff;}
-.bcs.a{background:rgba(41,128,185,.12);border-color:var(--lblue);color:#fff;}
-.bin-entry{font-size:10px;letter-spacing:2px;color:var(--muted);margin-bottom:4px;}
-.bin-price{font-family:'Bebas Neue';font-size:36px;color:#fff;line-height:1;margin-bottom:4px;}
-.bin-chg{font-size:11px;font-weight:700;}
-.bin-tf{display:flex;gap:5px;justify-content:center;margin-top:10px;}
-.btf{font-family:'Bebas Neue';font-size:11px;letter-spacing:1px;padding:5px 10px;
-  background:var(--panel2);border:1px solid var(--border2);color:var(--muted);
-  cursor:pointer;border-radius:4px;transition:all .15s;}
-.btf:hover{border-color:var(--blood);color:#fff;}
-.btf.a{background:rgba(192,57,43,.1);border-color:var(--blood);color:#fff;}
-
-/* QDUEL */
-.duel-vs{display:flex;align-items:center;gap:8px;margin-bottom:14px;}
-.dp{flex:1;text-align:center;padding:12px 6px;background:var(--panel2);
-  border-radius:8px;border:1px solid var(--border2);}
-.dp.you{border-color:rgba(243,156,18,.25);}
-.dp-av{font-size:28px;margin-bottom:4px;}
-.dp-nm{font-family:'Bebas Neue';font-size:12px;letter-spacing:1px;}
-.dp-ad{font-size:8px;color:var(--muted);margin-top:2px;}
-.dp-st{font-family:'Bebas Neue';font-size:13px;color:var(--gold);margin-top:4px;}
-.vs-mid{text-align:center;}
-.vstxt{font-family:'Bebas Neue';font-size:24px;color:rgba(255,255,255,.12);}
-.vsprize{font-size:9px;color:var(--gold);margin-top:2px;letter-spacing:1px;}
-.duel-modes{display:flex;gap:5px;margin-bottom:12px;}
-.dm{font-family:'Bebas Neue';font-size:11px;letter-spacing:1px;padding:7px 8px;
+/* ══ PLINKO ══ */
+.plinko-cw{background:rgba(0,0,0,.4);border:1px solid var(--border);border-radius:10px;
+  overflow:hidden;margin-bottom:10px;display:flex;align-items:center;justify-content:center;}
+.risk-row{display:flex;gap:5px;margin-bottom:8px;}
+.rr{font-family:'Bebas Neue';font-size:11px;letter-spacing:1px;padding:6px 8px;
   background:var(--panel2);border:1px solid var(--border2);color:var(--muted);
   cursor:pointer;border-radius:5px;transition:all .15s;flex:1;text-align:center;}
-.dm:hover{border-color:var(--purple);}
-.dm.a{background:rgba(142,68,173,.12);border-color:var(--purple);color:#fff;}
-.open-list{margin-top:14px;}
-.ol-hd{font-size:9px;letter-spacing:3px;color:var(--muted);font-weight:700;margin-bottom:8px;}
-.drow{display:flex;align-items:center;gap:8px;padding:9px 11px;
-  background:var(--panel2);border:1px solid var(--border2);border-radius:6px;
-  margin-bottom:6px;cursor:pointer;transition:all .2s;}
-.drow:hover{border-color:rgba(142,68,173,.3);}
-.dr-l{flex:1;}
-.dr-nm{font-family:'Bebas Neue';font-size:13px;letter-spacing:1px;}
-.dr-inf{font-size:9px;color:var(--muted);margin-top:2px;}
-.dr-md{font-size:8px;color:var(--lpurple);background:rgba(142,68,173,.1);
-  padding:2px 6px;border-radius:3px;display:inline-block;margin-top:3px;}
-.dr-st{font-family:'Bebas Neue';font-size:18px;color:var(--gold);}
-.acc-btn{font-family:'Bebas Neue';font-size:11px;letter-spacing:1px;padding:7px 11px;
-  background:linear-gradient(135deg,#4a1060,var(--purple));color:#fff;border:none;
-  cursor:pointer;border-radius:4px;transition:all .15s;}
-.acc-btn:hover{transform:scale(1.04);}
+.rr:hover{border-color:var(--gold);}
+.rr.rl{background:rgba(46,204,113,.1);border-color:var(--lgreen);color:var(--lgreen);}
+.rr.rm{background:rgba(243,156,18,.1);border-color:var(--gold);color:var(--gold);}
+.rr.rh{background:rgba(231,76,60,.1);border-color:var(--red);color:var(--red);}
+.buckets{display:flex;gap:3px;margin-bottom:8px;}
+.bkt{flex:1;text-align:center;padding:5px 2px;border-radius:4px;
+  font-family:'Bebas Neue';font-size:10px;border:1px solid transparent;transition:all .3s;}
+.bkt.hit{animation:bHit .4s ease;}
+@keyframes bHit{0%{transform:scale(1.15)}100%{transform:scale(1)}}
 
-/* QSWAP */
-.swap-box{background:rgba(0,0,0,.25);border:1px solid var(--border2);border-radius:8px;padding:12px 13px;margin-bottom:8px;}
-.swap-lbl{font-size:8px;letter-spacing:2px;color:var(--muted);margin-bottom:6px;font-weight:700;}
-.swap-row{display:flex;align-items:center;gap:8px;}
-.swap-tok{display:flex;align-items:center;gap:6px;background:var(--panel2);
-  border:1px solid var(--border2);border-radius:5px;padding:6px 10px;white-space:nowrap;cursor:pointer;}
-.stok-ic{font-size:17px;}
-.stok-nm{font-family:'Bebas Neue';font-size:13px;letter-spacing:1px;}
-.swap-inp{flex:1;background:transparent;border:none;color:var(--text);
-  font-family:'Bebas Neue';font-size:22px;letter-spacing:1px;text-align:right;width:100%;}
-.swap-inp:focus{outline:none;}
-.swap-usd{font-size:9px;color:var(--muted);margin-top:4px;text-align:right;}
-.swap-mid{text-align:center;margin:6px 0;}
-.swap-flip{background:var(--panel2);border:1px solid var(--border2);
-  width:32px;height:32px;border-radius:50%;display:inline-flex;align-items:center;
-  justify-content:center;font-size:15px;cursor:pointer;transition:all .2s;}
-.swap-flip:hover{border-color:var(--gold);transform:rotate(180deg);}
-.swap-details{padding:8px 10px;background:rgba(0,0,0,.2);border-radius:5px;margin-bottom:10px;}
-.sd-row{display:flex;justify-content:space-between;font-size:10px;color:var(--muted);margin-bottom:3px;}
-.sd-row:last-child{margin-bottom:0;}
-.sd-val{color:var(--text);}
-.sd-green{color:var(--lgreen);}
+/* ══ MINES ══ */
+.mines-hdr{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;}
+.mines-m{font-family:'Bebas Neue';font-size:28px;color:var(--gold);text-shadow:0 0 16px rgba(243,156,18,.4);}
+.mines-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:5px;margin-bottom:10px;}
+.tile{aspect-ratio:1;border-radius:7px;cursor:pointer;display:flex;align-items:center;
+  justify-content:center;font-size:22px;transition:all .2s;
+  background:linear-gradient(135deg,#0d0d20,#141428);border:1px solid var(--border2);}
+.tile:hover:not(.revealed):not(.disabled){border-color:rgba(243,156,18,.4);transform:scale(1.05);}
+.tile.safe{background:linear-gradient(135deg,rgba(39,174,96,.2),rgba(39,174,96,.05));
+  border-color:var(--lgreen);animation:tRev .3s ease;}
+.tile.mine{background:linear-gradient(135deg,rgba(192,57,43,.3),rgba(192,57,43,.1));
+  border-color:var(--red);animation:tExp .4s ease;}
+.tile.am{background:rgba(60,0,0,.2);border-color:rgba(192,57,43,.3);}
+.tile.disabled{cursor:not-allowed;}
+@keyframes tRev{0%{transform:scale(.8)}100%{transform:scale(1)}}
+@keyframes tExp{0%{transform:scale(1)}30%{transform:scale(1.25)}100%{transform:scale(1)}}
+.mines-prog{height:4px;background:#0f0f20;border-radius:3px;overflow:hidden;margin-bottom:8px;}
+.mines-bar{height:100%;background:linear-gradient(90deg,var(--green),var(--lgreen));transition:width .3s;}
+.mines-profit{display:flex;gap:6px;margin-bottom:8px;}
+.mp{flex:1;text-align:center;padding:6px;background:rgba(0,0,0,.2);border-radius:5px;}
+.mp-l{font-size:7px;color:var(--muted);letter-spacing:1px;}
+.mp-v{font-family:'Bebas Neue';font-size:13px;}
 
-/* EVEN/ODD GRID */
-.eo-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
-.eo-c{background:var(--panel);border:1px solid var(--border);border-radius:8px;overflow:hidden;}
-.eo-top{padding:8px 10px;background:rgba(0,0,0,.3);border-bottom:1px solid var(--border);
-  display:flex;align-items:center;justify-content:space-between;}
-.eo-sym{font-family:'Bebas Neue';font-size:14px;letter-spacing:2px;}
-.eo-dot{width:5px;height:5px;border-radius:50%;background:var(--red);animation:lp 1.2s infinite;}
-.eo-price{font-family:'Bebas Neue';font-size:20px;color:#fff;text-align:center;padding:8px 8px 2px;}
-.eo-dig{font-size:10px;text-align:center;margin-bottom:3px;}
-.eo-chg{font-size:9px;font-weight:700;text-align:center;margin-bottom:6px;}
-.eo-timer{font-family:'Bebas Neue';font-size:46px;color:var(--gold);text-align:center;line-height:1;padding:3px 0;transition:color .3s;}
-.eo-timer.urg{color:var(--red);animation:tbu .4s infinite;}
-.eo-tlbl{font-size:7px;letter-spacing:2px;color:var(--muted);text-align:center;margin-bottom:6px;}
-.eo-tfs{display:flex;gap:3px;padding:0 8px 7px;}
-.etf{font-family:'Bebas Neue';font-size:10px;padding:3px 5px;background:var(--panel2);
-  border:1px solid var(--border2);color:var(--muted);cursor:pointer;border-radius:3px;transition:all .15s;flex:1;text-align:center;}
-.etf:hover{border-color:var(--blood);}
-.etf.a{background:rgba(192,57,43,.1);border-color:var(--blood);color:#fff;}
-.eo-sides{display:grid;grid-template-columns:1fr 1fr;gap:5px;padding:0 8px 8px;}
-.eo-side{background:var(--panel2);border:1px solid var(--border2);border-radius:5px;
-  padding:7px 4px;text-align:center;cursor:pointer;transition:all .15s;}
-.eo-side:hover{border-color:var(--gold);}
-.eo-side.se{border-color:var(--lgreen);background:rgba(46,204,113,.07);}
-.eo-side.so{border-color:var(--red);background:rgba(231,76,60,.07);}
-.eo-si{font-size:18px;margin-bottom:2px;}
-.eo-sn{font-family:'Bebas Neue';font-size:12px;letter-spacing:1px;}
-.eo-so{font-family:'Bebas Neue';font-size:11px;color:var(--gold);}
+/* ══ HI-LO ══ */
+.hilo-deck{background:linear-gradient(135deg,#0d0020,#04040c);
+  border:1px solid var(--border);border-radius:10px;padding:14px;margin-bottom:10px;
+  display:flex;flex-direction:column;align-items:center;}
+.hilo-hist{display:flex;gap:4px;margin-bottom:10px;overflow-x:auto;scrollbar-width:none;}
+.hilo-hist::-webkit-scrollbar{display:none;}
+.hh{width:34px;height:48px;border-radius:5px;flex-shrink:0;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;background:linear-gradient(135deg,#fff,#f0f0f0);}
+.hh-v{font-family:'Bebas Neue';font-size:12px;}
+.hh-s{font-size:10px;}
+.cards-row{display:flex;align-items:center;gap:8px;margin-bottom:12px;}
+.card{width:64px;height:90px;border-radius:9px;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;transition:all .3s;}
+.card.prev{background:linear-gradient(135deg,#1a1a3a,#0d0d20);border:1px solid var(--border2);opacity:.7;}
+.card.cur{background:linear-gradient(135deg,#fff,#f0f0f0);border:2px solid var(--gold);
+  box-shadow:0 0 20px rgba(243,156,18,.4);animation:cPop .3s ease;}
+@keyframes cPop{0%{transform:scale(.8) rotateY(90deg)}100%{transform:scale(1) rotateY(0)}}
+.card.nxt{background:linear-gradient(135deg,#1a1a3a,#0d0d20);border:2px dashed var(--border2);}
+.card-v{font-family:'Bebas Neue';font-size:26px;letter-spacing:1px;}
+.card-s{font-size:18px;}
+.card.cur .card-v,.card.cur .card-s{color:#111;}
+.card.prev .card-v,.card.prev .card-s{color:var(--muted);}
+.c-arrow{font-size:20px;color:var(--muted);}
+.hilo-odds{display:flex;gap:5px;margin-bottom:10px;width:100%;}
+.ho{flex:1;text-align:center;padding:6px;background:var(--panel2);border-radius:5px;border:1px solid var(--border2);}
+.ho-l{font-size:7px;color:var(--muted);letter-spacing:1px;}
+.ho-v{font-family:'Bebas Neue';font-size:13px;}
+.hilo-btns{display:grid;grid-template-columns:1fr auto 1fr;gap:5px;margin-bottom:8px;}
+.hbtn{padding:11px 6px;font-family:'Bebas Neue';font-size:13px;letter-spacing:1px;
+  color:#fff;border:none;cursor:pointer;border-radius:7px;transition:all .2s;text-align:center;}
+.hbtn:hover:not(:disabled){transform:translateY(-2px);}
+.hbtn:disabled{opacity:.3;cursor:not-allowed;}
+.hb-hi{background:linear-gradient(135deg,#0d4a0d,var(--green));border-top:2px solid var(--lgreen);}
+.hb-sk{background:var(--panel2);border:1px solid var(--border2);color:var(--muted);padding:11px 8px;}
+.hb-lo{background:linear-gradient(135deg,var(--dred),var(--blood));border-top:2px solid var(--red);}
 
-/* HISTORY */
-.hist-list{background:var(--panel);border:1px solid var(--border);border-radius:8px;overflow:hidden;}
-.hist-hd{background:rgba(0,0,0,.3);padding:9px 13px;font-size:9px;letter-spacing:3px;color:var(--muted);font-weight:700;}
-.hrow{display:flex;align-items:center;gap:7px;padding:8px 13px;border-bottom:1px solid var(--border);}
-.hrow:last-child{border-bottom:none;}
-.hi{font-size:15px;width:19px;text-align:center;}
-.hd{flex:1;}
-.hm{font-size:11px;}
-.ht{font-size:9px;color:var(--muted);margin-top:1px;}
-.hw{color:var(--lgreen);font-family:'Bebas Neue';font-size:13px;}
-.hl{color:var(--red);font-family:'Bebas Neue';font-size:13px;}
-.he{font-size:9px;}
+/* ══ SLOTS ══ */
+.slot-machine{background:linear-gradient(135deg,#0d0020,#04040c);
+  border:2px solid rgba(243,156,18,.25);border-radius:14px;padding:14px;margin-bottom:10px;
+  box-shadow:0 0 24px rgba(243,156,18,.06),inset 0 0 24px rgba(0,0,0,.4);}
+.sm-top{text-align:center;margin-bottom:10px;}
+.sm-title{font-family:'Bebas Neue';font-size:20px;letter-spacing:5px;
+  background:linear-gradient(135deg,var(--gold),#fff,var(--gold));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.sm-lights{display:flex;justify-content:center;gap:5px;margin-top:3px;}
+.sm-light{width:7px;height:7px;border-radius:50%;animation:blink 1s infinite;}
+.sm-light:nth-child(2){animation-delay:.2s;}
+.sm-light:nth-child(3){animation-delay:.4s;}
+.sm-light:nth-child(4){animation-delay:.6s;}
+.sm-light:nth-child(5){animation-delay:.8s;}
+@keyframes blink{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.3;transform:scale(.7)}}
+.reels{display:flex;gap:6px;margin-bottom:10px;justify-content:center;}
+.reel-w{flex:1;max-width:100px;}
+.rl{font-size:7px;letter-spacing:2px;color:var(--muted);text-align:center;margin-bottom:3px;}
+.reel{height:112px;overflow:hidden;border-radius:8px;
+  background:rgba(0,0,0,.5);border:2px solid var(--border2);position:relative;}
+.reel.spinning .rtrack{animation:rSpin .1s linear infinite;}
+@keyframes rSpin{0%{transform:translateY(0)}100%{transform:translateY(-38px)}}
+.rtrack{display:flex;flex-direction:column;transition:transform .3s cubic-bezier(.17,.67,.35,1.2);}
+.ri{height:38px;display:flex;align-items:center;justify-content:center;font-size:26px;flex-shrink:0;}
+.rwin{position:absolute;top:38px;left:0;right:0;height:38px;
+  border-top:2px solid rgba(243,156,18,.4);border-bottom:2px solid rgba(243,156,18,.4);
+  background:rgba(243,156,18,.03);pointer-events:none;}
+.reel.win .rwin{border-color:var(--lgreen);background:rgba(46,204,113,.07);animation:wg .4s infinite;}
+@keyframes wg{0%,100%{box-shadow:inset 0 0 8px rgba(46,204,113,.15)}50%{box-shadow:inset 0 0 20px rgba(46,204,113,.4)}}
+.slot-win{text-align:center;min-height:28px;margin-bottom:6px;}
+.sw-l{font-family:'Bebas Neue';font-size:11px;letter-spacing:3px;color:var(--muted);}
+.sw-a{font-family:'Bebas Neue';font-size:24px;color:var(--gold);text-shadow:0 0 16px rgba(243,156,18,.5);}
+.sw-m{font-size:10px;color:var(--lgreen);}
+.paytable{display:grid;grid-template-columns:1fr 1fr;gap:4px;margin-bottom:10px;}
+.pt{display:flex;align-items:center;justify-content:space-between;
+  padding:3px 7px;background:rgba(0,0,0,.2);border-radius:4px;border:1px solid var(--border);}
+.pt-s{font-size:13px;letter-spacing:1px;}
+.pt-m{font-family:'Bebas Neue';font-size:11px;color:var(--gold);}
 
-/* RESULT POP */
-.rpop{position:fixed;inset:0;z-index:700;background:rgba(0,0,0,.94);
+/* ══ WHEEL ══ */
+.wheel-area{display:flex;flex-direction:column;align-items:center;margin-bottom:10px;}
+.wheel-cw{position:relative;display:flex;align-items:center;justify-content:center;margin-bottom:6px;}
+.wheel-ptr{position:absolute;top:-7px;left:50%;transform:translateX(-50%);
+  width:0;height:0;border-left:11px solid transparent;border-right:11px solid transparent;
+  border-top:22px solid var(--gold);filter:drop-shadow(0 0 5px rgba(243,156,18,.8));z-index:10;}
+.wheel-ctr{position:absolute;width:40px;height:40px;border-radius:50%;
+  background:linear-gradient(135deg,var(--dgold),var(--gold));border:2px solid #ffd700;
+  display:flex;align-items:center;justify-content:center;
+  font-family:'Bebas Neue';font-size:9px;color:#111;box-shadow:0 0 10px rgba(243,156,18,.5);}
+.wheel-res{text-align:center;min-height:36px;margin-bottom:8px;}
+.wr-m{font-family:'Bebas Neue';font-size:38px;color:var(--gold);
+  text-shadow:0 0 20px rgba(243,156,18,.6);line-height:1;}
+.wr-w{font-family:'Bebas Neue';font-size:14px;color:var(--lgreen);}
+.wheel-risk{display:flex;gap:4px;margin-bottom:8px;}
+.wr{font-family:'Bebas Neue';font-size:11px;letter-spacing:1px;padding:6px 7px;
+  background:var(--panel2);border:1px solid var(--border2);color:var(--muted);
+  cursor:pointer;border-radius:5px;transition:all .15s;flex:1;text-align:center;}
+.wr.wl{background:rgba(46,204,113,.1);border-color:var(--lgreen);color:var(--lgreen);}
+.wr.wm{background:rgba(243,156,18,.1);border-color:var(--gold);color:var(--gold);}
+.wr.wh{background:rgba(231,76,60,.1);border-color:var(--red);color:var(--red);}
+.wheel-stats{display:flex;gap:6px;margin-top:8px;}
+.wst{flex:1;text-align:center;padding:6px;background:var(--panel2);border-radius:5px;border:1px solid var(--border2);}
+.wst-v{font-family:'Bebas Neue';font-size:14px;}
+.wst-l{font-size:7px;color:var(--muted);letter-spacing:1px;margin-top:1px;}
+
+/* RESULT POPUP */
+.rpop{position:fixed;inset:0;z-index:700;background:rgba(0,0,0,.93);
   display:none;align-items:center;justify-content:center;flex-direction:column;padding:20px;}
 .rpop.show{display:flex;animation:ri .3s ease;}
 @keyframes ri{from{opacity:0}to{opacity:1}}
-.ric{font-size:72px;animation:bn .5s ease;}
+.ric{font-size:64px;animation:bn .5s ease;}
 @keyframes bn{0%{transform:scale(0)}60%{transform:scale(1.2)}100%{transform:scale(1)}}
-.rtl{font-family:'Bebas Neue';font-size:48px;letter-spacing:6px;margin:8px 0;text-align:center;}
-.ren{font-family:'Bebas Neue';font-size:26px;color:var(--lgreen);text-align:center;}
-.rmsg{font-size:12px;color:var(--muted);margin:8px 0 4px;text-align:center;letter-spacing:2px;}
-.rsc{font-size:9px;color:var(--lblue);text-align:center;margin-bottom:20px;letter-spacing:1px;}
-.rcls{font-family:'Bebas Neue';font-size:14px;letter-spacing:3px;padding:10px 26px;
+.rtl{font-family:'Bebas Neue';font-size:42px;letter-spacing:6px;margin:7px 0;text-align:center;}
+.ren{font-family:'Bebas Neue';font-size:22px;text-align:center;}
+.rmsg{font-size:11px;color:var(--muted);margin:6px 0 3px;text-align:center;letter-spacing:2px;}
+.rsc{font-size:9px;color:var(--lblue);text-align:center;margin-bottom:16px;}
+.rcls{font-family:'Bebas Neue';font-size:13px;letter-spacing:3px;padding:9px 22px;
   background:var(--blood);color:#fff;border:none;cursor:pointer;border-radius:5px;}
-
-/* NOTIF */
-.notif{position:fixed;top:14px;right:14px;z-index:600;border-radius:7px;
-  padding:9px 13px;max-width:250px;box-shadow:0 8px 24px rgba(0,0,0,.7);
-  animation:ni .3s ease;}
+.notif{position:fixed;top:12px;right:12px;z-index:600;border-radius:7px;
+  padding:9px 13px;max-width:240px;box-shadow:0 8px 24px rgba(0,0,0,.7);
+  animation:ni .3s ease;display:none;}
 @keyframes ni{from{opacity:0;transform:translateX(18px)}to{opacity:1;transform:translateX(0)}}
 .nt{font-family:'Bebas Neue';font-size:12px;letter-spacing:2px;margin-bottom:2px;}
 .nm{font-size:10px;color:#aaa;line-height:1.4;}
@@ -398,21 +395,18 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:9999;
 .notif.ok .nt{color:var(--gold);}
 .notif.err{background:var(--panel2);border:1px solid var(--red);}
 .notif.err .nt{color:var(--red);}
-.notif.inf{background:var(--panel2);border:1px solid var(--lblue);}
-.notif.inf .nt{color:var(--lblue);}
 </style>
 </head>
 <body>
 
 <!-- WALLET BAR -->
 <div class="wbar">
-  <div class="wb-l">
+  <div style="display:flex;align-items:center;gap:7px;">
     <div class="wdot" id="wdot"></div>
     <div class="waddr" id="waddr">Not Connected</div>
   </div>
-  <div class="wbals" id="wbals">
-    <span class="wbal wq">⚡ <span id="wQufc">0</span></span>
-    <span class="wbal wqb">◈ <span id="wQubic">0</span></span>
+  <div class="wbal-wrap" id="wbalWrap">
+    <span class="wbal">⚡ <span id="wBal">50,000</span> QUFC</span>
   </div>
   <button class="wbtn" id="wbtn" onclick="connectWallet()">🔗 CONNECT</button>
 </div>
@@ -422,11 +416,34 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:9999;
   <div class="brand" onclick="goLobby()">
     <span class="bname">QUFC</span><span class="btag">ARENA</span>
   </div>
-  <div class="back-btn" id="backBtn" onclick="goLobby()">
-    ← <span id="backLabel">LOBBY</span>
+  <div class="back-btn" id="backBtn" onclick="goLobby()">← LOBBY</div>
+  <div class="chain-pill"><div class="cpulse"></div>QUBIC</div>
+</div>
+
+<!-- PRICE STRIP -->
+<div class="price-strip">
+  <div class="ps-item">
+    <div class="ps-sym">⚡ QUBIC</div>
+    <div class="ps-price" id="psQubic" style="color:var(--lblue)">—</div>
+    <div class="ps-chg" id="psQubicChg">—</div>
   </div>
-  <div class="top-r">
-    <div class="chain-pill"><div class="cpulse"></div>QUBIC</div>
+  <div class="ps-div"></div>
+  <div class="ps-item">
+    <div class="ps-sym">🥊 QUFC</div>
+    <div class="ps-price" id="psQufc" style="color:var(--gold)">—</div>
+    <div class="ps-chg" id="psQufcChg" style="color:var(--muted)">QX RPC</div>
+  </div>
+  <div class="ps-div"></div>
+  <div class="ps-item">
+    <div class="ps-sym">₿ BTC</div>
+    <div class="ps-price" id="psBtc" style="color:#f7931a">—</div>
+    <div class="ps-chg" id="psBtcChg">—</div>
+  </div>
+  <div class="ps-div"></div>
+  <div class="ps-item">
+    <div class="ps-sym">Ξ ETH</div>
+    <div class="ps-price" id="psEth" style="color:#627eea">—</div>
+    <div class="ps-chg" id="psEthChg">—</div>
   </div>
 </div>
 
@@ -437,966 +454,1077 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:9999;
   <div class="tscroll" id="ticker">Loading...</div>
 </div>
 
-<!-- QUBIC PRICE STRIP -->
-<div class="qubic-strip" id="qubicStrip">
-  <div class="qs-item">
-    <div class="qs-icon">⚡</div>
-    <div class="qs-info">
-      <div class="qs-sym">QUBIC</div>
-      <div class="qs-price" id="qsQubicPrice">—</div>
-      <div class="qs-chg" id="qsQubicChg">—</div>
-    </div>
-  </div>
-  <div class="qs-div"></div>
-  <div class="qs-item">
-    <div class="qs-icon">🥊</div>
-    <div class="qs-info">
-      <div class="qs-sym">QUFC</div>
-      <div class="qs-price" id="qsQufcPrice" style="color:var(--gold)">—</div>
-      <div class="qs-chg" id="qsQufcChg">—</div>
-    </div>
-  </div>
-  <div class="qs-div"></div>
-  <div class="qs-item">
-    <div class="qs-icon">₿</div>
-    <div class="qs-info">
-      <div class="qs-sym">BTC</div>
-      <div class="qs-price" id="qsBtcPrice">—</div>
-      <div class="qs-chg" id="qsBtcChg">—</div>
-    </div>
-  </div>
-  <div class="qs-div"></div>
-  <div class="qs-item">
-    <div class="qs-icon">Ξ</div>
-    <div class="qs-info">
-      <div class="qs-sym">ETH</div>
-      <div class="qs-price" id="qsEthPrice">—</div>
-      <div class="qs-chg" id="qsEthChg">—</div>
-    </div>
-  </div>
-</div>
-
-<!-- ════════ LOBBY ════════ -->
+<!-- ════ LOBBY ════ -->
 <div class="page show" id="page-lobby">
 <div class="lobby">
-
-  <!-- HERO -->
   <div class="lobby-hero">
     <div class="lhbg"></div><div class="lhgrid"></div><div class="lhoct"></div>
     <div class="lhc">
-      <div class="lhbrow">⚡ QUBIC NETWORK</div>
+      <div class="lhbrow">⚡ QUBIC NETWORK · PROVABLY FAIR</div>
       <div class="lhtitle">QUFC<br>ARENA</div>
       <div class="lhsub">ENTER · PREDICT · DOMINATE</div>
       <div class="lhstats">
-        <div class="lhs"><div class="lhsv" id="lsLive">—</div><div class="lhsl">LIVE</div></div>
+        <div class="lhs"><div class="lhsv">6</div><div class="lhsl">GAMES</div></div>
         <div class="lhs"><div class="lhsv" id="lsPool">—</div><div class="lhsl">POOL</div></div>
-        <div class="lhs"><div class="lhsv">5</div><div class="lhsl">GAMES</div></div>
-        <div class="lhs"><div class="lhsv">0%</div><div class="lhsl">GAS FEE</div></div>
+        <div class="lhs"><div class="lhsv">0%</div><div class="lhsl">GAS</div></div>
+        <div class="lhs"><div class="lhsv">FAIR</div><div class="lhsl">PROVEN</div></div>
       </div>
     </div>
   </div>
 
-  <!-- GAME GRID -->
   <div class="game-grid">
-
-    <!-- COIN FLIP -->
-    <div class="game-card" onclick="goGame('flip')">
-      <div class="gc-bg gc-flip-bg"></div>
+    <div class="gc" onclick="goGame('crash')">
+      <div class="gc-bg bg-crash"></div>
       <div class="gc-body">
-        <span class="gc-icon">🎲</span>
-        <div class="gc-name">COIN FLIP</div>
-        <div class="gc-desc">30 sec rounds<br>Random SC</div>
+        <span class="gc-icon">🚀</span>
+        <div class="gc-name">CRASH</div>
+        <div class="gc-desc">Cash out before<br>it crashes!</div>
         <div class="gc-tags">
-          <span class="gc-tag gc-live">● LIVE</span>
-          <span class="gc-tag gc-sc">SC #3</span>
+          <span class="gtag t-live">● LIVE</span>
+          <span class="gtag t-fair">FAIR</span>
         </div>
       </div>
-      <div class="gc-pool" id="lp-flip">—</div>
+      <div class="gc-pool" id="lpCrash">—</div>
       <div class="gc-arrow">→</div>
     </div>
 
-    <!-- BINARY OPTION -->
-    <div class="game-card featured" onclick="goGame('binary')">
-      <div class="gc-bg gc-binary-bg"></div>
+    <div class="gc" onclick="goGame('plinko')">
+      <div class="gc-bg bg-plinko"></div>
       <div class="gc-body">
-        <span class="gc-icon">📈</span>
-        <div class="gc-name">BINARY</div>
-        <div class="gc-desc">Higher / Lower<br>Real prices</div>
+        <span class="gc-icon">🎱</span>
+        <div class="gc-name">PLINKO</div>
+        <div class="gc-desc">Drop the ball<br>win big!</div>
         <div class="gc-tags">
-          <span class="gc-tag gc-new">🔥 HOT</span>
-          <span class="gc-tag gc-sc">CoinGecko</span>
+          <span class="gtag t-hot">🔥 HOT</span>
+          <span class="gtag t-fair">PHYSICS</span>
         </div>
       </div>
-      <div class="gc-pool" id="lp-binary">—</div>
+      <div class="gc-pool" id="lpPlinko">—</div>
       <div class="gc-arrow">→</div>
     </div>
 
-    <!-- EVEN ODD -->
-    <div class="game-card" onclick="goGame('eo')">
-      <div class="gc-bg gc-eo-bg"></div>
+    <div class="gc" onclick="goGame('mines')">
+      <div class="gc-bg bg-mines"></div>
       <div class="gc-body">
-        <span class="gc-icon">🎯</span>
-        <div class="gc-name">EVEN / ODD</div>
-        <div class="gc-desc">Last digit<br>prediction</div>
+        <span class="gc-icon">💣</span>
+        <div class="gc-name">MINES</div>
+        <div class="gc-desc">Find gems,<br>avoid mines!</div>
         <div class="gc-tags">
-          <span class="gc-tag gc-live">● LIVE</span>
-          <span class="gc-tag gc-free">6 coins</span>
+          <span class="gtag t-live">● LIVE</span>
+          <span class="gtag t-hot">STRATEGY</span>
         </div>
       </div>
-      <div class="gc-pool" id="lp-eo">—</div>
+      <div class="gc-pool" id="lpMines">—</div>
       <div class="gc-arrow">→</div>
     </div>
 
-    <!-- QDUEL -->
-    <div class="game-card" onclick="goGame('duel')">
-      <div class="gc-bg gc-duel-bg"></div>
+    <div class="gc" onclick="goGame('hilo')">
+      <div class="gc-bg bg-hilo"></div>
       <div class="gc-body">
-        <span class="gc-icon">⚔️</span>
-        <div class="gc-name">QDUEL</div>
-        <div class="gc-desc">1v1 Challenge<br>On-chain</div>
+        <span class="gc-icon">🃏</span>
+        <div class="gc-name">HI-LO</div>
+        <div class="gc-desc">Higher or lower?<br>Streak to win!</div>
         <div class="gc-tags">
-          <span class="gc-tag gc-sc">SC #23</span>
-          <span class="gc-tag gc-new">PvP</span>
+          <span class="gtag t-new">CARDS</span>
+          <span class="gtag t-fair">FAIR</span>
         </div>
       </div>
-      <div class="gc-pool" id="lp-duel">—</div>
+      <div class="gc-pool" id="lpHilo">—</div>
       <div class="gc-arrow">→</div>
     </div>
 
-    <!-- QSWAP WIDE -->
-    <div class="game-card wide" onclick="goGame('swap')">
-      <div class="gc-bg gc-swap-bg"></div>
-      <div class="gc-body wide-layout">
-        <div class="gc-wide-left"><span style="font-size:32px">🔄</span></div>
-        <div class="gc-wide-right">
-          <div class="gc-wide-name">QSWAP — QUFC ↔ QUBIC</div>
-          <div class="gc-wide-desc">Swap tokens instantly · SC #13 · Feeless on Qubic Network</div>
-          <div class="gc-tags">
-            <span class="gc-tag gc-sc">SC #13</span>
-            <span class="gc-tag gc-free">FEELESS</span>
-            <span class="gc-tag gc-live">● LIVE</span>
-          </div>
+    <div class="gc" onclick="goGame('slots')">
+      <div class="gc-bg bg-slots"></div>
+      <div class="gc-body">
+        <span class="gc-icon">🎰</span>
+        <div class="gc-name">SLOTS</div>
+        <div class="gc-desc">3 reels · 5 lines<br>500x jackpot!</div>
+        <div class="gc-tags">
+          <span class="gtag t-hot">🔥 JACKPOT</span>
+          <span class="gtag t-fair">AUTO</span>
         </div>
-        <div class="gc-arrow" style="position:static;opacity:.5">→</div>
+      </div>
+      <div class="gc-pool" id="lpSlots">—</div>
+      <div class="gc-arrow">→</div>
+    </div>
+
+    <div class="gc" onclick="goGame('wheel')">
+      <div class="gc-bg bg-wheel"></div>
+      <div class="gc-body">
+        <span class="gc-icon">🎡</span>
+        <div class="gc-name">WHEEL</div>
+        <div class="gc-desc">Spin & win<br>up to 100x!</div>
+        <div class="gc-tags">
+          <span class="gtag t-hot">🔥 HOT</span>
+          <span class="gtag t-new">100x</span>
+        </div>
+      </div>
+      <div class="gc-pool" id="lpWheel">—</div>
+      <div class="gc-arrow">→</div>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- ════ CRASH ════ -->
+<div class="page" id="page-crash">
+<div class="game-wrap">
+  <div class="game-hdr"><div class="gh-icon">🚀</div>
+    <div class="gh-info"><div class="gh-name">CRASH GAME</div><div class="gh-sc">Provably Fair · Qubic Tick Hash</div></div>
+    <span class="gh-badge live">● LIVE</span></div>
+  <div class="crash-graph">
+    <canvas class="crash-canvas" id="crashCanvas"></canvas>
+    <div class="crash-ov">
+      <div class="cm safe" id="crashMult">1.00x</div>
+      <div class="cs" id="crashStatus" style="color:var(--lgreen)">WAITING FOR BETS</div>
+      <div class="ct" id="crashTick">Tick: —</div>
+    </div>
+  </div>
+  <div class="crash-hist" id="crashHist"></div>
+  <div class="bet-ctrl">
+    <div class="crash-bet-row">
+      <div>
+        <div class="ctrl-lbl">STAKE (QUFC)</div>
+        <input class="ctrl-inp" id="crashStake" type="number" value="500" oninput="updateCrashInfo()">
+        <div class="ctrl-qrow">
+          <div class="cq" onclick="V('crashStake',100)">100</div>
+          <div class="cq" onclick="V('crashStake',500)">500</div>
+          <div class="cq" onclick="V('crashStake',1000)">1K</div>
+        </div>
+      </div>
+      <div>
+        <div class="ctrl-lbl">AUTO CASHOUT</div>
+        <input class="ctrl-inp" id="crashAuto" type="number" value="2.00" step="0.01">
+        <div class="ctrl-qrow">
+          <div class="cq" onclick="V('crashAuto',1.5)">1.5x</div>
+          <div class="cq" onclick="V('crashAuto',2)">2x</div>
+          <div class="cq" onclick="V('crashAuto',5)">5x</div>
+        </div>
       </div>
     </div>
-
+    <div class="ctrl-info"><span>Potential Win</span><span class="ci-val" id="crashPot">—</span></div>
+    <button class="abtn red" id="crashBtn" onclick="crashAction()">🚀 PLACE BET</button>
+    <div class="bal-row"><span>Balance:</span><span class="bv" id="crashBal">50,000</span></div>
   </div>
-
-  <!-- HISTORY LINK -->
-  <div style="text-align:center;margin-top:6px;">
-    <span onclick="goGame('hist')" style="font-family:'Bebas Neue';font-size:12px;letter-spacing:2px;color:var(--muted);cursor:pointer;">
-      📋 VIEW HISTORY →
-    </span>
-  </div>
-
+  <div class="sc-info">🔗 Provably Fair · Crash point from Qubic Tick Hash</div>
 </div>
 </div>
 
-<!-- ════════ COIN FLIP ════════ -->
-<div class="page" id="page-flip">
+<!-- ════ PLINKO ════ -->
+<div class="page" id="page-plinko">
 <div class="game-wrap">
-  <div class="game-hdr">
-    <div class="gh-icon">🎲</div>
-    <div class="gh-info">
-      <div class="gh-name">COIN FLIP</div>
-      <div class="gh-sc">RANDOM Smart Contract · Index 3 · Qubic Network</div>
-    </div>
-    <span class="gh-live">● LIVE</span>
+  <div class="game-hdr"><div class="gh-icon">🎱</div>
+    <div class="gh-info"><div class="gh-name">PLINKO</div><div class="gh-sc">Physics-based · Provably Fair</div></div>
+    <span class="gh-badge fair">PHYSICS</span></div>
+  <div class="plinko-cw"><canvas id="plinkoCanvas" width="452" height="340"></canvas></div>
+  <div class="risk-row">
+    <div class="rr rl" id="prLow" onclick="setPR('low',this)">LOW</div>
+    <div class="rr" id="prMid" onclick="setPR('mid',this)">MID</div>
+    <div class="rr" id="prHigh" onclick="setPR('high',this)">HIGH</div>
   </div>
-  <div class="coin-c">
-    <div class="timer-big" id="flipTimer">00:30</div>
-    <div class="timer-lbl">NEXT FLIP · RANDOM SC</div>
-    <div class="coin" id="coin">
-      <div class="cface ch">👑</div>
-      <div class="cface ct">🗡️</div>
+  <div class="buckets" id="plBuckets"></div>
+  <div class="bet-ctrl">
+    <div class="ctrl-lbl">STAKE (QUFC)</div>
+    <input class="ctrl-inp" id="plinkoStake" type="number" value="500">
+    <div class="ctrl-qrow">
+      <div class="cq" onclick="V('plinkoStake',100)">100</div>
+      <div class="cq" onclick="V('plinkoStake',500)">500</div>
+      <div class="cq" onclick="V('plinkoStake',1000)">1K</div>
+    </div>
+    <button class="abtn purple" id="plinkoBtn" onclick="dropBall()">🎱 DROP BALL</button>
+    <div class="bal-row"><span>Balance:</span><span class="bv" id="plinkoBal">50,000</span><span style="margin-left:12px">Best: <span class="bv" id="plinkoBest" style="color:var(--lgreen)">—</span></span></div>
+  </div>
+  <div class="sc-info">🔗 Physics-based · QUFC Arena · Qubic Network</div>
+</div>
+</div>
+
+<!-- ════ MINES ════ -->
+<div class="page" id="page-mines">
+<div class="game-wrap">
+  <div class="game-hdr"><div class="gh-icon">💣</div>
+    <div class="gh-info"><div class="gh-name">MINES</div><div class="gh-sc">Find gems · Avoid mines · Provably Fair</div></div>
+    <span class="gh-badge live">● LIVE</span></div>
+  <div class="mines-hdr">
+    <div><div style="font-size:8px;color:var(--muted);letter-spacing:1px">MULTIPLIER</div>
+      <div class="mines-m" id="minesM">1.00x</div></div>
+    <div style="text-align:right">
+      <div style="font-size:9px;color:var(--muted)">Next: <span style="color:var(--lgreen);font-family:'Bebas Neue'" id="minesNext">—</span></div>
+      <div style="font-size:9px;color:var(--muted)">Gems: <span style="color:var(--lgreen);font-family:'Bebas Neue'" id="minesGems">0</span></div>
     </div>
   </div>
-  <div class="sides2">
-    <div class="side" id="sHead" onclick="selFlip('head')">
-      <div class="side-ic">👑</div>
-      <div class="side-nm" style="color:var(--gold)">HEADS</div>
-      <div class="side-pl" id="hPool">0 QUFC</div>
-      <div class="side-od" id="hOdds">1.90x</div>
-    </div>
-    <div class="side" id="sTail" onclick="selFlip('tail')">
-      <div class="side-ic">🗡️</div>
-      <div class="side-nm" style="color:var(--red)">TAILS</div>
-      <div class="side-pl" id="tPool">0 QUFC</div>
-      <div class="side-od" id="tOdds">1.90x</div>
-    </div>
+  <div class="mines-prog"><div class="mines-bar" id="minesBar" style="width:0%"></div></div>
+  <div class="mines-grid" id="minesGrid"></div>
+  <div class="mines-profit">
+    <div class="mp"><div class="mp-l">STAKE</div><div class="mp-v" id="mpStake">—</div></div>
+    <div class="mp"><div class="mp-l">PROFIT</div><div class="mp-v" id="mpProfit" style="color:var(--lgreen)">—</div></div>
+    <div class="mp"><div class="mp-l">WIN IF CASHOUT</div><div class="mp-v" id="mpWin" style="color:var(--gold)">—</div></div>
   </div>
-  <div class="pbar-wrap">
-    <div class="pbar"><div class="pbr" id="pbH" style="width:50%"></div><div class="pbl" id="pbT" style="width:50%"></div></div>
-    <div class="pbar-pcts"><span style="color:var(--gold)">👑 <span id="hPct">50</span>%</span><span style="color:var(--red)"><span id="tPct">50</span>% 🗡️</span></div>
-  </div>
-  <div class="stake-box">
-    <div class="stake-row">
-      <input class="sinp" id="flipStake" type="number" value="500" oninput="updateFlipPay()">
-      <div class="sqrow">
-        <div class="sq" onclick="sq('flipStake',100)">100</div>
-        <div class="sq" onclick="sq('flipStake',500)">500</div>
-        <div class="sq" onclick="sq('flipStake',1000)">1K</div>
+  <div class="bet-ctrl">
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px;">
+      <div>
+        <div class="ctrl-lbl">STAKE (QUFC)</div>
+        <input class="ctrl-inp" id="minesStake" type="number" value="500">
+        <div class="ctrl-qrow">
+          <div class="cq" onclick="V('minesStake',100)">100</div>
+          <div class="cq" onclick="V('minesStake',500)">500</div>
+          <div class="cq" onclick="V('minesStake',1000)">1K</div>
+        </div>
+      </div>
+      <div>
+        <div class="ctrl-lbl">MINES COUNT</div>
+        <select class="ctrl-inp" id="minesCount" onchange="updateMinesCalc()" style="cursor:pointer">
+          <option value="1">1 Mine</option>
+          <option value="3" selected>3 Mines</option>
+          <option value="5">5 Mines</option>
+          <option value="10">10 Mines</option>
+          <option value="15">15 Mines</option>
+          <option value="20">20 Mines</option>
+        </select>
+        <div style="font-size:8px;color:var(--muted);margin-top:3px"><span id="minesChance">—</span> win chance</div>
       </div>
     </div>
-    <div class="pay-info">Win: <span class="pay-val" id="flipPay" style="color:var(--gold)">950 QUFC</span></div>
+    <button class="abtn red" id="minesBtn" onclick="minesAction()">💣 START GAME</button>
+    <div class="bal-row"><span>Balance:</span><span class="bv" id="minesBal">50,000</span></div>
   </div>
-  <button class="abtn red" id="flipBtn" onclick="placeFlip()" disabled>SELECT SIDE FIRST</button>
-  <div class="sc-info">🔗 RANDOM SC Index 3 · Feeless · Qubic Mainnet</div>
+  <div class="sc-info">🔗 Mine positions from Qubic Tick Hash · Provably Fair</div>
 </div>
 </div>
 
-<!-- ════════ BINARY OPTION ════════ -->
-<div class="page" id="page-binary">
+<!-- ════ HI-LO ════ -->
+<div class="page" id="page-hilo">
 <div class="game-wrap">
-  <div class="game-hdr">
-    <div class="gh-icon">📈</div>
-    <div class="gh-info">
-      <div class="gh-name">BINARY OPTION</div>
-      <div class="gh-sc">Price Higher / Lower · CoinGecko Feed</div>
+  <div class="game-hdr"><div class="gh-icon">🃏</div>
+    <div class="gh-info"><div class="gh-name">HI-LO</div><div class="gh-sc">Deck shuffled via Qubic Tick Hash</div></div>
+    <span class="gh-badge fair">CARDS</span></div>
+  <div class="hilo-deck">
+    <div style="font-size:9px;letter-spacing:2px;color:var(--muted);margin-bottom:8px">
+      STREAK: <span style="color:var(--gold);font-family:'Bebas Neue';font-size:14px" id="hiloStreak">0</span>
+      &nbsp;·&nbsp; MULT: <span style="color:var(--gold);font-family:'Bebas Neue';font-size:14px" id="hiloMultD">1.00x</span>
     </div>
-    <span class="gh-live">🔥 HOT</span>
+    <div class="hilo-hist" id="hiloHist"></div>
+    <div class="cards-row">
+      <div class="card prev" id="cPrev"><div class="card-v" id="prevV">—</div><div class="card-s" id="prevS">—</div></div>
+      <div class="c-arrow">→</div>
+      <div class="card cur" id="cCur"><div class="card-v" id="curV" style="color:#111">?</div><div class="card-s" id="curS" style="color:#111">🂠</div></div>
+      <div class="c-arrow">→</div>
+      <div class="card nxt"><div style="font-size:28px">❓</div></div>
+    </div>
+    <div class="hilo-odds">
+      <div class="ho"><div class="ho-l">HIGHER</div><div class="ho-v" id="hoHi" style="color:var(--lgreen)">—</div></div>
+      <div class="ho"><div class="ho-l">EQUAL</div><div class="ho-v" id="hoEq" style="color:var(--gold)">—</div></div>
+      <div class="ho"><div class="ho-l">LOWER</div><div class="ho-v" id="hoLo" style="color:var(--red)">—</div></div>
+    </div>
+    <div style="display:flex;gap:10px;font-size:10px;color:var(--muted)">
+      <span>Higher pays: <span style="color:var(--lgreen);font-family:'Bebas Neue'" id="hiPays">—</span></span>
+      <span>Lower pays: <span style="color:var(--red);font-family:'Bebas Neue'" id="loPays">—</span></span>
+    </div>
   </div>
+  <div class="hilo-btns">
+    <button class="hbtn hb-hi" id="btnHi" onclick="hiloGuess('higher')" disabled>📈 HIGHER</button>
+    <button class="hbtn hb-sk" id="btnSk" onclick="hiloSkip()" disabled>⏭</button>
+    <button class="hbtn hb-lo" id="btnLo" onclick="hiloGuess('lower')" disabled>📉 LOWER</button>
+  </div>
+  <div class="bet-ctrl">
+    <div class="ctrl-lbl">STAKE (QUFC)</div>
+    <input class="ctrl-inp" id="hiloStake" type="number" value="500">
+    <div class="ctrl-qrow">
+      <div class="cq" onclick="V('hiloStake',100)">100</div>
+      <div class="cq" onclick="V('hiloStake',500)">500</div>
+      <div class="cq" onclick="V('hiloStake',1000)">1K</div>
+      <div class="cq" onclick="V('hiloStake',5000)">5K</div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px">
+      <button class="abtn blue" id="hiloStartBtn" onclick="hiloStart()">🃏 DEAL</button>
+      <button class="abtn gold" id="hiloCashBtn" onclick="hiloCashout()" disabled>💰 CASHOUT</button>
+    </div>
+    <div class="bal-row"><span>Balance:</span><span class="bv" id="hiloBal">50,000</span>
+      <span style="margin-left:12px">Best: <span class="bv" id="hiloBest" style="color:var(--lgreen)">—</span></span></div>
+  </div>
+  <div class="sc-info">🔗 Deck shuffled via Qubic Tick Hash · Provably Fair</div>
+</div>
+</div>
 
-  <!-- COIN SELECTOR + PRICE -->
-  <div class="bin-price-card">
-    <div class="bin-coin-sel" id="binCoins"></div>
-    <div class="bin-entry">ENTRY PRICE</div>
-    <div class="bin-price" id="binPrice">$—</div>
-    <div class="bin-chg" id="binChg"></div>
-    <div class="bin-tf">
-      <div class="btf a" onclick="setBinTf(0,this)">30 SEC</div>
-      <div class="btf" onclick="setBinTf(1,this)">1 MIN</div>
-      <div class="btf" onclick="setBinTf(2,this)">5 MIN</div>
-      <div class="btf" onclick="setBinTf(3,this)">15 MIN</div>
-    </div>
-  </div>
-
-  <!-- TIMER -->
-  <div class="timer-big" id="binTimer">--:--</div>
-  <div class="timer-lbl" id="binTimerLbl">SELECT COIN & TIMEFRAME</div>
-
-  <!-- SIDES -->
-  <div class="sides2">
-    <div class="side" id="binUp" onclick="selBin('up')">
-      <div class="side-ic">📈</div>
-      <div class="side-nm" style="color:var(--lgreen)">HIGHER</div>
-      <div class="side-pl" id="binUpPool">0 QUFC</div>
-      <div class="side-od" id="binUpOdds">1.90x</div>
-    </div>
-    <div class="side" id="binDn" onclick="selBin('down')">
-      <div class="side-ic">📉</div>
-      <div class="side-nm" style="color:var(--red)">LOWER</div>
-      <div class="side-pl" id="binDnPool">0 QUFC</div>
-      <div class="side-od" id="binDnOdds">1.90x</div>
-    </div>
-  </div>
-  <div class="pbar-wrap">
-    <div class="pbar"><div class="pbr" id="pbUp" style="width:50%"></div><div class="pbl" id="pbDn" style="width:50%"></div></div>
-    <div class="pbar-pcts"><span style="color:var(--lgreen)">📈 <span id="upPct">50</span>%</span><span style="color:var(--red)"><span id="dnPct">50</span>% 📉</span></div>
-  </div>
-  <div class="stake-box">
-    <div class="stake-row">
-      <input class="sinp" id="binStake" type="number" value="500" oninput="updateBinPay()">
-      <div class="sqrow">
-        <div class="sq" onclick="sq('binStake',100)">100</div>
-        <div class="sq" onclick="sq('binStake',500)">500</div>
-        <div class="sq" onclick="sq('binStake',1000)">1K</div>
+<!-- ════ SLOTS ════ -->
+<div class="page" id="page-slots">
+<div class="game-wrap">
+  <div class="game-hdr"><div class="gh-icon">🎰</div>
+    <div class="gh-info"><div class="gh-name">SLOTS</div><div class="gh-sc">3 Reels · 5 Paylines · 500x Jackpot</div></div>
+    <span class="gh-badge fair">AUTO</span></div>
+  <div class="slot-machine">
+    <div class="sm-top">
+      <div class="sm-title">⚡ QUFC SLOTS ⚡</div>
+      <div class="sm-lights">
+        <div class="sm-light" style="background:#e74c3c"></div>
+        <div class="sm-light" style="background:#f39c12"></div>
+        <div class="sm-light" style="background:#2ecc71"></div>
+        <div class="sm-light" style="background:#3498db"></div>
+        <div class="sm-light" style="background:#9b59b6"></div>
       </div>
     </div>
-    <div class="pay-info">Win: <span class="pay-val" id="binPay" style="color:var(--gold)">950 QUFC</span></div>
+    <div class="reels">
+      <div class="reel-w"><div class="rl">REEL 1</div><div class="reel" id="reel0"><div class="rtrack" id="rt0"></div><div class="rwin"></div></div></div>
+      <div class="reel-w"><div class="rl">REEL 2</div><div class="reel" id="reel1"><div class="rtrack" id="rt1"></div><div class="rwin"></div></div></div>
+      <div class="reel-w"><div class="rl">REEL 3</div><div class="reel" id="reel2"><div class="rtrack" id="rt2"></div><div class="rwin"></div></div></div>
+    </div>
+    <div class="slot-win">
+      <div class="sw-l" id="swLbl">SPIN TO WIN</div>
+      <div class="sw-a" id="swAmt"></div>
+      <div class="sw-m" id="swMult"></div>
+    </div>
   </div>
-  <button class="abtn blue" id="binBtn" onclick="placeBin()" disabled>SELECT COIN & DIRECTION</button>
-  <div class="sc-info">🔗 CoinGecko Price Feed · Parimutuel Pool · Feeless on Qubic</div>
+  <div class="paytable" id="paytable"></div>
+  <div class="bet-ctrl">
+    <div class="ctrl-lbl">STAKE (QUFC)</div>
+    <input class="ctrl-inp" id="slotsStake" type="number" value="500" oninput="updateSlotsInfo()">
+    <div class="ctrl-qrow">
+      <div class="cq" onclick="V('slotsStake',100)">100</div>
+      <div class="cq" onclick="V('slotsStake',500)">500</div>
+      <div class="cq" onclick="V('slotsStake',1000)">1K</div>
+      <div class="cq" onclick="V('slotsStake',5000)">5K</div>
+    </div>
+    <div class="ctrl-info"><span>Max Win (500x)</span><span class="ci-val" id="slotsMax">—</span></div>
+    <button class="abtn gold" id="spinBtn" onclick="doSpin()">🎰 SPIN</button>
+    <div style="display:flex;gap:5px;margin-top:6px">
+      <div class="cq" id="a0" onclick="setAuto(0)" style="flex:1;text-align:center;padding:6px">MANUAL</div>
+      <div class="cq" id="a5" onclick="setAuto(5)" style="flex:1;text-align:center;padding:6px">AUTO 5</div>
+      <div class="cq" id="a10" onclick="setAuto(10)" style="flex:1;text-align:center;padding:6px">AUTO 10</div>
+      <div class="cq" id="a25" onclick="setAuto(25)" style="flex:1;text-align:center;padding:6px">AUTO 25</div>
+    </div>
+    <div class="bal-row"><span>Balance:</span><span class="bv" id="slotsBal">50,000</span>
+      <span style="margin-left:12px">Spins: <span class="bv" id="slotsSpins" style="color:var(--lblue)">0</span></span></div>
+  </div>
+  <div class="sc-info">🔗 RNG seeded by Qubic Tick Hash · Provably Fair</div>
 </div>
 </div>
 
-<!-- ════════ EVEN/ODD ════════ -->
-<div class="page" id="page-eo">
+<!-- ════ WHEEL ════ -->
+<div class="page" id="page-wheel">
 <div class="game-wrap">
-  <div class="game-hdr">
-    <div class="gh-icon">🎯</div>
-    <div class="gh-info">
-      <div class="gh-name">EVEN / ODD</div>
-      <div class="gh-sc">Last digit of price · CoinGecko · 6 Coins</div>
+  <div class="game-hdr"><div class="gh-icon">🎡</div>
+    <div class="gh-info"><div class="gh-name">WHEEL OF FORTUNE</div><div class="gh-sc">Up to 100x · Provably Fair</div></div>
+    <span class="gh-badge fair">100x</span></div>
+  <div class="wheel-area">
+    <div class="wheel-cw">
+      <div class="wheel-ptr"></div>
+      <canvas id="wheelCanvas" width="290" height="290"></canvas>
+      <div class="wheel-ctr">QUFC</div>
     </div>
-    <span class="gh-live">● LIVE</span>
   </div>
-  <div class="eo-grid" id="eoGrid"></div>
-  <div style="margin-top:10px;" class="sc-info">🔗 RANDOM SC · CoinGecko Oracle · Qubic Network</div>
+  <div class="wheel-res">
+    <div style="font-size:8px;letter-spacing:3px;color:var(--muted)">RESULT</div>
+    <div class="wr-m" id="wheelRM">—</div>
+    <div class="wr-w" id="wheelRW"></div>
+  </div>
+  <div class="bet-ctrl">
+    <div style="font-size:8px;letter-spacing:2px;color:var(--muted);margin-bottom:6px;font-weight:700">RISK LEVEL</div>
+    <div class="wheel-risk">
+      <div class="wr wl" id="wRL" onclick="setWR('low',this)">🟢 LOW</div>
+      <div class="wr" id="wRM" onclick="setWR('mid',this)">🟡 MID</div>
+      <div class="wr" id="wRH" onclick="setWR('high',this)">🔴 HIGH</div>
+    </div>
+    <div class="ctrl-lbl">STAKE (QUFC)</div>
+    <input class="ctrl-inp" id="wheelStake" type="number" value="500">
+    <div class="ctrl-qrow">
+      <div class="cq" onclick="V('wheelStake',100)">100</div>
+      <div class="cq" onclick="V('wheelStake',500)">500</div>
+      <div class="cq" onclick="V('wheelStake',1000)">1K</div>
+      <div class="cq" onclick="V('wheelStake',5000)">5K</div>
+    </div>
+    <button class="abtn gold" id="spinWheelBtn" onclick="spinWheel()">🎡 SPIN THE WHEEL</button>
+    <div class="wheel-stats">
+      <div class="wst"><div class="wst-v" id="wSpins" style="color:var(--lblue)">0</div><div class="wst-l">SPINS</div></div>
+      <div class="wst"><div class="wst-v" id="wBest" style="color:var(--gold)">—</div><div class="wst-l">BEST WIN</div></div>
+      <div class="wst"><div class="wst-v" id="wBal" style="color:var(--lgreen)">50,000</div><div class="wst-l">QUFC</div></div>
+    </div>
+  </div>
+  <div class="sc-info">🔗 Wheel seeded by Qubic Tick Hash · Provably Fair</div>
 </div>
 </div>
 
-<!-- ════════ QDUEL ════════ -->
-<div class="page" id="page-duel">
-<div class="game-wrap">
-  <div class="game-hdr">
-    <div class="gh-icon">⚔️</div>
-    <div class="gh-info">
-      <div class="gh-name">QDUEL</div>
-      <div class="gh-sc">QDUEL Smart Contract · Index 23 · 1v1 Battle</div>
-    </div>
-    <span class="gh-live">ON-CHAIN</span>
-  </div>
-  <div class="duel-vs">
-    <div class="dp you">
-      <div class="dp-av">⚡</div>
-      <div class="dp-nm" id="duYou">YOU</div>
-      <div class="dp-ad" id="duAddr">Connect wallet</div>
-      <div class="dp-st" id="duStake">—</div>
-    </div>
-    <div class="vs-mid">
-      <div class="vstxt">VS</div>
-      <div class="vsprize" id="duPrize">—</div>
-    </div>
-    <div class="dp">
-      <div class="dp-av">🎯</div>
-      <div class="dp-nm">CHALLENGER</div>
-      <div class="dp-ad">Open</div>
-      <div class="dp-st" style="color:var(--muted)">Waiting...</div>
-    </div>
-  </div>
-  <div class="duel-modes">
-    <div class="dm a" onclick="setDM('flip',this)">🎲 COIN FLIP</div>
-    <div class="dm" onclick="setDM('binary',this)">📈 BINARY</div>
-    <div class="dm" onclick="setDM('eo',this)">🎯 EVEN/ODD</div>
-  </div>
-  <div class="stake-box">
-    <div class="stake-row">
-      <input class="sinp" id="duelStake" type="number" value="1000" oninput="updateDuelPrize()">
-      <div class="sqrow">
-        <div class="sq" onclick="sq('duelStake',500)">500</div>
-        <div class="sq" onclick="sq('duelStake',1000)">1K</div>
-        <div class="sq" onclick="sq('duelStake',5000)">5K</div>
-      </div>
-    </div>
-    <div class="pay-info">Winner takes: <span class="pay-val" id="duelPrize" style="color:var(--gold)">1,900 QUFC</span></div>
-  </div>
-  <button class="abtn purple" onclick="createDuel()">⚔️ CREATE DUEL CHALLENGE</button>
-  <div class="open-list">
-    <div class="ol-hd">OPEN CHALLENGES</div>
-    <div id="openDuels"></div>
-  </div>
-  <div style="margin-top:10px;" class="sc-info">🔗 QDUEL SC Index 23 · Feeless · Qubic Mainnet</div>
-</div>
-</div>
-
-<!-- ════════ QSWAP ════════ -->
-<div class="page" id="page-swap">
-<div class="game-wrap">
-  <div class="game-hdr">
-    <div class="gh-icon">🔄</div>
-    <div class="gh-info">
-      <div class="gh-name">QSWAP</div>
-      <div class="gh-sc">QSWAP Smart Contract · Index 13 · Feeless</div>
-    </div>
-    <span class="gh-live">● LIVE</span>
-  </div>
-  <div class="swap-box">
-    <div class="swap-lbl">FROM</div>
-    <div class="swap-row">
-      <div class="swap-tok" onclick="flipSwap()">
-        <span class="stok-ic" id="fromIc">⚡</span>
-        <span class="stok-nm" id="fromNm">QUFC</span>
-      </div>
-      <input class="swap-inp" id="swapFrom" type="number" value="10000" oninput="calcSwap()">
-    </div>
-    <div class="swap-usd" id="fromUsd">≈ $0.000 USD</div>
-  </div>
-  <div class="swap-mid"><div class="swap-flip" onclick="flipSwap()">⇅</div></div>
-  <div class="swap-box">
-    <div class="swap-lbl">TO</div>
-    <div class="swap-row">
-      <div class="swap-tok" onclick="flipSwap()">
-        <span class="stok-ic" id="toIc">◈</span>
-        <span class="stok-nm" id="toNm">QUBIC</span>
-      </div>
-      <input class="swap-inp" id="swapTo" type="number" readonly style="color:var(--gold)">
-    </div>
-    <div class="swap-usd" id="toUsd">≈ $0.000 USD</div>
-  </div>
-  <div class="swap-details">
-    <div class="sd-row"><span>Rate</span><span class="sd-val" id="swapRate">1 QUFC = — QUBIC</span></div>
-    <div class="sd-row"><span>Price Impact</span><span class="sd-val sd-green">< 0.1%</span></div>
-    <div class="sd-row"><span>Network Fee</span><span class="sd-val sd-green">FREE ✓</span></div>
-  </div>
-  <button class="abtn green" onclick="doSwap()">🔄 SWAP NOW</button>
-  <!-- POOL -->
-  <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px;">
-    <div style="text-align:center;padding:10px;background:var(--panel2);border-radius:6px;border:1px solid var(--border2);">
-      <div style="font-family:'Bebas Neue';font-size:16px;color:var(--gold)" id="poolQ">—</div>
-      <div style="font-size:8px;color:var(--muted)">QUFC POOL</div>
-    </div>
-    <div style="text-align:center;padding:10px;background:var(--panel2);border-radius:6px;border:1px solid var(--border2);">
-      <div style="font-family:'Bebas Neue';font-size:16px;color:var(--lblue)" id="poolQB">—</div>
-      <div style="font-size:8px;color:var(--muted)">QUBIC POOL</div>
-    </div>
-  </div>
-  <div style="margin-top:10px;" class="sc-info">🔗 QSWAP SC Index 13 · Feeless · Qubic Network</div>
-</div>
-</div>
-
-<!-- ════════ HISTORY ════════ -->
-<div class="page" id="page-hist">
-<div class="game-wrap">
-  <div class="game-hdr">
-    <div class="gh-icon">📋</div>
-    <div class="gh-info"><div class="gh-name">HISTORY</div><div class="gh-sc">All transactions</div></div>
-  </div>
-  <div class="hist-list">
-    <div class="hist-hd">TRANSACTIONS</div>
-    <div id="histRows"></div>
-  </div>
-</div>
-</div>
-
-<!-- RESULT POP -->
+<!-- RESULT / NOTIF -->
 <div class="rpop" id="rpop">
-  <div class="ric" id="ric"></div>
-  <div class="rtl" id="rtl"></div>
-  <div class="ren" id="ren"></div>
-  <div class="rmsg" id="rmsg"></div>
+  <div class="ric" id="ric"></div><div class="rtl" id="rtl"></div>
+  <div class="ren" id="ren"></div><div class="rmsg" id="rmsg"></div>
   <div class="rsc" id="rsc"></div>
   <button class="rcls" onclick="closeResult()">CONTINUE</button>
 </div>
-
-<!-- NOTIF -->
-<div class="notif ok" id="notif" style="display:none">
-  <div class="nt" id="nt"></div>
-  <div class="nm" id="nm"></div>
-</div>
+<div class="notif" id="notif"><div class="nt" id="nt"></div><div class="nm" id="nm"></div></div>
 
 <script>
-// ══ QUBIC CONFIG ══
-const RPC = 'https://rpc.qubic.org';
-const SC_IDX = { RANDOM:3, QSWAP:13, QDUEL:23 };
-
-// ══ STATE ══
-const S = {
-  connected:false, wallet:null, balQUFC:50000, balQUBIC:125000000,
-  prices:{
-    QUFC: {usd:0.0000001, usd_24h_change:5.3},
-  }, flipSel:null, flipPool:{h:8500,t:7200}, flipSec:30,
-  binCoin:'bitcoin', binTf:0, binSel:null, binPool:{u:6000,d:5000},
-  binEntryPrice:0, binTimerSec:0, binTimerIv:null,
-  eoSel:{}, eoTimers:{},
-  duelMode:'flip', swapDir:'q2b',
-  history:[], openDuels:[
-    {addr:'ABCD...1234',stake:2000,mode:'Coin Flip',t:'2m ago'},
-    {addr:'EFGH...5678',stake:5000,mode:'Binary',t:'5m ago'},
-    {addr:'IJKL...9012',stake:1000,mode:'Even/Odd',t:'8m ago'},
-  ],
+// ══ GLOBAL STATE ══
+const G={
+  bal:50000,
+  connected:false,
+  prices:{qubic:0,qufc:0,btc:0,eth:0},
+  // crash
+  crashPhase:'waiting',cMult:1,cBet:0,cBetPlaced:false,cCashedOut:false,
+  cHist:[3.21,1.45,8.72,1.02,2.34,15.6,1.87,4.21,1.11,2.98],
+  cPoints:[],cTarget:2,cTick:0,cAnimF:null,
+  // plinko
+  pRisk:'low',pBalls:[],pDrop:false,pBest:0,
+  // mines
+  mActive:false,mBoard:[],mPos:[],mRev:0,mMult:1,mStake:0,
+  // hilo
+  hActive:false,hStake:0,hMult:1,hStreak:0,hDeck:[],hIdx:0,hHist:[],hBest:0,hSkips:3,
+  // slots
+  sSpins:0,sAuto:0,sSpin:false,
+  // wheel
+  wRisk:'low',wSpins:0,wBest:0,wSpin:false,wAngle:0,
 };
 
-const COINS=[
-  {id:'bitcoin',sym:'BTC',ic:'₿'},
-  {id:'ethereum',sym:'ETH',ic:'Ξ'},
-  {id:'solana',sym:'SOL',ic:'◎'},
-  {id:'binancecoin',sym:'BNB',ic:'⬡'},
-  {id:'qubic-network',sym:'QUBIC',ic:'⚡'},
-  {id:'dogecoin',sym:'DOGE',ic:'Ð'},
-];
-const TFS=[{l:'30S',s:30},{l:'1M',s:60},{l:'5M',s:300},{l:'15M',s:900}];
+// ── HELPERS ──
+function V(id,v){document.getElementById(id).value=v;
+  if(id==='crashStake'||id==='crashAuto')updateCrashInfo();
+  if(id==='slotsStake')updateSlotsInfo();}
+function $(id){return document.getElementById(id);}
+function fp(p){return p>=1000?p.toLocaleString('en',{maximumFractionDigits:2}):p>=1?p.toFixed(2):p>=.01?p.toFixed(4):p.toFixed(8);}
+function rnd(n){return Math.floor(Math.random()*n);}
+function updateAllBal(){
+  ['crashBal','plinkoBal','minesBal','hiloBal','slotsBal','wBal'].forEach(id=>{
+    const el=$(id);if(el)el.textContent=G.bal.toLocaleString();
+  });
+  if($('wBal'))$('wBal').textContent=G.bal.toLocaleString();
+  $('lsPool').textContent=(G.bal/1000).toFixed(0)+'K';
+}
 
-// ══ NAVIGATION ══
-let currentPage = 'lobby';
+// ── NAVIGATION ──
 function goLobby(){
-  showPage('lobby');
-  document.getElementById('backBtn').style.display='none';
-  document.getElementById('brand') && null;
-  currentPage='lobby';
-  renderLobbyPools();
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('show'));
+  $('page-lobby').classList.add('show');
+  $('backBtn').style.display='none';
 }
 function goGame(id){
-  showPage(id);
-  document.getElementById('backBtn').style.display='flex';
-  document.getElementById('backLabel').textContent='LOBBY';
-  currentPage=id;
-  if(id==='eo')renderEoGrid();
-  if(id==='duel'){renderDuelCoins();renderOpenDuels();}
-  if(id==='swap')calcSwap();
-  if(id==='binary')renderBinCoins();
-  if(id==='hist')renderHistory();
-}
-function showPage(id){
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('show'));
-  document.getElementById('page-'+id).classList.add('show');
+  $('page-'+id).classList.add('show');
+  $('backBtn').style.display='flex';
+  if(id==='plinko'){plinkoLoop();renderPBuckets();}
+  if(id==='wheel'){drawWheel(G.wAngle);}
+  if(id==='slots'){initReels();renderPaytable();updateSlotsInfo();}
+  if(id==='mines'){updateMinesCalc();}
 }
 
-// ══ WALLET ══
+// ── WALLET ──
 async function connectWallet(){
-  showNotif('inf','🔗 Connecting...','Looking for Qubic wallet...');
-  try{
-    const r=await fetch(`${RPC}/v1/tick-info`);
-    if(r.ok) afterConnect();
-    else afterConnect();
-  }catch{afterConnect();}
-}
-function afterConnect(){
-  S.connected=true; S.wallet='BRTDI....FLHFB';
-  document.getElementById('wdot').classList.add('on');
-  document.getElementById('waddr').textContent=S.wallet;
-  document.getElementById('waddr').classList.add('on');
-  document.getElementById('wbals').style.display='flex';
-  document.getElementById('wbtn').textContent='✓ CONNECTED';
-  document.getElementById('wbtn').classList.add('on');
-  updateBals();
-  showNotif('ok','✅ Connected!','Qubic wallet ready');
-  document.getElementById('duYou').textContent='YOU';
-  document.getElementById('duAddr').textContent=S.wallet;
-  if(S.flipSel) document.getElementById('flipBtn').disabled=false;
-}
-function updateBals(){
-  document.getElementById('wQufc').textContent=S.balQUFC.toLocaleString();
-  document.getElementById('wQubic').textContent=(S.balQUBIC/1000000).toFixed(1)+'M';
+  showNotif('ok','🔗 Connecting...','');
+  try{await fetch('https://rpc.qubic.org/v1/tick-info');}catch{}
+  G.connected=true;
+  $('wdot').classList.add('on');
+  $('waddr').textContent='UFCDH...CSYCN';
+  $('waddr').classList.add('on');
+  $('wbalWrap').style.display='flex';
+  $('wbtn').textContent='✓ CONNECTED';
+  $('wbtn').classList.add('on');
+  showNotif('ok','✅ Connected!','Qubic mainnet · QUFC Arena ready');
 }
 
-// ══ COINGECKO ══
-async function loadQufcPrice(){
-  try {
-    const r = await fetch('https://rpc.qubic.org/v1/assets/QUFC/issuances');
-    if(r.ok){
-      const d = await r.json();
-      const priceInQubic = d?.issuances?.[0]?.price || 0;
-      const qubicUsd = S.prices['qubic-network']?.usd || 0.0000011;
-      if(priceInQubic > 0){
-        S.prices['QUFC'] = {
-          usd: priceInQubic * qubicUsd,
-          usd_24h_change: (Math.random()-.5)*15,
-          priceInQubic,
-          source:'QX RPC'
-        };
-        return;
-      }
-    }
-  } catch {}
-  // Fallback mock
-  const qp = S.prices['qubic-network']?.usd || 0.0000011;
-  S.prices['QUFC'] = { usd: 0.000001 * qp, usd_24h_change: 5.3+(Math.random()-.5)*3, source:'Mock' };
-}
-
+// ── PRICES ──
 async function loadPrices(){
   try{
-    const ids=COINS.map(c=>c.id).join(',');
-    const r=await fetch(`https://api.coingecko.com/api/v3/simple/price?ids=${ids}&vs_currencies=usd&include_24hr_change=true`);
-    S.prices=await r.json();
-  }catch{
-    S.prices={bitcoin:{usd:73839,usd_24h_change:3.2},ethereum:{usd:2289,usd_24h_change:9.3},
-      solana:{usd:93.88,usd_24h_change:6.7},binancecoin:{usd:675,usd_24h_change:2.3},
-      'qubic-network':{usd:0.0000011,usd_24h_change:14.2},dogecoin:{usd:.10,usd_24h_change:5.1}};
-  }
-  renderTicker(); updateQubicStrip(); renderLobbyPools(); renderBinCoins(); renderEoGrid(); calcSwap();
+    const r=await fetch('https://api.coingecko.com/api/v3/simple/price?ids=qubic-network,bitcoin,ethereum&vs_currencies=usd&include_24hr_change=true');
+    const d=await r.json();
+    const update=(id,sym,priceEl,chgEl)=>{
+      if(!d[id])return;
+      const u=(d[id].usd_24h_change||0)>=0;
+      $(priceEl).textContent='$'+fp(d[id].usd);
+      $(chgEl).textContent=(u?'▲':'▼')+Math.abs(d[id].usd_24h_change||0).toFixed(1)+'%';
+      $(chgEl).className='ps-chg '+(u?'tup':'tdn');
+    };
+    update('qubic-network','QUBIC','psQubic','psQubicChg');
+    update('bitcoin','BTC','psBtc','psBtcChg');
+    update('ethereum','ETH','psEth','psEthChg');
+    renderTicker(d);
+  }catch{}
+  // QUFC from QX RPC
+  try{
+    const r=await fetch('https://rpc.qubic.org/v1/assets/QUFC/issuances');
+    if(r.ok){const d=await r.json();const p=d?.issuances?.[0]?.price||0;
+      if(p>0)$('psQufc').textContent=p.toFixed(4)+' QU';}
+  }catch{}
   setTimeout(loadPrices,60000);
 }
 
-function renderTicker(){
-  const t=COINS.map(c=>{const d=S.prices[c.id];if(!d)return'';
-    const u=d.usd_24h_change>=0;
-    return`<span class="ti"><span class="ts">${c.sym}</span><span class="tp">$${fp(d.usd)}</span><span class="${u?'tu':'td'}">${u?'▲':'▼'}${Math.abs(d.usd_24h_change).toFixed(1)}%</span></span>`;
+function renderTicker(d){
+  const coins=[
+    {sym:'QUBIC',id:'qubic-network',ic:'⚡'},
+    {sym:'BTC',id:'bitcoin',ic:'₿'},
+    {sym:'ETH',id:'ethereum',ic:'Ξ'},
+  ];
+  const t=coins.map(c=>{
+    if(!d[c.id])return'';
+    const u=(d[c.id].usd_24h_change||0)>=0;
+    return`<span class="ti"><span class="tsm">${c.ic} ${c.sym}</span><span class="tp">$${fp(d[c.id].usd)}</span><span class="${u?'tup':'tdn'}">${u?'▲':'▼'}${Math.abs(d[c.id].usd_24h_change||0).toFixed(1)}%</span></span>`;
   }).join('');
-  document.getElementById('ticker').innerHTML=t+t;
+  $('ticker').innerHTML=t+t;
 }
 
-function updateQubicStrip(){
-  const coins = [
-    {id:'qubic-network', sym:'QUBIC', priceEl:'qsQubicPrice', chgEl:'qsQubicChg', fmt:'$'},
-    {id:'QUFC',          sym:'QUFC',  priceEl:'qsQufcPrice',  chgEl:'qsQufcChg',  fmt:''},
-    {id:'bitcoin',       sym:'BTC',   priceEl:'qsBtcPrice',   chgEl:'qsBtcChg',   fmt:'$'},
-    {id:'ethereum',      sym:'ETH',   priceEl:'qsEthPrice',   chgEl:'qsEthChg',   fmt:'$'},
-  ];
-  coins.forEach(c => {
-    const d = S.prices[c.id]; if(!d) return;
-    const u = (d.usd_24h_change||0) >= 0;
-    const pe = document.getElementById(c.priceEl);
-    const ce = document.getElementById(c.chgEl);
-    if(pe) pe.textContent = c.fmt + fp(d.usd||0);
-    if(ce){
-      ce.textContent = (u?'▲':'▼') + Math.abs(d.usd_24h_change||0).toFixed(1)+'%';
-      ce.className = 'qs-chg '+(u?'tu':'td');
+// ── QUBIC RPC ──
+async function getTick(){
+  try{const r=await fetch('https://rpc.qubic.org/v1/tick-info');
+    if(r.ok){const d=await r.json();return d?.tickData?.tick||d?.tick||Date.now();}
+  }catch{}
+  return Date.now();
+}
+function sRand(seed){
+  let s=seed+Math.floor(Date.now()/100);
+  return()=>{s=(s*1664525+1013904223)&0xffffffff;return(s>>>0)/0xffffffff;};
+}
+
+// ════════════════════════════
+// CRASH
+// ════════════════════════════
+const cCvs=$('crashCanvas'),cCtx=cCvs.getContext('2d');
+function resizeCrash(){cCvs.width=cCvs.parentElement.clientWidth;cCvs.height=cCvs.parentElement.clientHeight;}
+resizeCrash();window.addEventListener('resize',resizeCrash);
+
+function genCrash(tick){
+  let s=Math.abs(tick*1103515245+12345)&0x7fffffff;
+  s=(s*1103515245+12345)&0x7fffffff;
+  return Math.min(100,Math.max(1.01,(1/(s/0x7fffffff))*0.95));
+}
+function drawCrash(){
+  const W=cCvs.width,H=cCvs.height;cCtx.clearRect(0,0,W,H);
+  cCtx.strokeStyle='rgba(255,255,255,.03)';cCtx.lineWidth=1;
+  for(let i=0;i<4;i++){cCtx.beginPath();cCtx.moveTo(0,H*i/3);cCtx.lineTo(W,H*i/3);cCtx.stroke();}
+  if(G.cPoints.length<2)return;
+  const mx=Math.max(...G.cPoints.map(p=>p.m),2);
+  const tx=i=>(i/(G.cPoints.length-1))*(W-20)+10;
+  const ty=m=>H-10-((m-1)/(mx-1))*(H-30);
+  const crashed=G.crashPhase==='crashed';
+  const gr=cCtx.createLinearGradient(0,0,0,H);
+  gr.addColorStop(0,crashed?'rgba(231,76,60,.3)':'rgba(46,204,113,.3)');
+  gr.addColorStop(1,crashed?'rgba(231,76,60,.02)':'rgba(46,204,113,.02)');
+  cCtx.beginPath();cCtx.moveTo(tx(0),H);
+  G.cPoints.forEach((p,i)=>cCtx.lineTo(tx(i),ty(p.m)));
+  cCtx.lineTo(tx(G.cPoints.length-1),H);cCtx.closePath();
+  cCtx.fillStyle=gr;cCtx.fill();
+  cCtx.beginPath();cCtx.moveTo(tx(0),ty(G.cPoints[0].m));
+  G.cPoints.forEach((p,i)=>i>0&&cCtx.lineTo(tx(i),ty(p.m)));
+  cCtx.strokeStyle=crashed?'#e74c3c':'#2ecc71';cCtx.lineWidth=2;cCtx.stroke();
+  if(G.crashPhase==='flying'){
+    const l=G.cPoints[G.cPoints.length-1];const lx=tx(G.cPoints.length-1),ly=ty(l.m);
+    cCtx.beginPath();cCtx.arc(lx,ly,5,0,Math.PI*2);cCtx.fillStyle='#2ecc71';
+    cCtx.shadowColor='#2ecc71';cCtx.shadowBlur=12;cCtx.fill();cCtx.shadowBlur=0;
+  }
+}
+async function startCrash(){
+  const tick=await getTick();G.cTarget=genCrash(tick);G.cTick=tick;
+  G.crashPhase='betting';G.cMult=1;G.cBetPlaced=false;G.cCashedOut=false;G.cPoints=[{m:1}];
+  $('crashMult').textContent='—';$('crashMult').className='cm safe';
+  $('crashStatus').textContent='⏳ PLACE BET — 5 SEC';$('crashStatus').style.color='var(--gold)';
+  $('crashTick').textContent='Tick: #'+tick;
+  updateCrashBtn();
+  let c=5;const t=setInterval(()=>{c--;$('crashStatus').textContent='⏳ PLACE BET — '+c+' SEC';
+    if(c<=0){clearInterval(t);flyPhase();}},1000);
+}
+function flyPhase(){
+  G.crashPhase='flying';const st=Date.now();
+  $('crashStatus').textContent='🚀 FLYING!';$('crashStatus').style.color='var(--lgreen)';
+  updateCrashBtn();
+  function tick(){
+    const el=(Date.now()-st)/1000;
+    G.cMult=Math.pow(Math.E,el*0.3);
+    G.cPoints.push({m:G.cMult});
+    const auto=parseFloat($('crashAuto').value)||0;
+    if(G.cBetPlaced&&!G.cCashedOut&&auto>1&&G.cMult>=auto)doCashout();
+    const el2=$('crashMult');
+    el2.textContent=G.cMult.toFixed(2)+'x';
+    el2.className='cm '+(G.cMult<1.5?'safe':G.cMult<3?'warn':'danger');
+    if(G.cBetPlaced&&!G.cCashedOut)$('crashBtn').textContent='💰 CASH OUT '+G.cMult.toFixed(2)+'x';
+    updateCrashInfo();drawCrash();
+    if(G.cMult>=G.cTarget){doCrash();return;}
+    G.cAnimF=requestAnimationFrame(tick);
+  }
+  G.cAnimF=requestAnimationFrame(tick);
+}
+function doCrash(){
+  cancelAnimationFrame(G.cAnimF);G.crashPhase='crashed';
+  const f=G.cTarget.toFixed(2);
+  G.cHist.unshift(parseFloat(f));if(G.cHist.length>10)G.cHist.pop();
+  $('crashMult').textContent=f+'x';$('crashMult').className='cm crashed';
+  $('crashStatus').textContent='💥 CRASHED AT '+f+'x';$('crashStatus').style.color='var(--red)';
+  updateCrashBtn();renderCrashHist();drawCrash();
+  if(G.cBetPlaced&&!G.cCashedOut){
+    showResult('💀','CRASHED!','-'+G.cBet.toLocaleString()+' QUFC',
+      'Crashed at '+f+'x · Tick #'+G.cTick,'🔗 Provably Fair · Qubic Tick Hash',false);
+  }
+  setTimeout(startCrash,3000);
+}
+function crashAction(){
+  if(G.crashPhase==='betting'){
+    const s=parseFloat($('crashStake').value)||0;
+    if(s<100){showNotif('err','⚠️ Min 100 QUFC','');return;}
+    if(s>G.bal){showNotif('err','💸 Insufficient QUFC','');return;}
+    G.bal-=s;G.cBet=s;G.cBetPlaced=true;updateAllBal();
+    showNotif('ok','✅ Bet Placed!',s.toLocaleString()+' QUFC');updateCrashBtn();
+  }else if(G.crashPhase==='flying'&&G.cBetPlaced&&!G.cCashedOut){doCashout();}
+}
+function doCashout(){
+  G.cCashedOut=true;const m=G.cMult;const win=Math.round(G.cBet*m);
+  G.bal+=win;updateAllBal();updateCrashBtn();
+  showNotif('ok','💰 '+m.toFixed(2)+'x!','+'+win.toLocaleString()+' QUFC');
+  showResult('🏆','CASHED OUT!','+'+win.toLocaleString()+' QUFC',
+    m.toFixed(2)+'x · Tick #'+G.cTick,'🔗 Provably Fair · Qubic Tick Hash',true);
+}
+function updateCrashBtn(){
+  const b=$('crashBtn');
+  if(G.crashPhase==='betting'&&!G.cBetPlaced){b.textContent='🚀 PLACE BET';b.className='abtn red';b.disabled=false;}
+  else if(G.crashPhase==='betting'&&G.cBetPlaced){b.textContent='✅ BET PLACED';b.className='abtn red';b.disabled=true;}
+  else if(G.crashPhase==='flying'&&G.cBetPlaced&&!G.cCashedOut){b.textContent='💰 CASH OUT '+G.cMult.toFixed(2)+'x';b.className='abtn cashout';b.disabled=false;}
+  else if(G.crashPhase==='flying'){b.textContent='🚀 FLYING '+G.cMult.toFixed(2)+'x';b.className='abtn red';b.disabled=true;}
+  else{b.textContent='⏳ NEXT ROUND...';b.className='abtn red';b.disabled=true;}
+}
+function updateCrashInfo(){
+  const s=parseFloat($('crashStake').value)||0;const a=parseFloat($('crashAuto').value)||2;
+  $('crashPot').textContent=Math.round(s*a).toLocaleString()+' QUFC';
+}
+function renderCrashHist(){
+  $('crashHist').innerHTML=G.cHist.map(m=>{
+    const c=m<1.5?'ch-l':m<5?'ch-m':'ch-h';
+    return`<div class="ch-i ${c}">${m.toFixed(2)}x</div>`;
+  }).join('');
+}
+
+// ════════════════════════════
+// PLINKO
+// ════════════════════════════
+const pCvs=$('plinkoCanvas'),pCtx=pCvs.getContext('2d');
+const ROWS=12,BR=6,PR=4;
+const PMULTS={
+  low:[5,1.5,1.2,1.1,1.0,0.5,1.0,1.1,1.2,1.5,5,10,5],
+  mid:[10,3,1.5,1.2,0.7,0.4,0.7,1.2,1.5,3,10,25,10],
+  high:[50,10,3,1.5,0.5,0.2,0.5,1.5,3,10,50,100,50],
+};
+function getPegs(){
+  const W=pCvs.width,H=pCvs.height,pegs=[];
+  const sy=35,ey=H-55;
+  for(let r=0;r<ROWS;r++){
+    const cnt=r+3,sp=W/(cnt+1),y=sy+(r/(ROWS-1))*(ey-sy);
+    for(let c=0;c<cnt;c++)pegs.push({x:sp*(c+1),y,r,c});
+  }
+  return pegs;
+}
+let pegs=getPegs();
+function getBkts(){
+  const W=pCvs.width,H=pCvs.height,m=PMULTS[G.pRisk],bw=W/m.length;
+  return m.map((x,i)=>({x:bw*i+bw/2,y:H-22,w:bw-4,mult:x,idx:i}));
+}
+function drawPlinko(){
+  const W=pCvs.width,H=pCvs.height;pCtx.clearRect(0,0,W,H);
+  pCtx.strokeStyle='rgba(255,255,255,.02)';pCtx.lineWidth=1;
+  for(let i=0;i<6;i++){pCtx.beginPath();pCtx.moveTo(W*i/5,0);pCtx.lineTo(W*i/5,H);pCtx.stroke();}
+  pegs.forEach(p=>{
+    pCtx.beginPath();pCtx.arc(p.x,p.y,PR,0,Math.PI*2);
+    pCtx.fillStyle='rgba(255,255,255,.55)';pCtx.fill();
+  });
+  const bkts=getBkts();const mults=PMULTS[G.pRisk];
+  bkts.forEach((b,i)=>{
+    const m=mults[i];
+    let c=m>=50?'#9b59b6':m>=10?'#3498db':m>=3?'#2ecc71':m>=1?'#27ae60':m>=0.5?'#f39c12':'#e74c3c';
+    pCtx.fillStyle=c+'22';pCtx.strokeStyle=c+'88';pCtx.lineWidth=1;
+    pCtx.beginPath();pCtx.roundRect(b.x-b.w/2,b.y-16,b.w,32,4);pCtx.fill();pCtx.stroke();
+    pCtx.fillStyle=c;pCtx.font='bold 10px "Bebas Neue",sans-serif';pCtx.textAlign='center';
+    pCtx.fillText(m>=1?m.toFixed(1)+'x':m.toFixed(2)+'x',b.x,b.y+4);
+  });
+  G.pBalls.forEach(b=>{
+    const gr=pCtx.createRadialGradient(b.x,b.y,0,b.x,b.y,BR*2);
+    gr.addColorStop(0,'rgba(243,156,18,.7)');gr.addColorStop(1,'rgba(243,156,18,0)');
+    pCtx.beginPath();pCtx.arc(b.x,b.y,BR*2,0,Math.PI*2);pCtx.fillStyle=gr;pCtx.fill();
+    pCtx.beginPath();pCtx.arc(b.x,b.y,BR,0,Math.PI*2);pCtx.fillStyle='#f39c12';pCtx.fill();
+    pCtx.strokeStyle='#fff';pCtx.lineWidth=1;pCtx.stroke();
+  });
+  pCtx.textAlign='left';
+}
+function updatePBalls(){
+  const W=pCvs.width,H=pCvs.height;const bkts=getBkts();
+  G.pBalls.forEach(b=>{
+    b.vy+=0.35;b.vx*=0.99;b.x+=b.vx;b.y+=b.vy;
+    pegs.forEach(p=>{
+      const dx=b.x-p.x,dy=b.y-p.y,d=Math.sqrt(dx*dx+dy*dy);
+      if(d<BR+PR+1){
+        const a=Math.atan2(dy,dx),sp=Math.sqrt(b.vx*b.vx+b.vy*b.vy);
+        b.x=p.x+Math.cos(a)*(BR+PR+2);b.y=p.y+Math.sin(a)*(BR+PR+2);
+        b.vx=Math.cos(a)*sp*.6+(Math.random()-.5)*.4;b.vy=Math.abs(Math.sin(a)*sp*.6)+.5;
+      }
+    });
+    if(b.x<BR){b.x=BR;b.vx=Math.abs(b.vx);}
+    if(b.x>W-BR){b.x=W-BR;b.vx=-Math.abs(b.vx);}
+    if(b.y>H-55&&!b.landed){
+      b.landed=true;let cl=bkts[0],md=Infinity;
+      bkts.forEach(bk=>{const dd=Math.abs(b.x-bk.x);if(dd<md){md=dd;cl=bk;}});
+      const bels=document.querySelectorAll('.bkt');
+      if(bels[cl.idx]){bels[cl.idx].classList.add('hit');setTimeout(()=>bels[cl.idx].classList.remove('hit'),400);}
+      const win=Math.round(b.stake*cl.mult);G.bal+=win;
+      if(win>G.pBest)G.pBest=win;
+      updateAllBal();G.pDrop=false;$('plinkoBtn').disabled=false;
+      if($('plinkoBest'))$('plinkoBest').textContent=G.pBest>0?G.pBest.toLocaleString():'—';
+      const won=cl.mult>=1;
+      showResult(won?'🏆':'😬',cl.mult.toFixed(1)+'x!',(won?'+':'')+((win-b.stake)).toLocaleString()+' QUFC',
+        'Landed '+cl.mult.toFixed(1)+'x · Stake: '+b.stake.toLocaleString(),'🔗 Physics-based · QUFC Arena',won);
     }
   });
+  G.pBalls=G.pBalls.filter(b=>b.y<H+20);
 }
-
-function renderLobbyPools(){
-  const tot=S.flipPool.h+S.flipPool.t;
-  document.getElementById('lp-flip').textContent=(tot/1000).toFixed(1)+'K';
-  document.getElementById('lp-binary').textContent=((S.binPool.u+S.binPool.d)/1000).toFixed(1)+'K';
-  document.getElementById('lp-eo').textContent='LIVE';
-  document.getElementById('lp-duel').textContent=S.openDuels.length+' OPEN';
-  document.getElementById('lsLive').textContent='5';
-  document.getElementById('lsPool').textContent=((tot+S.binPool.u+S.binPool.d)/1000).toFixed(0)+'K';
+let pAF;function plinkoLoop(){updatePBalls();drawPlinko();pAF=requestAnimationFrame(plinkoLoop);}
+function dropBall(){
+  if(G.pDrop)return;
+  const s=parseFloat($('plinkoStake').value)||0;
+  if(s<100){showNotif('err','⚠️ Min 100 QUFC','');return;}
+  if(s>G.bal){showNotif('err','💸 Insufficient QUFC','');return;}
+  G.bal-=s;updateAllBal();G.pDrop=true;$('plinkoBtn').disabled=true;
+  G.pBalls.push({x:pCvs.width/2+(Math.random()-.5)*10,y:10,vx:(Math.random()-.5)*1.5,vy:0,stake:s,landed:false});
 }
-
-// ══ COIN FLIP ══
-function selFlip(s){
-  S.flipSel=s;
-  document.getElementById('sHead').className='side'+(s==='head'?' gold':'');
-  document.getElementById('sTail').className='side'+(s==='tail'?' red':'');
-  const b=document.getElementById('flipBtn');
-  b.disabled=!S.connected;
-  b.textContent=s==='head'?'👑 BET ON HEADS':'🗡️ BET ON TAILS';
-  updateFlipPay();
-}
-function updateFlipPay(){
-  const s=parseFloat(document.getElementById('flipStake').value)||0;
-  document.getElementById('flipPay').textContent=Math.round(s*1.9).toLocaleString()+' QUFC';
-}
-function placeFlip(){
-  if(!S.connected){showNotif('err','⚠️ Connect Wallet','');return;}
-  const stake=parseFloat(document.getElementById('flipStake').value)||0;
-  if(stake<100||stake>S.balQUFC){showNotif('err','⚠️ Invalid stake','');return;}
-  S.balQUFC-=stake; S.flipPool[S.flipSel==='head'?'h':'t']+=stake;
-  updateBals(); updateFlipPool();
-  showNotif('ok','✅ Bet Placed!',`${stake.toLocaleString()} QUFC · Waiting for RANDOM SC...`);
-  document.getElementById('flipBtn').disabled=true;
-  document.getElementById('flipBtn').textContent='⏳ WAITING...';
-}
-function updateFlipPool(){
-  const tot=S.flipPool.h+S.flipPool.t;
-  const hp=Math.round(S.flipPool.h/tot*100), tp=100-hp;
-  document.getElementById('hPool').textContent=S.flipPool.h.toLocaleString()+' QUFC';
-  document.getElementById('tPool').textContent=S.flipPool.t.toLocaleString()+' QUFC';
-  document.getElementById('hOdds').textContent=(tot/Math.max(1,S.flipPool.h)*.95).toFixed(2)+'x';
-  document.getElementById('tOdds').textContent=(tot/Math.max(1,S.flipPool.t)*.95).toFixed(2)+'x';
-  document.getElementById('hPct').textContent=hp; document.getElementById('tPct').textContent=tp;
-  document.getElementById('pbH').style.width=hp+'%'; document.getElementById('pbT').style.width=tp+'%';
-  renderLobbyPools();
-}
-function startFlipTimer(){
-  S.flipSec=30;
-  const iv=setInterval(()=>{
-    S.flipSec--;
-    const el=document.getElementById('flipTimer');
-    el.textContent='00:'+String(S.flipSec).padStart(2,'0');
-    el.className='timer-big'+(S.flipSec<=5?' urgent':'');
-    if(S.flipSec<=0){clearInterval(iv);doFlip();}
-  },1000);
-}
-function doFlip(){
-  document.getElementById('coin').classList.add('flip');
-  setTimeout(()=>{
-    document.getElementById('coin').classList.remove('flip');
-    const res=Math.random()<.5?'head':'tail';
-    const won=S.flipSel===res;
-    const stake=parseFloat(document.getElementById('flipStake').value)||0;
-    const pay=won?Math.round(stake*1.9):0;
-    if(won)S.balQUFC+=pay; updateBals();
-    S.history.unshift({ic:res==='head'?'👑':'🗡️',match:'Coin Flip',pred:res==='head'?'HEADS':'TAILS',r:won?'win':'lose',earn:won?'+'+pay:'-'+stake,t:'just now'});
-    if(S.flipSel)showResult(won?'🏆':'💀',won?'YOU WIN!':'NEXT TIME!',won?'+'+pay.toLocaleString()+' QUFC':'-'+stake.toLocaleString()+' QUFC','Result: '+(res==='head'?'👑 HEADS':'🗡️ TAILS'),'🔗 RANDOM SC · Index 3',won);
-    setTimeout(()=>{
-      S.flipSel=null; S.flipPool={h:8500+rnd(5000),t:7200+rnd(4000)};
-      updateFlipPool();
-      document.getElementById('sHead').className='side'; document.getElementById('sTail').className='side';
-      document.getElementById('flipBtn').disabled=true; document.getElementById('flipBtn').textContent='SELECT SIDE FIRST';
-      startFlipTimer();
-    },3000);
-  },900);
-}
-
-// ══ BINARY OPTION ══
-function renderBinCoins(){
-  document.getElementById('binCoins').innerHTML=COINS.slice(0,5).map(c=>`
-    <div class="bcs${S.binCoin===c.id?' a':''}" onclick="setBinCoin('${c.id}')">${c.ic} ${c.sym}</div>`).join('');
-  updateBinPrice();
-}
-function setBinCoin(id){S.binCoin=id;renderBinCoins();}
-function setBinTf(i,el){
-  S.binTf=i;
-  document.querySelectorAll('.btf').forEach(t=>t.classList.remove('a'));
-  el.classList.add('a');
-}
-function updateBinPrice(){
-  const d=S.prices[S.binCoin]; if(!d) return;
-  const u=d.usd_24h_change>=0;
-  document.getElementById('binPrice').textContent='$'+fp(d.usd);
-  document.getElementById('binChg').textContent=(u?'▲':'▼')+' '+Math.abs(d.usd_24h_change).toFixed(2)+'%';
-  document.getElementById('binChg').className='bin-chg '+(u?'tu':'td');
-}
-function selBin(dir){
-  if(!S.connected){showNotif('err','⚠️ Connect Wallet','');return;}
-  S.binSel=dir;
-  const d=S.prices[S.binCoin]; if(!d) return;
-  S.binEntryPrice=d.usd;
-  document.getElementById('binUp').className='side'+(dir==='up'?' green':'');
-  document.getElementById('binDn').className='side'+(dir==='down'?' red':'');
-  document.getElementById('binBtn').disabled=false;
-  document.getElementById('binBtn').textContent=dir==='up'?'📈 BET HIGHER':'📉 BET LOWER';
-  updateBinPay();
-  // Start timer
-  if(S.binTimerIv)clearInterval(S.binTimerIv);
-  let sec=TFS[S.binTf].s;
-  S.binTimerSec=sec;
-  document.getElementById('binTimerLbl').textContent='WAITING FOR RESULT · '+COINS.find(c=>c.id===S.binCoin)?.sym;
-  S.binTimerIv=setInterval(()=>{
-    sec--;
-    const el=document.getElementById('binTimer');
-    el.textContent=fmtSec(sec);
-    el.className='timer-big'+(sec<=5?' urgent':'');
-    if(sec<=0){clearInterval(S.binTimerIv);settleBin();}
-  },1000);
-}
-function updateBinPay(){
-  const s=parseFloat(document.getElementById('binStake').value)||0;
-  document.getElementById('binPay').textContent=Math.round(s*1.9).toLocaleString()+' QUFC';
-}
-function placeBin(){
-  if(!S.connected){showNotif('err','⚠️ Connect Wallet','');return;}
-  if(!S.binSel){showNotif('err','⚠️ Select direction','');return;}
-  const stake=parseFloat(document.getElementById('binStake').value)||0;
-  if(stake<100||stake>S.balQUFC){showNotif('err','⚠️ Invalid stake','');return;}
-  S.balQUFC-=stake; S.binPool[S.binSel==='up'?'u':'d']+=stake;
-  updateBals(); updateBinPool();
-  showNotif('ok','✅ Placed!',`${stake.toLocaleString()} QUFC · ${S.binSel==='up'?'📈 HIGHER':'📉 LOWER'}`);
-  document.getElementById('binBtn').disabled=true;
-  document.getElementById('binBtn').textContent='⏳ WAITING FOR RESULT...';
-}
-function updateBinPool(){
-  const tot=S.binPool.u+S.binPool.d;
-  const up=Math.round(S.binPool.u/tot*100), dn=100-up;
-  document.getElementById('binUpPool').textContent=S.binPool.u.toLocaleString()+' QUFC';
-  document.getElementById('binDnPool').textContent=S.binPool.d.toLocaleString()+' QUFC';
-  document.getElementById('binUpOdds').textContent=(tot/Math.max(1,S.binPool.u)*.95).toFixed(2)+'x';
-  document.getElementById('binDnOdds').textContent=(tot/Math.max(1,S.binPool.d)*.95).toFixed(2)+'x';
-  document.getElementById('upPct').textContent=up; document.getElementById('dnPct').textContent=dn;
-  document.getElementById('pbUp').style.width=up+'%'; document.getElementById('pbDn').style.width=dn+'%';
-}
-function settleBin(){
-  const d=S.prices[S.binCoin]; if(!d||!S.binSel) return;
-  const cur=d.usd;
-  const res=cur>S.binEntryPrice?'up':'down';
-  const won=S.binSel===res;
-  const stake=parseFloat(document.getElementById('binStake').value)||0;
-  const pay=won?Math.round(stake*1.9):0;
-  if(won)S.balQUFC+=pay; updateBals();
-  const sym=COINS.find(c=>c.id===S.binCoin)?.sym;
-  S.history.unshift({ic:'📈',match:`${sym} Binary`,pred:S.binSel==='up'?'HIGHER':'LOWER',r:won?'win':'lose',earn:won?'+'+pay:'-'+stake,t:'just now'});
-  showResult(won?'🏆':'💀',won?'YOU WIN!':'NEXT TIME!',
-    won?'+'+pay.toLocaleString()+' QUFC':'-'+stake.toLocaleString()+' QUFC',
-    `Entry: $${fp(S.binEntryPrice)} → Exit: $${fp(cur)}`,
-    '🔗 CoinGecko Price Feed · Qubic Network',won);
-  // Reset
-  setTimeout(()=>{
-    S.binSel=null; S.binPool={u:6000+rnd(4000),d:5000+rnd(3000)};
-    document.getElementById('binUp').className='side'; document.getElementById('binDn').className='side';
-    document.getElementById('binBtn').disabled=true; document.getElementById('binBtn').textContent='SELECT COIN & DIRECTION';
-    document.getElementById('binTimer').textContent='--:--'; document.getElementById('binTimerLbl').textContent='SELECT COIN & TIMEFRAME';
-    updateBinPool(); updateBinPrice();
-  },3000);
-}
-
-// ══ EVEN/ODD ══
-function renderEoGrid(){
-  document.getElementById('eoGrid').innerHTML=COINS.slice(0,6).map(c=>{
-    const d=S.prices[c.id]; if(!d)return'';
-    const u=d.usd_24h_change>=0;
-    const ps=fp(d.usd), ld=ps.replace(/[^0-9]/g,'').slice(-1);
-    const isE=parseInt(ld)%2===0;
-    const sel=S.eoSel[c.id], tf=sel?.tf||0;
-    const sec=S.eoTimers[c.id]?.sec;
-    return`<div class="eo-c">
-      <div class="eo-top"><span class="eo-sym">${c.ic} ${c.sym}</span><div class="eo-dot"></div></div>
-      <div class="eo-price">$${ps}</div>
-      <div class="eo-dig">Last: <strong style="color:${isE?'var(--lgreen)':'var(--red)'}">${ld}</strong> → ${isE?'EVEN':'ODD'}</div>
-      <div class="eo-chg ${u?'tu':'td'}">${u?'▲':'▼'}${Math.abs(d.usd_24h_change).toFixed(2)}%</div>
-      <div class="eo-timer ${sec&&sec<=5?'urg':''}" id="eoT-${c.id}">${sel?.side?fmtSec(sec||TFS[tf].s):'--:--'}</div>
-      <div class="eo-tlbl">RESULT TIMER</div>
-      <div class="eo-tfs">${TFS.map((t,i)=>`<div class="etf${tf===i?' a':''}" onclick="setEoTf('${c.id}',${i})">${t.l}</div>`).join('')}</div>
-      <div class="eo-sides">
-        <div class="eo-side${sel?.side==='even'?' se':''}" onclick="selEo('${c.id}','even')">
-          <div class="eo-si">2️⃣</div><div class="eo-sn" style="color:var(--lgreen)">EVEN</div><div class="eo-so">1.90x</div>
-        </div>
-        <div class="eo-side${sel?.side==='odd'?' so':''}" onclick="selEo('${c.id}','odd')">
-          <div class="eo-si">1️⃣</div><div class="eo-sn" style="color:var(--red)">ODD</div><div class="eo-so">1.90x</div>
-        </div>
-      </div>
-    </div>`;
+function setPR(r,el){G.pRisk=r;document.querySelectorAll('.rr').forEach(x=>x.className='rr');
+  el.className='rr r'+r[0];renderPBuckets();}
+function renderPBuckets(){
+  const m=PMULTS[G.pRisk];
+  $('plBuckets').innerHTML=m.map((x,i)=>{
+    let bg='rgba(231,76,60,.1)',c='var(--red)',b='rgba(231,76,60,.3)';
+    if(x>=50){bg='rgba(155,89,182,.1)';c='var(--lpurple)';b='rgba(155,89,182,.3)';}
+    else if(x>=10){bg='rgba(52,152,219,.1)';c='var(--lblue)';b='rgba(52,152,219,.3)';}
+    else if(x>=3){bg='rgba(46,204,113,.1)';c='var(--lgreen)';b='rgba(46,204,113,.3)';}
+    else if(x>=1){bg='rgba(39,174,96,.1)';c='var(--green)';b='rgba(39,174,96,.3)';}
+    else if(x>=.5){bg='rgba(243,156,18,.1)';c='var(--gold)';b='rgba(243,156,18,.3)';}
+    return`<div class="bkt" id="bkt${i}" style="background:${bg};color:${c};border:1px solid ${b}">${x>=1?x.toFixed(1)+'x':x.toFixed(2)+'x'}</div>`;
   }).join('');
 }
-function setEoTf(id,i){if(!S.eoSel[id])S.eoSel[id]={};S.eoSel[id].tf=i;renderEoGrid();}
-function selEo(id,side){
-  if(!S.connected){showNotif('err','⚠️ Connect Wallet','');return;}
-  if(!S.eoSel[id])S.eoSel[id]={tf:0};
-  S.eoSel[id].side=side;
-  if(!S.eoTimers[id]){
-    const tf=S.eoSel[id].tf||0;
-    S.eoTimers[id]={sec:TFS[tf].s};
-    const iv=setInterval(()=>{
-      if(!S.eoTimers[id]){clearInterval(iv);return;}
-      S.eoTimers[id].sec--;
-      const el=document.getElementById('eoT-'+id);
-      if(el){el.textContent=fmtSec(S.eoTimers[id].sec);el.className='eo-timer'+(S.eoTimers[id].sec<=5?' urg':'');}
-      if(S.eoTimers[id].sec<=0){clearInterval(iv);settleEo(id);delete S.eoTimers[id];}
-    },1000);
-  }
-  renderEoGrid();
-  showNotif('ok','🎯 Set!',`${id.split('-')[0].toUpperCase()} → ${side.toUpperCase()}`);
+
+// ════════════════════════════
+// MINES
+// ════════════════════════════
+const TILES=25;
+function mMult(mc,rev){if(rev===0)return 1;let m=1;for(let i=0;i<rev;i++)m*=(TILES-mc-i)/(TILES-i);return Math.max(1,(0.95/m));}
+function mNext(mc,rev){return mMult(mc,rev+1);}
+function updateMinesCalc(){
+  const mc=parseInt($('minesCount').value);
+  $('minesChance').textContent=((TILES-mc)/TILES*100).toFixed(0)+'%';
 }
-function settleEo(id){
-  const sel=S.eoSel[id]; if(!sel?.side)return;
-  const d=S.prices[id]; if(!d)return;
-  const ld=parseInt(fp(d.usd).replace(/[^0-9]/g,'').slice(-1));
-  const res=ld%2===0?'even':'odd';
-  const won=sel.side===res;
-  const stake=500, pay=won?Math.round(stake*1.9):0;
-  if(won)S.balQUFC+=pay; updateBals();
-  S.history.unshift({ic:'🎯',match:id.split('-')[0].toUpperCase()+' Even/Odd',pred:sel.side.toUpperCase(),r:won?'win':'lose',earn:won?'+'+pay:'-'+stake,t:'just now'});
-  showResult(won?'🏆':'💀',won?'YOU WIN!':'NEXT TIME!',won?'+'+pay+' QUFC':'-'+stake+' QUFC',`Digit: ${ld} → ${res.toUpperCase()}`,'🔗 CoinGecko Oracle',won);
-  delete S.eoSel[id]; renderEoGrid();
+async function minesAction(){
+  if(!G.mActive){
+    const s=parseFloat($('minesStake').value)||0;
+    if(s<100){showNotif('err','⚠️ Min 100','');return;}
+    if(s>G.bal){showNotif('err','💸 Insufficient','');return;}
+    const mc=parseInt($('minesCount').value);
+    const tick=await getTick();const rand=sRand(tick);
+    const pos=new Set();while(pos.size<mc)pos.add(Math.floor(rand()*TILES));
+    G.mActive=true;G.mBoard=Array(TILES).fill(0);G.mPos=[...pos];
+    G.mRev=0;G.mMult=1;G.mStake=s;G.bal-=s;updateAllBal();
+    $('minesBtn').textContent='💰 CASHOUT '+s.toLocaleString();
+    $('minesBtn').className='abtn cashout';
+    $('minesStake').disabled=true;$('minesCount').disabled=true;
+    $('mpStake').textContent=s.toLocaleString();$('mpProfit').textContent='0';
+    renderMinesGrid(false);updateMinesUI();
+    showNotif('ok','💣 Started!',mc+' mines hidden · Find gems!');
+  }else{doMinesCO();}
+}
+function renderMinesGrid(showAll){
+  const g=$('minesGrid');g.innerHTML='';
+  for(let i=0;i<TILES;i++){
+    const t=document.createElement('div');t.className='tile';t.id='t'+i;
+    if(G.mBoard[i]===1){t.className='tile safe disabled';t.innerHTML='💎';}
+    else if(G.mBoard[i]===2){t.className='tile mine disabled';t.innerHTML='💥';}
+    else if(showAll&&G.mPos.includes(i)){t.className='tile am disabled';t.innerHTML='💣';}
+    else if(G.mActive){t.onclick=()=>revTile(i);}
+    g.appendChild(t);
+  }
+}
+function revTile(i){
+  if(!G.mActive||G.mBoard[i]!==0)return;
+  if(G.mPos.includes(i)){
+    G.mBoard[i]=2;renderMinesGrid(true);G.mActive=false;
+    $('minesBtn').textContent='💣 START GAME';$('minesBtn').className='abtn red';
+    $('minesStake').disabled=false;$('minesCount').disabled=false;
+    showResult('💥','BOOM!','-'+G.mStake.toLocaleString()+' QUFC',
+      'Hit a mine! '+G.mPos.length+' mines hidden','🔗 Mine positions from Qubic Tick Hash',false);
+  }else{
+    G.mBoard[i]=1;G.mRev++;
+    const mc=parseInt($('minesCount').value);
+    G.mMult=mMult(mc,G.mRev);updateMinesUI();renderMinesGrid(false);
+    if(G.mRev>=TILES-mc)doMinesCO();
+  }
+}
+function doMinesCO(){
+  if(!G.mActive)return;G.mActive=false;
+  const win=Math.round(G.mStake*G.mMult);const profit=win-G.mStake;
+  G.bal+=win;updateAllBal();renderMinesGrid(true);
+  $('minesBtn').textContent='💣 START GAME';$('minesBtn').className='abtn red';
+  $('minesStake').disabled=false;$('minesCount').disabled=false;
+  showResult('🏆','CASHED OUT!','+'+profit.toLocaleString()+' QUFC',
+    G.mMult.toFixed(2)+'x · '+G.mRev+' gems found','🔗 Provably Fair · Qubic Tick Hash',true);
+}
+function updateMinesUI(){
+  const mc=parseInt($('minesCount').value);
+  $('minesM').textContent=G.mMult.toFixed(2)+'x';
+  $('minesNext').textContent=mNext(mc,G.mRev).toFixed(2)+'x';
+  $('minesGems').textContent=G.mRev;
+  const sf=TILES-mc;$('minesBar').style.width=(G.mRev/sf*100)+'%';
+  const profit=Math.round(G.mStake*G.mMult)-G.mStake;
+  $('mpProfit').textContent=profit>0?'+'+profit.toLocaleString():'0';
+  $('mpWin').textContent=Math.round(G.mStake*G.mMult).toLocaleString();
+  if(G.mActive)$('minesBtn').textContent='💰 CASHOUT '+Math.round(G.mStake*G.mMult).toLocaleString();
 }
 
-// ══ QDUEL ══
-function renderDuelCoins(){}
-function setDM(m,el){S.duelMode=m;document.querySelectorAll('.dm').forEach(d=>d.classList.remove('a'));el.classList.add('a');updateDuelPrize();}
-function updateDuelPrize(){
-  const s=parseFloat(document.getElementById('duelStake').value)||0;
-  const p=Math.round(s*2*.95);
-  document.getElementById('duelPrize').textContent=p.toLocaleString()+' QUFC';
-  document.getElementById('duStake').textContent=s.toLocaleString()+' QUFC';
-  document.getElementById('duPrize').textContent='Prize: '+p.toLocaleString()+' QUFC';
+// ════════════════════════════
+// HI-LO
+// ════════════════════════════
+const CVALS=['A','2','3','4','5','6','7','8','9','10','J','Q','K'];
+const CSUITS=['♠','♥','♦','♣'];
+const SC={'♠':'#222','♥':'#e74c3c','♦':'#e74c3c','♣':'#222'};
+function cNum(v){if(v==='A')return 1;if(v==='J')return 11;if(v==='Q')return 12;if(v==='K')return 13;return parseInt(v);}
+async function buildDeck(seed){
+  const rand=sRand(seed);const d=[];
+  CSUITS.forEach(s=>CVALS.forEach(v=>d.push({v,s})));
+  for(let i=d.length-1;i>0;i--){const j=Math.floor(rand()*(i+1));[d[i],d[j]]=[d[j],d[i]];}
+  return d;
 }
-function createDuel(){
-  if(!S.connected){showNotif('err','⚠️ Connect Wallet','');return;}
-  const stake=parseFloat(document.getElementById('duelStake').value)||0;
-  if(stake<100||stake>S.balQUFC){showNotif('err','⚠️ Invalid stake','');return;}
-  S.balQUFC-=stake; updateBals();
-  showNotif('ok','⚔️ Created!',`${stake.toLocaleString()} QUFC · Waiting for opponent...`);
-  S.openDuels.unshift({addr:S.wallet||'YOU',stake,mode:S.duelMode==='flip'?'Coin Flip':S.duelMode==='binary'?'Binary':'Even/Odd',t:'just now'});
-  renderOpenDuels();
+function calcOdds(val){
+  const cv=cNum(val);let hi=0,lo=0,eq=0;
+  CVALS.forEach(v=>{const nv=cNum(v);if(nv>cv)hi+=4;else if(nv<cv)lo+=4;else eq+=4;});
+  return{hi,lo,eq,hp:(hi/52*100).toFixed(0)+'%',lp:(lo/52*100).toFixed(0)+'%',ep:(eq/52*100).toFixed(0)+'%',
+    hm:hi>0?(52/hi*.97).toFixed(2)+'x':'∞',lm:lo>0?(52/lo*.97).toFixed(2)+'x':'∞'};
 }
-function renderOpenDuels(){
-  document.getElementById('openDuels').innerHTML=S.openDuels.map((d,i)=>`
-    <div class="drow">
-      <div class="dr-l">
-        <div class="dr-nm">${d.addr}</div>
-        <div class="dr-inf">${d.t}</div>
-        <div class="dr-md">${d.mode}</div>
-      </div>
-      <div style="text-align:right">
-        <div class="dr-st">${d.stake.toLocaleString()}</div>
-        <div style="font-size:8px;color:var(--muted)">QUFC</div>
-        <button class="acc-btn" onclick="acceptDuel(${i})" style="margin-top:5px">⚔️ ACCEPT</button>
-      </div>
-    </div>`).join('');
+async function hiloStart(){
+  const s=parseFloat($('hiloStake').value)||0;
+  if(s<100){showNotif('err','⚠️ Min 100','');return;}
+  if(s>G.bal){showNotif('err','💸 Insufficient','');return;}
+  const seed=await getTick();G.hDeck=await buildDeck(seed);
+  G.hIdx=0;G.hMult=1;G.hStreak=0;G.hActive=true;G.hStake=s;G.hHist=[];G.hSkips=3;
+  G.bal-=s;updateAllBal();
+  $('hiloStartBtn').disabled=true;$('hiloCashBtn').disabled=false;
+  $('btnHi').disabled=false;$('btnLo').disabled=false;$('btnSk').disabled=false;
+  $('hiloStake').disabled=true;
+  showCurCard();showNotif('ok','🃏 Dealt!',s.toLocaleString()+' QUFC · Deck from Qubic tick');
 }
-function acceptDuel(i){
-  if(!S.connected){showNotif('err','⚠️ Connect Wallet','');return;}
-  const d=S.openDuels[i];
-  if(d.stake>S.balQUFC){showNotif('err','💸 Insufficient QUFC','');return;}
-  S.balQUFC-=d.stake; updateBals();
-  S.openDuels.splice(i,1); renderOpenDuels();
-  showNotif('ok','⚔️ Accepted!',`${d.stake.toLocaleString()} QUFC · QDUEL processing...`);
+function showCurCard(){
+  const c=G.hDeck[G.hIdx];
+  $('curV').textContent=c.v;$('curS').textContent=c.s;
+  $('curV').style.color=SC[c.s]||'#111';$('curS').style.color=SC[c.s]||'#111';
+  const o=calcOdds(c.v);
+  $('hoHi').textContent=o.hp;$('hoLo').textContent=o.lp;$('hoEq').textContent=o.ep;
+  $('hiPays').textContent=o.hm;$('loPays').textContent=o.lm;
+  $('hiloStreak').textContent=G.hStreak;$('hiloMultD').textContent=G.hMult.toFixed(2)+'x';
+}
+function hiloGuess(dir){
+  if(!G.hActive)return;
+  const cur=G.hDeck[G.hIdx],nxt=G.hDeck[G.hIdx+1];if(!nxt){hiloCashout();return;}
+  const cv=cNum(cur.v),nv=cNum(nxt.v);
+  if(nv===cv){hiloLose(cur,nxt,dir);return;}
+  const ok=(dir==='higher'&&nv>cv)||(dir==='lower'&&nv<cv);
+  if(ok){
+    const o=calcOdds(cur.v);const m=parseFloat(dir==='higher'?o.hm:o.lm);
+    G.hMult*=m;G.hStreak++;
+    $('prevV').textContent=cur.v;$('prevS').textContent=cur.s;
+    $('prevV').style.color=SC[cur.s]||'#eee';$('prevS').style.color=SC[cur.s]||'#eee';
+    G.hHist.push(cur);renderHHist();G.hIdx++;showCurCard();
+    showNotif('ok','✅ '+nxt.v+nxt.s,dir==='higher'?'📈':'📉'+' · '+G.hMult.toFixed(2)+'x');
+  }else{hiloLose(cur,nxt,dir);}
+}
+function hiloLose(cur,nxt,dir){
+  G.hActive=false;resetHiloUI();
+  showResult('💀','WRONG!','-'+G.hStake.toLocaleString()+' QUFC',
+    'Card was '+nxt.v+nxt.s,'🔗 Deck from Qubic Tick Hash',false);
+}
+function hiloSkip(){
+  if(!G.hActive||G.hSkips<=0)return;G.hSkips--;G.hIdx++;
+  if(G.hIdx>=G.hDeck.length-1){hiloCashout();return;}showCurCard();
+  showNotif('ok','⏭ Skipped',G.hSkips+' remaining');
+}
+function hiloCashout(){
+  if(!G.hActive)return;G.hActive=false;
+  const win=Math.round(G.hStake*G.hMult);const p=win-G.hStake;
+  G.bal+=win;if(win>G.hBest)G.hBest=win;
+  updateAllBal();if($('hiloBest'))$('hiloBest').textContent=G.hBest>0?G.hBest.toLocaleString():'—';
+  resetHiloUI();
+  showResult('🏆','CASHED OUT!','+'+p.toLocaleString()+' QUFC',
+    G.hMult.toFixed(2)+'x · Streak: '+G.hStreak,'🔗 Deck from Qubic Tick Hash',p>=0);
+}
+function resetHiloUI(){
+  $('hiloStartBtn').disabled=false;$('hiloCashBtn').disabled=true;
+  $('btnHi').disabled=true;$('btnLo').disabled=true;$('btnSk').disabled=true;
+  $('hiloStake').disabled=false;
+}
+function renderHHist(){
+  $('hiloHist').innerHTML=G.hHist.slice(-8).map(c=>
+    `<div class="hh"><div class="hh-v" style="color:${SC[c.s]||'#111'}">${c.v}</div><div class="hh-s" style="color:${SC[c.s]||'#111'}">${c.s}</div></div>`
+  ).join('');
+}
+
+// ════════════════════════════
+// SLOTS
+// ════════════════════════════
+const SYMS=[
+  {s:'⚡',w:1,m:[0,0,50,500]},{s:'💎',w:2,m:[0,0,20,200]},{s:'🥊',w:3,m:[0,0,15,150]},
+  {s:'🎯',w:4,m:[0,0,10,100]},{s:'🔥',w:5,m:[0,0,8,80]},{s:'🌙',w:7,m:[0,0,5,50]},
+  {s:'⭐',w:8,m:[0,0,4,40]},{s:'🍀',w:10,m:[0,0,3,30]},{s:'🎲',w:12,m:[0,0,2,20]},
+  {s:'💰',w:15,m:[0,0,1.5,15]},{s:'🃏',w:2,wild:true},
+];
+const POOL=[];SYMS.forEach(x=>{for(let i=0;i<x.w;i++)POOL.push(x);});
+const PLINES=[[1,1,1],[0,0,0],[2,2,2],[0,1,2],[2,1,0]];
+function genGrid(rand){
+  const g=[];for(let r=0;r<3;r++){const c=[];for(let row=0;row<3;row++)c.push(POOL[Math.floor(rand()*POOL.length)]);g.push(c);}return g;
+}
+function checkWins(grid){
+  let tot=0;
+  PLINES.forEach(line=>{
+    const syms=line.map((row,col)=>grid[col][row]);
+    const nw=syms.filter(s=>!s.wild);const wilds=syms.filter(s=>s.wild).length;
+    if(nw.length===0){tot+=100;return;}
+    const f=nw[0];const am=nw.every(s=>s.s===f.s);
+    if(am){const m=f.m[3]||0;tot+=m;}
+    else if(wilds>0&&nw.length===2&&nw[0].s===nw[1].s){tot+=(nw[0].m[3]*.5)||0;}
+  });
+  return tot;
+}
+function initReels(){
+  for(let i=0;i<3;i++){
+    const t=$('rt'+i);t.innerHTML='';
+    for(let j=0;j<9;j++){const x=document.createElement('div');x.className='ri';x.textContent=POOL[rnd(POOL.length)].s;t.appendChild(x);}
+  }
+}
+function setReelResult(ri,syms){
+  const t=$('rt'+ri);t.innerHTML='';
+  syms.forEach(s=>{const x=document.createElement('div');x.className='ri';x.textContent=s.s;t.appendChild(x);});
+  t.style.transform='translateY(-38px)';
+}
+async function doSpin(){
+  if(G.sSpin)return;
+  const s=parseFloat($('slotsStake').value)||0;
+  if(s<100){showNotif('err','⚠️ Min 100','');return;}
+  if(s>G.bal){showNotif('err','💸 Insufficient','');return;}
+  G.sSpin=true;G.bal-=s;G.sSpins++;updateAllBal();updateSlotsInfo();
+  $('spinBtn').disabled=true;$('swLbl').textContent='SPINNING...';$('swAmt').textContent='';$('swMult').textContent='';
+  for(let i=0;i<3;i++){$('reel'+i).classList.remove('win');$('reel'+i).classList.add('spinning');}
+  const seed=await getTick();const rand=sRand(seed+G.sSpins);
+  const grid=genGrid(rand);const tot=checkWins(grid);
+  const dl=[600,900,1200];
+  for(let i=0;i<3;i++){
+    setTimeout(()=>{
+      $('reel'+i).classList.remove('spinning');setReelResult(i,grid[i]);
+      if(tot>0&&i===2)for(let r=0;r<3;r++)$('reel'+r).classList.add('win');
+    },dl[i]);
+  }
   setTimeout(()=>{
-    const won=Math.random()>.5, pay=won?Math.round(d.stake*2*.95):0;
-    if(won)S.balQUFC+=pay; updateBals();
-    showResult(won?'🏆':'💀',won?'DUEL WIN!':'DUEL LOST!',won?'+'+pay.toLocaleString()+' QUFC':'-'+d.stake.toLocaleString()+' QUFC',`Mode: ${d.mode}`,'🔗 QDUEL SC Index 23',won);
-  },3000);
+    const win=Math.round(s*tot);G.bal+=win;updateAllBal();updateSlotsInfo();
+    G.sSpin=false;$('spinBtn').disabled=false;
+    if(tot>0){
+      $('swLbl').textContent='🎉 WIN!';$('swAmt').textContent='+'+win.toLocaleString()+' QUFC';
+      $('swMult').textContent=tot+'x MULTIPLIER';
+      if(tot>=50)showResult('🎰','JACKPOT!','+'+win.toLocaleString()+' QUFC',tot+'x','🔗 RNG: Qubic Tick #'+seed,true);
+      else showNotif('ok','🎰 '+tot+'x!','+'+win.toLocaleString()+' QUFC');
+    }else{
+      $('swLbl').textContent='TRY AGAIN';$('swAmt').textContent='';
+      for(let r=0;r<3;r++)$('reel'+r).classList.remove('win');
+    }
+    if(G.sAuto>0){G.sAuto--;setTimeout(doSpin,500);}
+  },1450);
+}
+function setAuto(n){
+  G.sAuto=n;document.querySelectorAll('#page-slots .cq').forEach(b=>b.style.borderColor='');
+  $('a'+n).style.borderColor='var(--gold)';
+  if(n>0)doSpin();
+}
+function renderPaytable(){
+  const rows=[{s:'⚡⚡⚡',m:'500x',c:'var(--gold)'},{s:'💎💎💎',m:'200x',c:'var(--lblue)'},
+    {s:'🥊🥊🥊',m:'150x',c:'var(--red)'},{s:'🎯🎯🎯',m:'100x',c:'var(--lpurple)'},
+    {s:'🔥🔥🔥',m:'80x',c:'#e67e22'},{s:'🌙🌙🌙',m:'50x',c:'#aaa'},
+    {s:'⭐⭐⭐',m:'40x',c:'var(--gold)'},{s:'🃏🃏🃏',m:'100x',c:'var(--lgreen)'}];
+  $('paytable').innerHTML=rows.map(r=>`<div class="pt"><span class="pt-s">${r.s}</span><span class="pt-m" style="color:${r.c}">${r.m}</span></div>`).join('');
+}
+function updateSlotsInfo(){
+  const s=parseFloat($('slotsStake').value)||0;
+  $('slotsMax').textContent=(s*500).toLocaleString()+' QUFC';
+  $('slotsSpins').textContent=G.sSpins;
 }
 
-// ══ QSWAP ══
-function calcSwap(){
-  const d=S.prices['qubic-network'];
-  const qufcUsd=0.000001, qubicUsd=d?.usd||0.0000011;
-  const rate=0.00001;
-  const amt=parseFloat(document.getElementById('swapFrom').value)||0;
-  if(S.swapDir==='q2b'){
-    document.getElementById('swapTo').value=(amt*rate).toFixed(4);
-    document.getElementById('swapRate').textContent=`1 QUFC = ${rate} QUBIC`;
-    document.getElementById('fromUsd').textContent=`≈ $${(amt*qufcUsd).toFixed(6)} USD`;
-    document.getElementById('toUsd').textContent=`≈ $${(amt*rate*qubicUsd).toFixed(6)} USD`;
-  } else {
-    document.getElementById('swapTo').value=Math.round(amt/rate).toLocaleString();
-    document.getElementById('swapRate').textContent=`1 QUBIC = ${(1/rate).toLocaleString()} QUFC`;
-    document.getElementById('fromUsd').textContent=`≈ $${(amt*qubicUsd).toFixed(6)} USD`;
-    document.getElementById('toUsd').textContent=`≈ $${(amt/rate*qufcUsd).toFixed(6)} USD`;
-  }
-  document.getElementById('poolQ').textContent=(8888888+rnd(500000)).toLocaleString();
-  document.getElementById('poolQB').textContent=(125000000+rnd(5000000)).toLocaleString();
+// ════════════════════════════
+// WHEEL
+// ════════════════════════════
+const WSEGS={
+  low:[{l:'0.2x',m:.2,c:'#e74c3c',w:5},{l:'1.5x',m:1.5,c:'#27ae60',w:10},{l:'0.5x',m:.5,c:'#e67e22',w:8},
+    {l:'2x',m:2,c:'#2980b9',w:6},{l:'0.2x',m:.2,c:'#e74c3c',w:5},{l:'1.2x',m:1.2,c:'#27ae60',w:10},
+    {l:'3x',m:3,c:'#9b59b6',w:4},{l:'0.5x',m:.5,c:'#e67e22',w:8},{l:'1.5x',m:1.5,c:'#27ae60',w:10},{l:'5x',m:5,c:'#f39c12',w:2}],
+  mid:[{l:'0x',m:0,c:'#7b0000',w:6},{l:'2x',m:2,c:'#2980b9',w:7},{l:'0.5x',m:.5,c:'#e67e22',w:6},
+    {l:'5x',m:5,c:'#f39c12',w:4},{l:'0x',m:0,c:'#7b0000',w:6},{l:'3x',m:3,c:'#9b59b6',w:5},
+    {l:'10x',m:10,c:'#2ecc71',w:2},{l:'0.5x',m:.5,c:'#e67e22',w:6},{l:'2x',m:2,c:'#2980b9',w:7},{l:'25x',m:25,c:'#ffd700',w:1}],
+  high:[{l:'0x',m:0,c:'#7b0000',w:8},{l:'5x',m:5,c:'#f39c12',w:4},{l:'0x',m:0,c:'#7b0000',w:8},
+    {l:'10x',m:10,c:'#2ecc71',w:3},{l:'0x',m:0,c:'#7b0000',w:8},{l:'50x',m:50,c:'#9b59b6',w:1},
+    {l:'0x',m:0,c:'#7b0000',w:8},{l:'3x',m:3,c:'#2980b9',w:4},{l:'100x',m:100,c:'#ffd700',w:.5},{l:'0x',m:0,c:'#7b0000',w:8}],
+};
+const wCvs=$('wheelCanvas'),wCtx=wCvs.getContext('2d');
+function drawWheel(angle){
+  const segs=WSEGS[G.wRisk],n=segs.length,arc=Math.PI*2/n,cx=wCvs.width/2,cy=wCvs.height/2,r=cx-10;
+  wCtx.clearRect(0,0,wCvs.width,wCvs.height);
+  wCtx.beginPath();wCtx.arc(cx,cy,r+7,0,Math.PI*2);wCtx.strokeStyle='rgba(243,156,18,.4)';wCtx.lineWidth=3;wCtx.stroke();
+  segs.forEach((seg,i)=>{
+    const sa=angle+i*arc-Math.PI/2,ea=sa+arc;
+    wCtx.beginPath();wCtx.moveTo(cx,cy);wCtx.arc(cx,cy,r,sa,ea);wCtx.closePath();
+    wCtx.fillStyle=seg.c+'cc';wCtx.fill();wCtx.strokeStyle='rgba(0,0,0,.4)';wCtx.lineWidth=1.5;wCtx.stroke();
+    wCtx.save();wCtx.translate(cx,cy);wCtx.rotate(sa+arc/2);wCtx.textAlign='right';
+    wCtx.fillStyle='#fff';wCtx.font=`bold ${seg.m>=10?13:12}px "Bebas Neue",sans-serif`;
+    wCtx.shadowColor='rgba(0,0,0,.8)';wCtx.shadowBlur=4;wCtx.fillText(seg.l,r-7,5);wCtx.shadowBlur=0;wCtx.restore();
+  });
+  wCtx.beginPath();wCtx.arc(cx,cy,20,0,Math.PI*2);
+  wCtx.fillStyle='rgba(0,0,0,.8)';wCtx.fill();wCtx.strokeStyle='rgba(243,156,18,.6)';wCtx.lineWidth=2;wCtx.stroke();
 }
-function flipSwap(){
-  S.swapDir=S.swapDir==='q2b'?'b2q':'q2b';
-  if(S.swapDir==='q2b'){
-    document.getElementById('fromIc').textContent='⚡'; document.getElementById('fromNm').textContent='QUFC';
-    document.getElementById('toIc').textContent='◈'; document.getElementById('toNm').textContent='QUBIC';
-  }else{
-    document.getElementById('fromIc').textContent='◈'; document.getElementById('fromNm').textContent='QUBIC';
-    document.getElementById('toIc').textContent='⚡'; document.getElementById('toNm').textContent='QUFC';
+async function spinWheel(){
+  if(G.wSpin)return;
+  const s=parseFloat($('wheelStake').value)||0;
+  if(s<100){showNotif('err','⚠️ Min 100','');return;}
+  if(s>G.bal){showNotif('err','💸 Insufficient','');return;}
+  G.bal-=s;G.wSpin=true;G.wSpins++;$('spinWheelBtn').disabled=true;
+  $('wheelRM').textContent='...';$('wheelRW').textContent='';
+  const seed=await getTick();const rand=sRand(seed+G.wSpins);
+  const segs=WSEGS[G.wRisk];const tw=segs.reduce((a,x)=>a+x.w,0);
+  let pick=rand()*tw;let chosen=0;
+  for(let i=0;i<segs.length;i++){pick-=segs[i].w;if(pick<=0){chosen=i;break;}}
+  const arc=Math.PI*2/segs.length;
+  const target=-(chosen*arc+arc/2);const spins=5+Math.floor(rand()*3);
+  const final=target-spins*Math.PI*2;
+  const start=G.wAngle,dur=4000,st=Date.now();
+  function anim(){
+    const el=Date.now()-st,p=Math.min(el/dur,1),ease=1-Math.pow(1-p,3);
+    G.wAngle=start+(final-start)*ease;drawWheel(G.wAngle);
+    if(p<1){requestAnimationFrame(anim);}else{
+      G.wAngle=final;drawWheel(G.wAngle);G.wSpin=false;$('spinWheelBtn').disabled=false;
+      const res=segs[chosen];const win=Math.round(s*res.m);G.bal+=win;
+      if(win>G.wBest)G.wBest=win;updateAllBal();
+      $('wheelRM').textContent=res.l;$('wheelRM').style.color=res.c;
+      $('wheelRW').textContent=res.m>0?'+'+win.toLocaleString()+' QUFC':'-'+s.toLocaleString()+' QUFC';
+      $('wSpins').textContent=G.wSpins;$('wBest').textContent=G.wBest>0?G.wBest.toLocaleString():'—';
+      const won=res.m>=1;
+      if(res.m>=10)showResult(res.m>=50?'🎉':'🏆',res.l+' WIN!','+'+win.toLocaleString()+' QUFC',
+        'Landed '+res.l+' · Tick #'+seed,'🔗 Provably Fair · Qubic Tick Hash',true);
+      else showNotif(won?'ok':'err',won?'🎡 '+res.l+'!':'💀 '+res.l,
+        won?'+'+win.toLocaleString()+' QUFC':'-'+s.toLocaleString()+' QUFC');
+    }
   }
-  calcSwap();
+  requestAnimationFrame(anim);
 }
-function doSwap(){
-  if(!S.connected){showNotif('err','⚠️ Connect Wallet','');return;}
-  const amt=parseFloat(document.getElementById('swapFrom').value)||0;
-  const out=parseFloat(document.getElementById('swapTo').value)||0;
-  if(S.swapDir==='q2b'){
-    if(amt>S.balQUFC){showNotif('err','💸 Insufficient QUFC','');return;}
-    S.balQUFC-=amt; S.balQUBIC+=Math.round(out);
-  }else{
-    if(amt>S.balQUBIC){showNotif('err','💸 Insufficient QUBIC','');return;}
-    S.balQUBIC-=Math.round(amt); S.balQUFC+=Math.round(out);
-  }
-  updateBals();
-  S.history.unshift({ic:'🔄',match:'QSWAP',pred:`${amt.toLocaleString()} ${S.swapDir==='q2b'?'QUFC':'QUBIC'}`,r:'win',earn:`+${Math.round(out).toLocaleString()} ${S.swapDir==='q2b'?'QUBIC':'QUFC'}`,t:'just now'});
-  showNotif('ok','🔄 Swapped!',`QSWAP SC Index 13 · Success`);
-}
+function setWR(r,el){G.wRisk=r;document.querySelectorAll('.wr').forEach(x=>x.className='wr');el.className='wr w'+r[0];drawWheel(G.wAngle);}
 
-// ══ HISTORY ══
-function renderHistory(){
-  const el=document.getElementById('histRows');
-  if(!S.history.length){el.innerHTML='<div style="padding:16px;text-align:center;font-size:11px;color:var(--muted)">No transactions yet</div>';return;}
-  el.innerHTML=S.history.slice(0,30).map(h=>`
-    <div class="hrow">
-      <div class="hi">${h.ic}</div>
-      <div class="hd"><div class="hm">${h.match} · ${h.pred}</div><div class="ht">${h.t}</div></div>
-      <div><div class="${h.r==='win'?'hw':'hl'}">${h.r==='win'?'WIN':'LOSS'}</div>
-        <div class="he" style="color:${h.r==='win'?'var(--lgreen)':'var(--red)'}">${h.earn} QUFC</div></div>
-    </div>`).join('');
-}
-
-// ══ UI ══
+// ── SHARED UI ──
 function showResult(ic,tl,en,msg,sc,won){
-  document.getElementById('ric').textContent=ic;
-  document.getElementById('rtl').textContent=tl;
-  document.getElementById('rtl').style.color=won?'var(--gold)':'var(--red)';
-  document.getElementById('ren').textContent=en;
-  document.getElementById('rmsg').textContent=msg;
-  document.getElementById('rsc').textContent=sc;
-  document.getElementById('rpop').classList.add('show');
+  $('ric').textContent=ic;$('rtl').textContent=tl;$('rtl').style.color=won?'var(--gold)':'var(--red)';
+  $('ren').textContent=en;$('ren').style.color=won?'var(--lgreen)':'var(--red)';
+  $('rmsg').textContent=msg;$('rsc').textContent=sc;$('rpop').classList.add('show');
 }
-function closeResult(){document.getElementById('rpop').classList.remove('show');}
-
+function closeResult(){$('rpop').classList.remove('show');}
 let ntmr;
 function showNotif(type,t,m){
-  document.getElementById('nt').textContent=t;
-  document.getElementById('nm').textContent=m;
-  const n=document.getElementById('notif');
-  n.className='notif '+type;n.style.display='block';
-  clearTimeout(ntmr);ntmr=setTimeout(()=>n.style.display='none',3800);
+  $('nt').textContent=t;$('nm').textContent=m;
+  const n=$('notif');n.className='notif '+type;n.style.display='block';
+  clearTimeout(ntmr);ntmr=setTimeout(()=>n.style.display='none',3500);
 }
 
-function sq(id,v){
-  document.getElementById(id).value=v;
-  if(id==='flipStake')updateFlipPay();
-  if(id==='binStake')updateBinPay();
-  if(id==='duelStake')updateDuelPrize();
-}
-
-// ══ POOL GROW ══
-setInterval(()=>{
-  S.flipPool.h+=rnd(300); S.flipPool.t+=rnd(400);
-  S.binPool.u+=rnd(200); S.binPool.d+=rnd(250);
-  updateFlipPool(); updateBinPool();
-},3000);
-
-// ══ UTILS ══
-function fp(p){return p>=1000?p.toLocaleString('en',{maximumFractionDigits:2}):p>=1?p.toFixed(2):p>=.01?p.toFixed(4):p.toFixed(8);}
-function rnd(n){return Math.floor(Math.random()*n);}
-function fmtSec(s){const m=Math.floor(s/60),sc=s%60;return String(m).padStart(2,'0')+':'+String(sc).padStart(2,'0');}
-
-// ══ INIT ══
+// ── INIT ──
 loadPrices();
-startFlipTimer();
-renderOpenDuels();
-renderLobbyPools();
+startCrash();
+renderCrashHist();
+renderPBuckets();
+renderPaytable();
+updateSlotsInfo();
+updateMinesCalc();
+drawWheel(0);
+updateAllBal();
 </script>
 </body>
 </html>
