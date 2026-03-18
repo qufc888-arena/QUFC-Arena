@@ -1,0 +1,1231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>QUFC ARENA — Enter. Predict. Dominate.</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow+Condensed:ital,wght@0,400;0,600;0,700;0,900;1,700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --red:#e74c3c;--blood:#c0392b;--dred:#7b0000;
+  --gold:#f39c12;--dgold:#d4ac0d;
+  --blue:#2980b9;--lblue:#3498db;
+  --green:#27ae60;--lgreen:#2ecc71;
+  --purple:#8e44ad;--lpurple:#9b59b6;
+  --dark:#04040c;--panel:#09091a;--panel2:#0d0d20;
+  --border:#141428;--border2:#1c1c38;
+  --text:#eeeeff;--muted:#55557a;--dim:#202040;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;}
+body{background:var(--dark);color:var(--text);font-family:'Barlow Condensed',sans-serif;overflow-x:hidden;}
+body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:9999;
+  background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,.05) 2px,rgba(0,0,0,.05) 4px);}
+
+/* ── TOPBAR ── */
+.topbar{background:rgba(4,4,12,.97);border-bottom:2px solid var(--blood);
+  padding:0 20px;height:52px;display:flex;align-items:center;justify-content:space-between;
+  position:sticky;top:0;z-index:200;}
+.brand{display:flex;align-items:center;gap:8px;}
+.bname{font-family:'Bebas Neue';font-size:26px;letter-spacing:5px;color:#fff;
+  text-shadow:0 0 22px rgba(231,76,60,.8),3px 3px 0 var(--blood);}
+.btag{font-size:8px;letter-spacing:4px;color:var(--blood);border:1px solid rgba(192,57,43,.5);padding:2px 8px;border-radius:3px;font-weight:700;}
+.tnav{display:flex;gap:2px;}
+.tnl{font-family:'Bebas Neue';font-size:12px;letter-spacing:2px;padding:6px 12px;color:var(--muted);cursor:pointer;transition:color .2s;border-bottom:2px solid transparent;}
+.tnl:hover,.tnl.a{color:#fff;}
+.tnl.a{border-bottom-color:var(--blood);}
+.top-r{display:flex;align-items:center;gap:8px;}
+.rank-badge{display:flex;align-items:center;gap:5px;padding:4px 10px;border-radius:20px;font-size:11px;letter-spacing:1px;font-weight:700;}
+.cbtn{font-family:'Bebas Neue';font-size:12px;letter-spacing:2px;padding:7px 18px;
+  background:linear-gradient(135deg,var(--dred),var(--blood));color:#fff;border:none;
+  cursor:pointer;border-radius:3px;transition:all .2s;box-shadow:0 0 16px rgba(192,57,43,.3);}
+.cbtn:hover{transform:scale(1.04);box-shadow:0 0 24px rgba(192,57,43,.5);}
+.cbtn.on{background:linear-gradient(135deg,#0d3b6e,#1a6bb5);}
+.bal-chip{font-family:'Bebas Neue';font-size:13px;color:var(--gold);
+  background:rgba(243,156,18,.08);border:1px solid rgba(243,156,18,.2);
+  padding:4px 10px;border-radius:20px;display:none;}
+
+/* ── PAGE TABS ── */
+.page-tabs{display:flex;background:var(--panel);border-bottom:1px solid var(--border);overflow-x:auto;scrollbar-width:none;}
+.page-tabs::-webkit-scrollbar{display:none;}
+.ptab{font-family:'Bebas Neue';font-size:13px;letter-spacing:2px;padding:12px 20px;
+  cursor:pointer;color:var(--muted);border-bottom:2px solid transparent;
+  white-space:nowrap;transition:all .2s;display:flex;align-items:center;gap:6px;flex-shrink:0;}
+.ptab:hover{color:var(--text);}
+.ptab.a{color:#fff;border-bottom-color:var(--gold);}
+.ptab-badge{font-size:8px;background:rgba(231,76,60,.2);color:var(--red);
+  padding:1px 5px;border-radius:8px;border:1px solid rgba(231,76,60,.3);}
+
+/* ── TICKER ── */
+.ticker-bar{background:rgba(0,0,0,.4);border-bottom:1px solid var(--border);overflow:hidden;padding:8px 0;}
+.tlbl{position:absolute;left:0;z-index:2;background:linear-gradient(135deg,var(--dred),var(--blood));
+  display:flex;align-items:center;padding:0 20px 0 14px;height:30px;
+  font-family:'Bebas Neue';font-size:9px;letter-spacing:3px;color:#fff;
+  clip-path:polygon(0 0,100% 0,calc(100% - 8px) 100%,0 100%);}
+.ticker-rel{position:relative;}
+.tfade{position:absolute;right:0;top:0;bottom:0;z-index:1;width:60px;background:linear-gradient(270deg,rgba(0,0,0,.8),transparent);}
+.tinner{display:flex;animation:tsc 28s linear infinite;white-space:nowrap;padding-left:88px;}
+.tinner:hover{animation-play-state:paused;}
+@keyframes tsc{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
+.ti{display:inline-flex;align-items:center;gap:5px;padding:0 16px;font-size:12px;border-right:1px solid var(--border);}
+.tsym{color:var(--muted);font-weight:700;font-size:9px;letter-spacing:2px;}
+.tprice{font-family:'Bebas Neue';font-size:14px;}
+.tup{color:var(--lgreen);font-size:10px;font-weight:700;}
+.tdn{color:var(--red);font-size:10px;font-weight:700;}
+
+/* ── PAGES ── */
+.page{display:none;animation:fadeIn .3s ease;}
+.page.active{display:block;}
+@keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+
+/* ── HERO (Markets page) ── */
+.hero{position:relative;overflow:hidden;padding:32px 20px 24px;text-align:center;
+  background:linear-gradient(180deg,#08000a,var(--dark));}
+.hbg{position:absolute;inset:0;
+  background:radial-gradient(ellipse 80% 60% at 50% 0%,rgba(192,57,43,.2),transparent 60%),
+    radial-gradient(ellipse 50% 40% at 15% 90%,rgba(41,128,185,.1),transparent),
+    radial-gradient(ellipse 50% 40% at 85% 90%,rgba(192,57,43,.08),transparent);}
+.hgrid{position:absolute;inset:0;opacity:.04;
+  background-image:linear-gradient(rgba(231,76,60,.8) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(231,76,60,.8) 1px,transparent 1px);
+  background-size:55px 55px;animation:gm 18s linear infinite;}
+@keyframes gm{to{transform:translateY(55px)}}
+.oct{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
+  width:380px;height:380px;border:1px solid rgba(192,57,43,.07);
+  clip-path:polygon(30% 0%,70% 0%,100% 30%,100% 70%,70% 100%,30% 100%,0% 70%,0% 30%);
+  animation:op 5s ease-in-out infinite;}
+@keyframes op{0%,100%{opacity:.4;transform:translate(-50%,-50%) scale(1)}50%{opacity:.8;transform:translate(-50%,-50%) scale(1.03)}}
+.hcontent{position:relative;z-index:2;}
+.eyebrow{font-size:9px;letter-spacing:6px;color:var(--gold);background:rgba(243,156,18,.07);
+  border:1px solid rgba(243,156,18,.2);padding:5px 16px;border-radius:20px;
+  display:inline-block;margin-bottom:14px;}
+.htitle{font-family:'Bebas Neue';font-size:clamp(48px,10vw,88px);letter-spacing:4px;line-height:.95;margin-bottom:5px;
+  background:linear-gradient(135deg,var(--red) 0%,#fff 45%,var(--lblue) 100%);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.hsub{font-size:14px;letter-spacing:4px;color:var(--muted);margin-bottom:20px;}
+.spills{display:flex;gap:6px;flex-wrap:wrap;justify-content:center;margin-bottom:20px;}
+.spill{display:flex;align-items:center;gap:4px;padding:5px 12px;
+  background:rgba(255,255,255,.03);border:1px solid var(--border2);
+  border-radius:20px;font-size:10px;letter-spacing:2px;color:var(--muted);transition:all .2s;}
+.spill:hover{border-color:var(--blood);color:#fff;}
+.hstats{display:inline-flex;border:1px solid var(--border);border-radius:6px;overflow:hidden;
+  background:rgba(0,0,0,.35);}
+.hs{padding:10px 18px;text-align:center;border-right:1px solid var(--border);}
+.hs:last-child{border-right:none;}
+.hs-v{font-family:'Bebas Neue';font-size:20px;color:var(--gold);}
+.hs-l{font-size:8px;letter-spacing:2px;color:var(--muted);}
+
+/* ── MARKETS ── */
+.mkts-section{padding:16px 16px 0;}
+.cat-row{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:14px;}
+.ctab{font-family:'Bebas Neue';font-size:11px;letter-spacing:2px;padding:6px 14px;
+  background:var(--panel);border:1px solid var(--border2);color:var(--muted);
+  cursor:pointer;border-radius:4px;transition:all .2s;}
+.ctab:hover{border-color:var(--blood);color:#fff;}
+.ctab.a{background:rgba(192,57,43,.1);border-color:var(--blood);color:#fff;}
+.cn{font-size:8px;background:rgba(243,156,18,.15);color:var(--gold);padding:1px 5px;border-radius:8px;margin-left:3px;}
+.mgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:12px;padding-bottom:16px;}
+
+/* CARD */
+.mc{background:var(--panel);border:1px solid var(--border);border-radius:8px;overflow:hidden;transition:all .25s;}
+.mc:hover{border-color:rgba(231,76,60,.3);transform:translateY(-2px);box-shadow:0 10px 36px rgba(0,0,0,.5);}
+.mc.feat{border-color:rgba(243,156,18,.2);}
+.mc-rib{background:linear-gradient(90deg,rgba(243,156,18,.1),rgba(243,156,18,.02));border-bottom:1px solid rgba(243,156,18,.15);padding:3px 12px;font-size:9px;letter-spacing:2px;color:var(--gold);}
+.mc-top{display:flex;align-items:center;justify-content:space-between;padding:6px 12px;background:rgba(0,0,0,.3);border-bottom:1px solid var(--border);}
+.mc-lg{font-size:9px;letter-spacing:1px;color:var(--muted);}
+.mc-r{display:flex;align-items:center;gap:5px;}
+.blive{font-size:8px;background:rgba(231,76,60,.15);color:var(--red);border:1px solid rgba(231,76,60,.3);padding:2px 6px;border-radius:3px;animation:lp 1.5s infinite;}
+@keyframes lp{0%,100%{opacity:1}50%{opacity:.4}}
+.bsoon{font-size:8px;background:rgba(243,156,18,.1);color:var(--gold);border:1px solid rgba(243,156,18,.2);padding:2px 6px;border-radius:3px;}
+.mc-t{font-family:'Bebas Neue';font-size:12px;letter-spacing:2px;}
+.mfight{display:flex;align-items:center;padding:12px 12px 8px;gap:6px;}
+.mf{flex:1;text-align:center;}
+.mav{width:50px;height:50px;border-radius:50%;margin:0 auto 6px;display:flex;align-items:center;justify-content:center;font-size:22px;transition:transform .2s;}
+.mav:hover{transform:scale(1.08);}
+.avr{background:radial-gradient(circle,rgba(192,57,43,.3),rgba(192,57,43,.04));border:2px solid rgba(231,76,60,.4);}
+.avb{background:radial-gradient(circle,rgba(41,128,185,.3),rgba(41,128,185,.04));border:2px solid rgba(52,152,219,.4);}
+.mn{font-family:'Bebas Neue';font-size:13px;letter-spacing:1px;}
+.mnr{color:var(--red);}
+.mnb{color:var(--lblue);}
+.md{font-size:9px;color:var(--muted);margin-top:2px;}
+.mpl{font-family:'Bebas Neue';font-size:11px;color:var(--gold);margin-top:3px;}
+.mvsec{text-align:center;}
+.mvs{font-family:'Bebas Neue';font-size:24px;color:rgba(255,255,255,.1);}
+.mrw{font-size:9px;color:var(--gold);letter-spacing:1px;margin-top:3px;white-space:nowrap;}
+.mcrypto{display:flex;align-items:center;gap:10px;padding:12px;border-bottom:1px solid var(--border);}
+.mci{font-size:28px;width:36px;text-align:center;}
+.mcp{font-family:'Bebas Neue';font-size:24px;color:#fff;line-height:1;}
+.mcc{font-size:10px;font-weight:700;margin-top:2px;}
+.mcq{font-size:9px;color:var(--muted);margin-top:3px;letter-spacing:1px;}
+.pbar-w{padding:0 12px 8px;}
+.pbar{height:4px;background:#0f0f20;border-radius:2px;overflow:hidden;position:relative;margin:4px 0;}
+.pbr{position:absolute;left:0;top:0;height:100%;background:linear-gradient(90deg,var(--dred),var(--red));transition:width .8s;}
+.pbb{position:absolute;right:0;top:0;height:100%;background:linear-gradient(270deg,#1a5276,var(--lblue));transition:width .8s;}
+.ppcts{display:flex;justify-content:space-between;font-size:10px;font-weight:700;}
+.odds-sec{padding:0 12px 12px;}
+.odds-lbl{font-size:8px;letter-spacing:2px;color:var(--dim);font-weight:700;margin:7px 0 4px;text-transform:uppercase;}
+.og{display:grid;gap:4px;}
+.og2{grid-template-columns:1fr 1fr;}
+.og3{grid-template-columns:1fr 1fr 1fr;}
+.odd{background:var(--panel2);border:1px solid var(--border2);border-radius:4px;padding:7px 5px;cursor:pointer;transition:all .15s;text-align:center;position:relative;overflow:hidden;}
+.odd::after{content:'';position:absolute;inset:0;background:rgba(255,255,255,.05);opacity:0;transition:opacity .15s;}
+.odd:hover::after{opacity:1;}
+.odd:hover{border-color:var(--gold);}
+.odd.sel{border-color:var(--gold);background:rgba(243,156,18,.07);box-shadow:0 0 10px rgba(243,156,18,.12);}
+.odd:active{transform:scale(.97);}
+.ol{font-size:9px;color:var(--muted);letter-spacing:.5px;margin-bottom:2px;}
+.ohc{font-size:9px;color:var(--lblue);font-weight:700;margin-bottom:2px;}
+.ov{font-family:'Bebas Neue';font-size:19px;color:var(--gold);}
+.ov.ou{animation:ofu .5s;}
+.ov.od{animation:ofd .5s;}
+@keyframes ofu{0%,100%{color:var(--gold)}50%{color:var(--lgreen);transform:scale(1.1)}}
+@keyframes ofd{0%,100%{color:var(--gold)}50%{color:var(--red);transform:scale(1.1)}}
+
+/* ── LEADERBOARD PAGE ── */
+.lb-page{padding:20px 16px;}
+.lb-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;}
+.lb-title{font-family:'Bebas Neue';font-size:28px;letter-spacing:4px;color:var(--gold);}
+.lb-period{display:flex;gap:5px;}
+.lbp{font-family:'Bebas Neue';font-size:11px;letter-spacing:1px;padding:5px 12px;
+  background:var(--panel);border:1px solid var(--border2);color:var(--muted);
+  cursor:pointer;border-radius:3px;transition:all .15s;}
+.lbp:hover,.lbp.a{background:rgba(243,156,18,.1);border-color:var(--gold);color:var(--gold);}
+
+/* TOP 3 PODIUM */
+.podium{display:flex;align-items:flex-end;justify-content:center;gap:12px;margin-bottom:24px;padding:20px 0;}
+.pod{text-align:center;position:relative;}
+.pod-1{order:2;}
+.pod-2{order:1;}
+.pod-3{order:3;}
+.pod-avatar{font-size:36px;margin-bottom:8px;position:relative;display:inline-block;}
+.pod-crown{position:absolute;top:-14px;left:50%;transform:translateX(-50%);font-size:20px;}
+.pod-name{font-family:'Bebas Neue';font-size:14px;letter-spacing:1px;margin-bottom:3px;}
+.pod-amount{font-family:'Bebas Neue';font-size:16px;color:var(--gold);}
+.pod-acc{font-size:10px;color:var(--muted);}
+.pod-block{border-radius:6px 6px 0 0;display:flex;align-items:center;justify-content:center;margin-top:10px;}
+.pod-1 .pod-block{height:80px;width:80px;background:linear-gradient(180deg,rgba(243,156,18,.3),rgba(243,156,18,.1));border:1px solid rgba(243,156,18,.4);}
+.pod-2 .pod-block{height:60px;width:72px;background:linear-gradient(180deg,rgba(192,192,192,.2),rgba(192,192,192,.05));border:1px solid rgba(192,192,192,.3);}
+.pod-3 .pod-block{height:45px;width:72px;background:linear-gradient(180deg,rgba(205,127,50,.2),rgba(205,127,50,.05));border:1px solid rgba(205,127,50,.3);}
+.pod-rank{font-family:'Bebas Neue';font-size:22px;}
+.pod-1 .pod-rank{color:var(--gold);}
+.pod-2 .pod-rank{color:#c0c0c0;}
+.pod-3 .pod-rank{color:#cd7f32;}
+
+/* LB TABLE */
+.lb-table{background:var(--panel);border:1px solid var(--border);border-radius:8px;overflow:hidden;}
+.lb-thead{display:grid;grid-template-columns:40px 1fr 80px 80px 80px;gap:0;
+  background:rgba(0,0,0,.3);border-bottom:1px solid var(--border);padding:8px 14px;}
+.lb-th{font-size:9px;letter-spacing:2px;color:var(--muted);font-weight:700;text-transform:uppercase;}
+.lb-row{display:grid;grid-template-columns:40px 1fr 80px 80px 80px;gap:0;
+  padding:10px 14px;border-bottom:1px solid var(--border);transition:background .15s;align-items:center;}
+.lb-row:last-child{border-bottom:none;}
+.lb-row:hover{background:rgba(255,255,255,.02);}
+.lb-row.me{background:rgba(243,156,18,.05);border-left:2px solid var(--gold);}
+.lb-rank{font-family:'Bebas Neue';font-size:16px;color:var(--muted);text-align:center;}
+.lb-rank.top1{color:var(--gold);}
+.lb-rank.top2{color:#c0c0c0;}
+.lb-rank.top3{color:#cd7f32;}
+.lb-user{display:flex;align-items:center;gap:8px;}
+.lb-avatar{font-size:20px;width:30px;text-align:center;}
+.lb-name{font-size:13px;letter-spacing:1px;}
+.lb-you{font-size:9px;color:var(--gold);background:rgba(243,156,18,.1);padding:1px 5px;border-radius:3px;margin-left:4px;}
+.lb-val{font-family:'Bebas Neue';font-size:14px;text-align:right;}
+.lb-acc{font-size:11px;text-align:right;}
+.lb-acc.good{color:var(--lgreen);}
+.lb-acc.avg{color:var(--gold);}
+.lb-acc.low{color:var(--muted);}
+
+/* ── TOURNAMENTS PAGE ── */
+.tour-page{padding:20px 16px;}
+.tour-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;}
+.tour-title{font-family:'Bebas Neue';font-size:28px;letter-spacing:4px;color:var(--red);}
+
+/* ACTIVE TOURNAMENT CARD */
+.tour-featured{background:linear-gradient(135deg,rgba(192,57,43,.15),rgba(192,57,43,.05));
+  border:1px solid rgba(231,76,60,.3);border-radius:10px;overflow:hidden;margin-bottom:16px;}
+.tour-banner{background:linear-gradient(135deg,var(--dred),var(--blood));
+  padding:16px 20px;display:flex;align-items:center;justify-content:space-between;}
+.tour-banner-title{font-family:'Bebas Neue';font-size:24px;letter-spacing:3px;color:#fff;}
+.tour-banner-prize{font-family:'Bebas Neue';font-size:32px;color:var(--gold);}
+.tour-banner-lbl{font-size:9px;letter-spacing:2px;color:rgba(255,255,255,.5);}
+.tour-body{padding:16px 20px;}
+.tour-meta{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:16px;}
+.tour-meta-item{text-align:center;padding:10px;background:rgba(0,0,0,.2);border-radius:5px;border:1px solid var(--border2);}
+.tmv{font-family:'Bebas Neue';font-size:20px;color:var(--gold);}
+.tml{font-size:9px;letter-spacing:1px;color:var(--muted);}
+
+/* BRACKET PREVIEW */
+.bracket{background:rgba(0,0,0,.2);border:1px solid var(--border);border-radius:6px;padding:14px;margin-bottom:14px;}
+.bracket-title{font-size:10px;letter-spacing:3px;color:var(--muted);margin-bottom:10px;font-weight:700;}
+.bracket-row{display:flex;gap:8px;margin-bottom:8px;align-items:center;}
+.bslot{background:var(--panel2);border:1px solid var(--border2);border-radius:4px;
+  padding:5px 10px;font-size:11px;flex:1;display:flex;align-items:center;gap:6px;
+  transition:border-color .2s;}
+.bslot.active{border-color:var(--gold);}
+.bslot.winner{border-color:var(--lgreen);background:rgba(39,174,96,.08);}
+.bslot.loser{opacity:.4;}
+.bslot-rank{font-size:8px;color:var(--muted);width:16px;}
+.bslot-name{flex:1;}
+.bslot-score{font-family:'Bebas Neue';font-size:13px;color:var(--gold);}
+.bvs{font-family:'Bebas Neue';font-size:12px;color:var(--dim);padding:0 4px;}
+
+.tour-join-btn{width:100%;padding:13px;font-family:'Bebas Neue';font-size:18px;letter-spacing:3px;
+  background:linear-gradient(135deg,var(--dred),var(--blood));color:#fff;border:none;cursor:pointer;
+  border-radius:5px;transition:all .2s;box-shadow:0 4px 18px rgba(192,57,43,.3);}
+.tour-join-btn:hover{transform:translateY(-2px);box-shadow:0 8px 28px rgba(192,57,43,.5);}
+
+/* UPCOMING TOURNAMENTS */
+.tour-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px;}
+.tour-card{background:var(--panel);border:1px solid var(--border);border-radius:8px;
+  overflow:hidden;transition:all .2s;}
+.tour-card:hover{border-color:rgba(243,156,18,.2);transform:translateY(-2px);}
+.tc-top{padding:12px 14px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;}
+.tc-name{font-family:'Bebas Neue';font-size:16px;letter-spacing:2px;}
+.tc-status{font-size:8px;padding:2px 7px;border-radius:3px;letter-spacing:1px;font-weight:700;}
+.tc-open{background:rgba(39,174,96,.15);color:var(--lgreen);border:1px solid rgba(39,174,96,.3);}
+.tc-soon{background:rgba(243,156,18,.1);color:var(--gold);border:1px solid rgba(243,156,18,.25);}
+.tc-body{padding:12px 14px;}
+.tc-prize{font-family:'Bebas Neue';font-size:24px;color:var(--gold);margin-bottom:8px;}
+.tc-meta{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:12px;}
+.tc-m{font-size:11px;color:var(--muted);}
+.tc-m span{color:var(--text);font-weight:700;}
+.tc-btn{width:100%;padding:9px;font-family:'Bebas Neue';font-size:14px;letter-spacing:2px;
+  background:var(--panel2);border:1px solid var(--border2);color:var(--text);cursor:pointer;
+  border-radius:4px;transition:all .2s;}
+.tc-btn:hover{border-color:var(--blood);background:rgba(192,57,43,.1);}
+
+/* ── RANK PAGE ── */
+.rank-page{padding:20px 16px;}
+.my-rank-card{background:linear-gradient(135deg,rgba(243,156,18,.12),rgba(243,156,18,.04));
+  border:1px solid rgba(243,156,18,.25);border-radius:10px;padding:20px;margin-bottom:20px;
+  display:flex;align-items:center;gap:16px;}
+.mrc-left{text-align:center;}
+.mrc-icon{font-size:52px;display:block;margin-bottom:5px;}
+.mrc-rank{font-family:'Bebas Neue';font-size:22px;letter-spacing:2px;}
+.mrc-right{flex:1;}
+.mrc-name{font-family:'Bebas Neue';font-size:18px;letter-spacing:2px;margin-bottom:8px;}
+.mrc-progress{margin-bottom:6px;}
+.mrc-prog-lbl{display:flex;justify-content:space-between;font-size:9px;color:var(--muted);margin-bottom:3px;letter-spacing:1px;}
+.prog-track{height:8px;background:rgba(0,0,0,.3);border-radius:4px;overflow:hidden;border:1px solid var(--border2);}
+.prog-fill{height:100%;border-radius:4px;transition:width .6s ease;}
+.mrc-stats{display:flex;gap:16px;}
+.mrc-stat{text-align:center;}
+.mrc-sv{font-family:'Bebas Neue';font-size:18px;color:var(--gold);}
+.mrc-sl{font-size:8px;color:var(--muted);letter-spacing:1px;}
+
+/* RANK TIERS */
+.rank-tiers{background:var(--panel);border:1px solid var(--border);border-radius:8px;overflow:hidden;margin-bottom:20px;}
+.rt-hdr{background:rgba(0,0,0,.3);padding:10px 16px;font-size:10px;letter-spacing:3px;color:var(--muted);font-weight:700;}
+.rt-row{display:flex;align-items:center;gap:12px;padding:12px 16px;border-bottom:1px solid var(--border);transition:background .15s;}
+.rt-row:last-child{border-bottom:none;}
+.rt-row:hover{background:rgba(255,255,255,.02);}
+.rt-row.current{background:rgba(243,156,18,.05);border-left:3px solid var(--gold);}
+.rt-icon{font-size:28px;width:36px;text-align:center;}
+.rt-info{flex:1;}
+.rt-name{font-family:'Bebas Neue';font-size:16px;letter-spacing:2px;}
+.rt-req{font-size:10px;color:var(--muted);margin-top:2px;}
+.rt-perks{display:flex;gap:5px;flex-wrap:wrap;margin-top:5px;}
+.rt-perk{font-size:9px;padding:2px 6px;background:rgba(255,255,255,.05);border:1px solid var(--border2);border-radius:3px;color:var(--text);}
+.rt-bonus{font-family:'Bebas Neue';font-size:14px;text-align:right;}
+
+/* RANK HISTORY */
+.rank-hist{background:var(--panel);border:1px solid var(--border);border-radius:8px;overflow:hidden;}
+.rh-hdr{background:rgba(0,0,0,.3);padding:10px 16px;font-size:10px;letter-spacing:3px;color:var(--muted);font-weight:700;}
+.rh-row{display:flex;align-items:center;gap:10px;padding:9px 16px;border-bottom:1px solid var(--border);}
+.rh-row:last-child{border-bottom:none;}
+.rh-icon{font-size:16px;width:22px;text-align:center;}
+.rh-info{flex:1;}
+.rh-match{font-size:12px;}
+.rh-time{font-size:9px;color:var(--muted);margin-top:1px;}
+.rh-result{font-family:'Bebas Neue';font-size:14px;}
+.rh-w{color:var(--lgreen);}
+.rh-l{color:var(--red);}
+.rh-pts{font-size:10px;color:var(--muted);}
+
+/* ── SLIP FAB ── */
+.sfab{position:fixed;bottom:22px;right:22px;z-index:300;
+  background:linear-gradient(135deg,var(--dred),var(--blood));
+  width:52px;height:52px;border-radius:50%;border:none;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;font-size:20px;
+  box-shadow:0 4px 20px rgba(192,57,43,.5);transition:all .2s;}
+.sfab:hover{transform:scale(1.1);}
+.sfab-ct{position:absolute;top:-4px;right:-4px;background:var(--gold);color:#111;
+  border-radius:50%;width:18px;height:18px;font-family:'Bebas Neue';font-size:11px;
+  display:flex;align-items:center;justify-content:center;}
+
+/* SLIP PANEL */
+.slip{position:fixed;bottom:84px;right:22px;z-index:300;width:300px;
+  background:var(--panel2);border:1px solid var(--border2);border-radius:10px;
+  box-shadow:0 16px 50px rgba(0,0,0,.85);display:none;overflow:hidden;}
+.slip.open{display:block;animation:sli .2s ease;}
+@keyframes sli{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.slip-hdr{background:linear-gradient(135deg,var(--dred),var(--blood));padding:10px 13px;display:flex;align-items:center;justify-content:space-between;}
+.slip-ttl{font-family:'Bebas Neue';font-size:15px;letter-spacing:2px;color:#fff;}
+.slip-x{color:rgba(255,255,255,.5);cursor:pointer;font-size:16px;}
+.slip-x:hover{color:#fff;}
+.slip-body{padding:10px;max-height:260px;overflow-y:auto;}
+.slip-empty{font-size:11px;color:var(--muted);text-align:center;padding:12px;letter-spacing:1px;}
+.si{display:flex;align-items:center;gap:6px;padding:6px 8px;background:rgba(0,0,0,.2);border:1px solid var(--border);border-radius:5px;margin-bottom:4px;}
+.si-i{font-size:14px;width:18px;text-align:center;}
+.si-d{flex:1;min-width:0;}
+.si-m{font-size:10px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.si-s{font-size:9px;color:var(--gold);font-weight:700;margin-top:1px;}
+.si-o{font-family:'Bebas Neue';font-size:15px;color:var(--gold);}
+.si-r{color:var(--muted);cursor:pointer;font-size:13px;}
+.si-r:hover{color:var(--red);}
+.slip-foot{padding:10px;border-top:1px solid var(--border);}
+.stots{display:flex;justify-content:space-between;margin-bottom:8px;}
+.stot{text-align:center;}
+.stl{font-size:8px;color:var(--muted);letter-spacing:1px;}
+.stv{font-family:'Bebas Neue';font-size:15px;}
+.sinp{width:100%;background:rgba(0,0,0,.2);border:1px solid var(--border2);color:var(--text);
+  padding:8px 10px;border-radius:4px;font-family:'Bebas Neue';font-size:15px;letter-spacing:1px;margin-bottom:6px;}
+.sinp:focus{outline:none;border-color:var(--gold);}
+.sqrow{display:flex;gap:4px;margin-bottom:7px;}
+.sq{flex:1;font-family:'Bebas Neue';font-size:10px;letter-spacing:1px;padding:5px 2px;
+  background:rgba(0,0,0,.2);border:1px solid var(--border2);color:var(--muted);
+  cursor:pointer;border-radius:3px;text-align:center;transition:all .15s;}
+.sq:hover{border-color:var(--blood);color:#fff;}
+.pbtn{width:100%;padding:11px;font-family:'Bebas Neue';font-size:15px;letter-spacing:3px;
+  background:linear-gradient(135deg,var(--dred),var(--blood));color:#fff;border:none;
+  cursor:pointer;border-radius:5px;transition:all .2s;}
+.pbtn:hover{background:linear-gradient(135deg,var(--blood),var(--red));}
+.pbtn:disabled{opacity:.3;cursor:not-allowed;}
+
+/* MODAL */
+.mbg{position:fixed;inset:0;z-index:500;background:rgba(0,0,0,.87);backdrop-filter:blur(10px);display:none;align-items:center;justify-content:center;}
+.mbg.open{display:flex;}
+.modal{background:var(--panel);border:1px solid var(--border2);border-radius:12px;padding:28px;max-width:360px;width:90%;text-align:center;position:relative;animation:mi .3s ease;}
+@keyframes mi{from{opacity:0;transform:scale(.94)}to{opacity:1;transform:scale(1)}}
+.mclose{position:absolute;top:12px;right:12px;color:var(--muted);cursor:pointer;font-size:17px;}
+.mclose:hover{color:#fff;}
+.micon{font-size:44px;margin-bottom:9px;}
+.mtitle{font-family:'Bebas Neue';font-size:26px;letter-spacing:3px;color:#fff;margin-bottom:6px;}
+.msub{font-size:12px;color:var(--muted);margin-bottom:20px;line-height:1.6;}
+.maddr{background:rgba(0,0,0,.3);border:1px solid var(--border2);border-radius:5px;padding:8px 12px;font-family:'Bebas Neue';font-size:12px;color:var(--gold);letter-spacing:2px;margin-bottom:12px;word-break:break-all;}
+.mbal{font-family:'Bebas Neue';font-size:30px;color:var(--lgreen);}
+.mball{font-size:9px;letter-spacing:3px;color:var(--muted);margin-bottom:3px;}
+.mbtn{width:100%;padding:12px;font-family:'Bebas Neue';font-size:15px;letter-spacing:3px;background:linear-gradient(135deg,var(--dred),var(--blood));color:#fff;border:none;cursor:pointer;border-radius:5px;transition:all .2s;margin-top:12px;}
+.mbtn:hover{background:linear-gradient(135deg,var(--blood),var(--red));}
+
+/* WIN POP */
+.wpop{position:fixed;inset:0;z-index:700;background:rgba(0,0,0,.93);display:none;align-items:center;justify-content:center;flex-direction:column;}
+.wpop.show{display:flex;animation:wpi .3s ease;}
+@keyframes wpi{from{opacity:0}to{opacity:1}}
+.wicon{font-size:68px;animation:wb .5s ease;}
+@keyframes wb{0%{transform:scale(0)}60%{transform:scale(1.2)}100%{transform:scale(1)}}
+.wtitle{font-family:'Bebas Neue';font-size:48px;color:var(--gold);letter-spacing:6px;margin:6px 0;}
+.wearn{font-family:'Bebas Neue';font-size:24px;color:var(--lgreen);margin-bottom:8px;}
+.wpts{font-size:14px;color:var(--muted);margin-bottom:20px;letter-spacing:2px;}
+.wclose{font-family:'Bebas Neue';font-size:14px;letter-spacing:3px;padding:10px 26px;background:var(--blood);color:#fff;border:none;cursor:pointer;border-radius:5px;}
+
+/* NOTIF */
+.notif{position:fixed;top:16px;right:16px;z-index:600;background:var(--panel2);border:1px solid var(--gold);border-radius:8px;padding:10px 15px;max-width:260px;box-shadow:0 8px 28px rgba(0,0,0,.7);animation:noti .3s ease;}
+@keyframes noti{from{opacity:0;transform:translateX(20px)}to{opacity:1;transform:translateX(0)}}
+.nt{font-family:'Bebas Neue';font-size:13px;color:var(--gold);letter-spacing:2px;margin-bottom:2px;}
+.nm{font-size:10px;color:#aaa;line-height:1.4;}
+
+@media(max-width:640px){
+  .tnav{display:none;}
+  .mgrid{grid-template-columns:1fr;}
+  .tour-grid{grid-template-columns:1fr;}
+  .podium{gap:6px;}
+  .slip{width:calc(100vw - 28px);right:14px;}
+  .lb-thead,.lb-row{grid-template-columns:36px 1fr 70px 70px;}
+  .lb-thead .lb-th:last-child,.lb-row .lb-acc:last-child{display:none;}
+}
+</style>
+</head>
+<body>
+
+<!-- ── TOPBAR ── -->
+<div class="topbar">
+  <div class="brand"><span class="bname">QUFC</span><span class="btag">ARENA</span></div>
+  <div class="tnav">
+    <div class="tnl a" onclick="showPage('markets',this)">🔥 Markets</div>
+    <div class="tnl" onclick="showPage('leaderboard',this)">🏆 Leaderboard</div>
+    <div class="tnl" onclick="showPage('tournaments',this)">⚔️ Tournaments <span class="ptab-badge">LIVE</span></div>
+    <div class="tnl" onclick="showPage('ranks',this)">🎖️ My Rank</div>
+  </div>
+  <div class="top-r">
+    <div class="rank-badge" id="rankBadge" style="display:none"></div>
+    <span class="bal-chip" id="balChip"></span>
+    <button class="cbtn" id="cbtn" onclick="openModal()">⚡ Connect</button>
+  </div>
+</div>
+
+<!-- ── TICKER ── -->
+<div class="ticker-bar">
+  <div class="ticker-rel" style="position:relative;">
+    <div class="tlbl">LIVE</div>
+    <div class="tfade"></div>
+    <div class="tinner" id="ticker">Fetching prices...</div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════ -->
+<!-- PAGE: MARKETS                           -->
+<!-- ════════════════════════════════════════ -->
+<div class="page active" id="page-markets">
+  <div class="hero">
+    <div class="hbg"></div><div class="hgrid"></div><div class="oct"></div>
+    <div class="hcontent">
+      <div class="eyebrow">⚡ BUILT ON QUBIC NETWORK</div>
+      <div class="htitle">QUFC ARENA</div>
+      <div class="hsub">ENTER THE OCTAGON · PREDICT · EARN · DOMINATE</div>
+      <div class="spills">
+        <div class="spill">⚽ FOOTBALL</div>
+        <div class="spill">🏀 BASKETBALL</div>
+        <div class="spill">🥊 MMA · MUAY THAI</div>
+        <div class="spill">📈 CRYPTO PRICE</div>
+        <div class="spill">🎮 ESPORT</div>
+        <div class="spill">🎲 INSTANT FLIP</div>
+      </div>
+      <div class="hstats">
+        <div class="hs"><div class="hs-v" id="hs1">—</div><div class="hs-l">Live</div></div>
+        <div class="hs"><div class="hs-v" id="hs2">—</div><div class="hs-l">QUFC Pools</div></div>
+        <div class="hs"><div class="hs-v" id="hs3">—</div><div class="hs-l">Predictors</div></div>
+        <div class="hs"><div class="hs-v">5%</div><div class="hs-l">Arena Fee</div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="mkts-section">
+    <div class="cat-row">
+      <div class="ctab a" onclick="setCat('all',this)">🔥 All <span class="cn" id="ct-all">—</span></div>
+      <div class="ctab" onclick="setCat('soccer',this)">⚽ Football <span class="cn" id="ct-soccer">—</span></div>
+      <div class="ctab" onclick="setCat('basketball',this)">🏀 Basketball <span class="cn" id="ct-basketball">—</span></div>
+      <div class="ctab" onclick="setCat('mma',this)">🥊 MMA <span class="cn" id="ct-mma">—</span></div>
+      <div class="ctab" onclick="setCat('crypto',this)">📈 Crypto <span class="cn" id="ct-crypto">—</span></div>
+      <div class="ctab" onclick="setCat('esport',this)">🎮 Esport <span class="cn" id="ct-esport">—</span></div>
+    </div>
+    <div class="mgrid" id="mgrid"></div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════ -->
+<!-- PAGE: LEADERBOARD                       -->
+<!-- ════════════════════════════════════════ -->
+<div class="page" id="page-leaderboard">
+  <div class="lb-page">
+    <div class="lb-hdr">
+      <div class="lb-title">🏆 Leaderboard</div>
+      <div class="lb-period">
+        <div class="lbp a" onclick="setLbPeriod('week',this)">This Week</div>
+        <div class="lbp" onclick="setLbPeriod('month',this)">This Month</div>
+        <div class="lbp" onclick="setLbPeriod('all',this)">All Time</div>
+      </div>
+    </div>
+
+    <!-- PODIUM -->
+    <div class="podium" id="podium"></div>
+
+    <!-- TABLE -->
+    <div class="lb-table">
+      <div class="lb-thead">
+        <div class="lb-th">#</div>
+        <div class="lb-th">PREDICTOR</div>
+        <div class="lb-th" style="text-align:right">EARNED</div>
+        <div class="lb-th" style="text-align:right">WIN RATE</div>
+        <div class="lb-th" style="text-align:right">PREDICTIONS</div>
+      </div>
+      <div id="lbRows"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════ -->
+<!-- PAGE: TOURNAMENTS                       -->
+<!-- ════════════════════════════════════════ -->
+<div class="page" id="page-tournaments">
+  <div class="tour-page">
+    <div class="tour-hdr">
+      <div class="tour-title">⚔️ Arena Tournaments</div>
+    </div>
+
+    <!-- FEATURED TOURNAMENT -->
+    <div class="tour-featured">
+      <div class="tour-banner">
+        <div>
+          <div style="font-size:9px;letter-spacing:3px;color:rgba(255,255,255,.5);margin-bottom:3px;">🔴 LIVE NOW</div>
+          <div class="tour-banner-title">⚔️ WEEKLY OCTAGON CUP</div>
+          <div style="font-size:11px;color:rgba(255,255,255,.5);letter-spacing:2px;">16-Player Single Elimination</div>
+        </div>
+        <div style="text-align:right">
+          <div class="tour-banner-lbl">PRIZE POOL</div>
+          <div class="tour-banner-prize">50,000 QUFC</div>
+        </div>
+      </div>
+      <div class="tour-body">
+        <div class="tour-meta">
+          <div class="tour-meta-item"><div class="tmv">16</div><div class="tml">PLAYERS</div></div>
+          <div class="tour-meta-item"><div class="tmv">12</div><div class="tml">JOINED</div></div>
+          <div class="tour-meta-item"><div class="tmv">500</div><div class="tml">ENTRY (QUFC)</div></div>
+          <div class="tour-meta-item"><div class="tmv" id="tourTimer">02:14:33</div><div class="tml">CLOSES</div></div>
+        </div>
+
+        <!-- BRACKET -->
+        <div class="bracket">
+          <div class="bracket-title">▸ CURRENT BRACKET — QUARTERFINALS</div>
+          <div id="bracketEl"></div>
+        </div>
+
+        <button class="tour-join-btn" onclick="joinTournament()">
+          ⚔️ JOIN TOURNAMENT — 500 QUFC ENTRY
+        </button>
+      </div>
+    </div>
+
+    <!-- UPCOMING -->
+    <div style="font-size:10px;letter-spacing:3px;color:var(--muted);margin-bottom:12px;font-weight:700;">UPCOMING TOURNAMENTS</div>
+    <div class="tour-grid" id="tourGrid"></div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════ -->
+<!-- PAGE: RANK                              -->
+<!-- ════════════════════════════════════════ -->
+<div class="page" id="page-ranks">
+  <div class="rank-page">
+    <div style="font-family:'Bebas Neue';font-size:28px;letter-spacing:4px;color:var(--gold);margin-bottom:16px;">🎖️ Rank System</div>
+
+    <!-- MY RANK CARD -->
+    <div class="my-rank-card" id="myRankCard">
+      <div class="mrc-left">
+        <span class="mrc-icon" id="myRankIcon">🥉</span>
+        <div class="mrc-rank" id="myRankName" style="color:var(--gold)">BRONZE</div>
+      </div>
+      <div class="mrc-right">
+        <div class="mrc-name" id="myRankWallet">Connect wallet to see your rank</div>
+        <div class="mrc-progress">
+          <div class="mrc-prog-lbl">
+            <span id="progFrom">Bronze</span>
+            <span id="progTo">Silver · 245 pts needed</span>
+          </div>
+          <div class="prog-track">
+            <div class="prog-fill" id="progFill" style="width:35%;background:linear-gradient(90deg,#cd7f32,var(--gold))"></div>
+          </div>
+        </div>
+        <div class="mrc-stats">
+          <div class="mrc-stat"><div class="mrc-sv" id="myPts">0</div><div class="mrc-sl">POINTS</div></div>
+          <div class="mrc-stat"><div class="mrc-sv" id="myWins">0</div><div class="mrc-sl">WINS</div></div>
+          <div class="mrc-stat"><div class="mrc-sv" id="myAcc">—</div><div class="mrc-sl">ACCURACY</div></div>
+          <div class="mrc-stat"><div class="mrc-sv" id="myStreak">0</div><div class="mrc-sl">STREAK 🔥</div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- RANK TIERS -->
+    <div class="rank-tiers">
+      <div class="rt-hdr">ALL RANK TIERS</div>
+      <div id="rankTiers"></div>
+    </div>
+
+    <div style="margin-top:16px;">
+      <div class="rank-hist">
+        <div class="rh-hdr">RECENT PREDICTIONS</div>
+        <div id="rankHist"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- BET SLIP FAB -->
+<button class="sfab" onclick="toggleSlip()">🎯<span class="sfab-ct" id="fabct">0</span></button>
+
+<!-- SLIP -->
+<div class="slip" id="slipEl">
+  <div class="slip-hdr"><span class="slip-ttl">🎯 PREDICTION SLIP</span><span class="slip-x" onclick="toggleSlip()">✕</span></div>
+  <div class="slip-body" id="slipBody"><div class="slip-empty">Select a market to predict</div></div>
+  <div class="slip-foot" id="slipFoot" style="display:none">
+    <div class="stots">
+      <div class="stot"><div class="stl">MULTIPLIER</div><div class="stv" id="stOdds" style="color:var(--gold)">—</div></div>
+      <div class="stot"><div class="stl">STAKE</div><div class="stv" id="stStake">0</div></div>
+      <div class="stot"><div class="stl">MAX EARN</div><div class="stv" id="stPay" style="color:var(--lgreen)">0</div></div>
+    </div>
+    <input class="sinp" id="stakeIn" type="number" placeholder="Amount in QUFC" value="500" oninput="updateSlip()">
+    <div class="sqrow">
+      <div class="sq" onclick="addS(200)">+200</div>
+      <div class="sq" onclick="addS(500)">+500</div>
+      <div class="sq" onclick="setS(1000)">1K</div>
+      <div class="sq" onclick="setS(5000)">5K</div>
+    </div>
+    <button class="pbtn" id="pbtn" onclick="confirmPred()" disabled>CONFIRM PREDICTION</button>
+  </div>
+</div>
+
+<!-- MODAL -->
+<div class="mbg" id="mbg" onclick="if(event.target===this)closeModal()">
+  <div class="modal">
+    <span class="mclose" onclick="closeModal()">✕</span>
+    <div id="mcontent">
+      <div class="micon">⚡</div>
+      <div class="mtitle">Connect Wallet</div>
+      <div class="msub">Connect your Qubic wallet to enter QUFC Arena and start predicting</div>
+      <button class="mbtn" onclick="doConnect()">🔗 CONNECT QUBIC WALLET</button>
+      <div style="font-size:10px;color:var(--muted);margin-top:10px;">
+        Don't have $QUFC? <a href="https://qubictrade.com/trade" target="_blank" style="color:var(--gold)">Buy on QubicTrade →</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- WIN POP -->
+<div class="wpop" id="wpop">
+  <div class="wicon">🏆</div>
+  <div class="wtitle">PREDICTION PLACED!</div>
+  <div class="wearn" id="wearn"></div>
+  <div class="wpts" id="wpts"></div>
+  <button class="wclose" onclick="document.getElementById('wpop').classList.remove('show')">CONTINUE</button>
+</div>
+
+<!-- NOTIF -->
+<div class="notif" id="notif" style="display:none">
+  <div class="nt" id="nt"></div>
+  <div class="nm" id="nm"></div>
+</div>
+
+<script>
+// ════════════════════════════════════════════════════════
+// STATE
+// ════════════════════════════════════════════════════════
+const S = {
+  connected:false, balance:50000, wallet:'BRTDI....FLHFB',
+  cat:'all', slip:[], prices:{}, pools:{}, allMatches:[],
+  myPoints:755, myWins:42, myTotal:58, myStreak:5,
+  lbPeriod:'week',
+};
+
+// RANKS
+const RANKS = [
+  {name:'Rookie',    icon:'⚪', color:'#aaaaaa', min:0,    max:199,   bonus:'+0%',   perks:['Basic markets','Standard odds']},
+  {name:'Bronze',    icon:'🥉', color:'#cd7f32', min:200,  max:499,   bonus:'+2%',   perks:['All markets','2% bonus earnings']},
+  {name:'Silver',    icon:'🥈', color:'#c0c0c0', min:500,  max:999,   bonus:'+5%',   perks:['Early access','5% bonus','Special markets']},
+  {name:'Gold',      icon:'🥇', color:'#f39c12', min:1000, max:2499,  bonus:'+10%',  perks:['VIP markets','10% bonus','Priority support']},
+  {name:'Platinum',  icon:'💎', color:'#a8dadc', min:2500, max:4999,  bonus:'+15%',  perks:['Exclusive markets','15% bonus','Tournament seed']},
+  {name:'Champion',  icon:'🏆', color:'#e74c3c', min:5000, max:99999, bonus:'+25%',  perks:['All access','25% bonus','Custom arena','Free entries']},
+];
+
+function getMyRank(){return RANKS.find(r=>S.myPoints>=r.min&&S.myPoints<=r.max)||RANKS[0];}
+
+// LB DATA
+const LB_DATA = {
+  week:[
+    {name:'CryptoKing#1234',emoji:'👑',earned:'124,500',acc:78,preds:64},
+    {name:'QubicWhale',emoji:'🐋',earned:'98,200',acc:72,preds:51},
+    {name:'FightFanatic',emoji:'🥊',earned:'76,800',acc:69,preds:48},
+    {name:'OctagonBet',emoji:'🎯',earned:'54,100',acc:65,preds:42},
+    {name:'DragonVoter',emoji:'🐉',earned:'41,500',acc:61,preds:38},
+    {name:'ArenaKing',emoji:'⚔️',earned:'38,200',acc:58,preds:35},
+    {name:'PredictPro',emoji:'📊',earned:'31,900',acc:55,preds:32},
+    {name:'You',emoji:'⚡',earned:'28,400',acc:72,preds:58,isMe:true},
+    {name:'NFTHunter',emoji:'🎨',earned:'22,100',acc:51,preds:28},
+    {name:'BlockchainBro',emoji:'⛓️',earned:'18,700',acc:48,preds:25},
+  ],
+  month:[
+    {name:'QubicWhale',emoji:'🐋',earned:'412,000',acc:74,preds:198},
+    {name:'CryptoKing#1234',emoji:'👑',earned:'389,500',acc:71,preds:182},
+    {name:'You',emoji:'⚡',earned:'182,400',acc:72,preds:58,isMe:true},
+  ],
+  all:[
+    {name:'QubicWhale',emoji:'🐋',earned:'2.4M',acc:76,preds:890},
+    {name:'CryptoKing#1234',emoji:'👑',earned:'1.8M',acc:69,preds:720},
+    {name:'You',emoji:'⚡',earned:'755K',acc:72,preds:58,isMe:true},
+  ],
+};
+
+// TOURNAMENTS
+const TOURS = [
+  {name:'DAILY ARENA',status:'open',prize:'10,000 QUFC',entry:'100',players:'8/16',starts:'00:45:00',cat:'⚽ Football'},
+  {name:'CRYPTO CUP',status:'open',prize:'20,000 QUFC',entry:'200',players:'5/16',starts:'03:20:00',cat:'📈 Crypto'},
+  {name:'GRAND OCTAGON',status:'soon',prize:'100,000 QUFC',entry:'1,000',players:'0/32',starts:'48:00:00',cat:'🔥 All Sports'},
+  {name:'MMA SHOWDOWN',status:'soon',prize:'30,000 QUFC',entry:'300',players:'0/16',starts:'24:00:00',cat:'🥊 MMA'},
+];
+
+const BRACKET_DATA = [
+  {p1:'CryptoKing',p2:'ArenaKing',s1:3,s2:1,done:true},
+  {p1:'QubicWhale',p2:'FightFan',s1:2,s2:3,done:true},
+  {p1:'You',p2:'DragonVoter',s1:null,s2:null,done:false},
+  {p1:'NFTHunter',p2:'PredictPro',s1:null,s2:null,done:false},
+];
+
+// HISTORY
+const HIST_DATA = [
+  {icon:'⚽',match:'Man Utd vs Liverpool',pred:'Man Utd Win',result:'win',pts:'+12 pts',time:'2h ago'},
+  {icon:'📈',match:'BTC Price Prediction',pred:'Higher',result:'win',pts:'+8 pts',time:'4h ago'},
+  {icon:'🥊',match:'Rodtang vs DJ',pred:'Rodtang Win',result:'win',pts:'+10 pts',time:'6h ago'},
+  {icon:'🏀',match:'Lakers vs Celtics',pred:'Over 220.5',result:'lose',pts:'-5 pts',time:'8h ago'},
+  {icon:'⚽',match:'Barcelona vs Real Madrid',pred:'Barcelona',result:'win',pts:'+15 pts',time:'1d ago'},
+  {icon:'🎮',match:'T1 vs G2 Esports',pred:'T1 Win',result:'win',pts:'+10 pts',time:'1d ago'},
+];
+
+// MATCH DATA
+const MD = [
+  {id:'s1',cat:'soccer',feat:true,live:true,league:'🏴󠁧󠁢󠁥󠁮󠁧󠁿 Premier League',time:"45'+2",
+   ri:'🔴',bi:'🔵',rn:'Man United',bn:'Liverpool',rs:'W W D L W',bs:'W D W W L',
+   rp:220000,bp:310000,reward:'25,000 QUFC',
+   mkt:{'1X2':{h:{l:'Man United',o:2.85},d:{l:'Draw',o:3.40},a:{l:'Liverpool',o:2.20}},
+        'Handicap':{h:{l:'Man Utd +0.5',hc:'+0.5',o:1.85},a:{l:'Liverpool -0.5',hc:'-0.5',o:1.90}},
+        'Over/Under':{ov:{l:'Over 2.5',o:1.80},un:{l:'Under 2.5',o:1.95}}}},
+  {id:'s2',cat:'soccer',live:false,league:'🇪🇸 La Liga',time:'20:45',
+   ri:'🔴',bi:'🔵',rn:'Barcelona',bn:'Real Madrid',rs:'W W W D W',bs:'W W L W W',
+   rp:480000,bp:390000,reward:'50,000 QUFC',
+   mkt:{'1X2':{h:{l:'Barcelona',o:2.10},d:{l:'Draw',o:3.60},a:{l:'Real Madrid',o:2.75}},
+        'Over/Under':{ov:{l:'Over 2.5',o:1.78},un:{l:'Under 2.5',o:1.98}}}},
+  {id:'s3',cat:'soccer',live:false,league:'🇩🇪 Bundesliga',time:'21:30',
+   ri:'🔴',bi:'🔵',rn:'Bayern Munich',bn:'Dortmund',rs:'W W W W D',bs:'L W W D W',
+   rp:180000,bp:140000,reward:'18,000 QUFC',
+   mkt:{'1X2':{h:{l:'Bayern',o:1.65},d:{l:'Draw',o:4.00},a:{l:'Dortmund',o:4.50}}}},
+  {id:'b1',cat:'basketball',live:true,league:'🇺🇸 NBA',time:'Q3 · 8:24',
+   ri:'🟡',bi:'⚫',rn:'LA Lakers',bn:'Boston Celtics',rs:'98 pts',bs:'94 pts',
+   rp:160000,bp:200000,reward:'20,000 QUFC',
+   mkt:{'Handicap':{h:{l:'Lakers +5.5',hc:'+5.5',o:1.85},a:{l:'Celtics -5.5',hc:'-5.5',o:1.90}},
+        'Moneyline':{h:{l:'Lakers Win',o:2.40},a:{l:'Celtics Win',o:1.62}}}},
+  {id:'b2',cat:'basketball',live:false,league:'🇺🇸 NBA',time:'22:00',
+   ri:'🔵',bi:'🔴',rn:'Golden State',bn:'Miami Heat',rs:'',bs:'',
+   rp:90000,bp:110000,reward:'12,000 QUFC',
+   mkt:{'Moneyline':{h:{l:'Warriors Win',o:1.70},a:{l:'Heat Win',o:2.20}}}},
+  {id:'m1',cat:'mma',feat:true,live:true,league:'🥊 ONE Championship',time:'Round 2',
+   ri:'🇹🇭',bi:'🇧🇷',rn:'Rodtang',bn:'Demetrious J.',rs:'14W 1L · Muay Thai',bs:'31W 4L · MMA',
+   rp:95000,bp:72000,reward:'10,000 QUFC',
+   mkt:{'Winner':{h:{l:'Rodtang Win',o:1.65},a:{l:'DJ Win',o:2.30}},
+        'Method':{ko:{l:'KO/TKO',o:2.10},sub:{l:'Submission',o:4.50},dec:{l:'Decision',o:2.80}}}},
+  {id:'m2',cat:'mma',live:false,league:'🥊 UFC Fight Night',time:'23:00',
+   ri:'🇮🇪',bi:'🇺🇸',rn:'McGregor',bn:'Poirier',rs:'22W 6L',bs:'30W 8L',
+   rp:130000,bp:160000,reward:'15,000 QUFC',
+   mkt:{'Winner':{h:{l:'McGregor Win',o:2.50},a:{l:'Poirier Win',o:1.60}}}},
+  {id:'e1',cat:'esport',live:true,league:'🎮 LoL Worlds 2025',time:'Map 2',
+   ri:'🇰🇷',bi:'🇪🇺',rn:'T1',bn:'G2 Esports',rs:'Series 1-0',bs:'Must win',
+   rp:160000,bp:95000,reward:'15,000 QUFC',
+   mkt:{'Winner':{h:{l:'T1 Win',o:1.55},a:{l:'G2 Win',o:2.50}},
+        'Map Handicap':{h:{l:'T1 -1.5',hc:'-1.5',o:2.10},a:{l:'G2 +1.5',hc:'+1.5',o:1.75}}}},
+];
+
+// ════════════════════════════════════════════════════════
+// COINGECKO
+// ════════════════════════════════════════════════════════
+async function loadPrices(){
+  try{
+    const r=await fetch('https://api.coingecko.com/api/v3/simple/price?ids=bitcoin,ethereum,solana,binancecoin,dogecoin,cardano&vs_currencies=usd&include_24hr_change=true');
+    S.prices=await r.json();
+  }catch{
+    S.prices={bitcoin:{usd:67420,usd_24h_change:2.34},ethereum:{usd:3182,usd_24h_change:-1.08},
+      solana:{usd:143.5,usd_24h_change:5.21},binancecoin:{usd:412,usd_24h_change:.89},
+      dogecoin:{usd:.1524,usd_24h_change:-2.1},cardano:{usd:.445,usd_24h_change:1.3}};
+  }
+  renderTicker();
+  buildCrypto();
+  setTimeout(loadPrices,60000);
+}
+
+function renderTicker(){
+  const c=[{id:'bitcoin',s:'BTC'},{id:'ethereum',s:'ETH'},{id:'solana',s:'SOL'},
+    {id:'binancecoin',s:'BNB'},{id:'dogecoin',s:'DOGE'},{id:'cardano',s:'ADA'}];
+  const t=c.map(x=>{const d=S.prices[x.id];if(!d)return'';
+    const u=d.usd_24h_change>=0;
+    return `<span class="ti"><span class="tsym">${x.s}</span><span class="tprice">$${fp(d.usd)}</span><span class="${u?'tup':'tdn'}">${u?'▲':'▼'}${Math.abs(d.usd_24h_change).toFixed(1)}%</span></span>`;
+  }).join('');
+  document.getElementById('ticker').innerHTML=t+t;
+}
+
+function buildCrypto(){
+  const cm=[{id:'bitcoin',s:'BTC',i:'₿'},{id:'ethereum',s:'ETH',i:'Ξ'},{id:'solana',s:'SOL',i:'◎'}];
+  const crypto=cm.map(c=>{
+    const d=S.prices[c.id];if(!d)return null;
+    const u=d.usd_24h_change>=0;
+    return{id:`c-${c.id}`,cat:'crypto',live:true,
+      league:'📈 Crypto Price Prediction',time:'1 hour',
+      icon:c.i,sym:c.s,cp:d.usd,chg:d.usd_24h_change,
+      rp:40000+rnd(30000),bp:32000+rnd(25000),reward:`${(3000+rnd(4000)).toLocaleString()} QUFC`,
+      mkt:{'Price Prediction':{
+        up:{l:`📈 Higher > $${fp(d.usd*1.01)}`,o:+(1.80+(u?-.05:.05)+rnd(15)/100).toFixed(2)},
+        dn:{l:`📉 Lower < $${fp(d.usd*.99)}`,o:+(1.80+(u?.05:-.05)+rnd(15)/100).toFixed(2)},
+      }}};
+  }).filter(Boolean);
+  S.allMatches=[...MD,...crypto];
+  renderAll();
+}
+
+// ════════════════════════════════════════════════════════
+// MARKETS
+// ════════════════════════════════════════════════════════
+function renderAll(){
+  const all=S.allMatches.length?S.allMatches:MD;
+  const list=S.cat==='all'?all:all.filter(m=>m.cat===S.cat);
+  const cats=['soccer','basketball','mma','crypto','esport'];
+  document.getElementById('ct-all').textContent=all.length;
+  cats.forEach(c=>{const el=document.getElementById(`ct-${c}`);if(el)el.textContent=all.filter(m=>m.cat===c).length;});
+  const lv=all.filter(m=>m.live).length;
+  const tp=all.reduce((a,m)=>{const p=S.pools[m.id]||{r:m.rp||0,b:m.bp||0};return a+p.r+p.b;},0);
+  document.getElementById('hs1').textContent=lv;
+  document.getElementById('hs2').textContent=(tp/1000000).toFixed(1)+'M';
+  document.getElementById('hs3').textContent=(450+rnd(500)).toLocaleString();
+  const sorted=[...list].sort((a,b)=>{
+    if(a.feat&&!b.feat)return-1;if(!a.feat&&b.feat)return 1;
+    if(a.live&&!b.live)return-1;if(!a.live&&b.live)return 1;return 0;
+  });
+  document.getElementById('mgrid').innerHTML=sorted.map(buildCard).join('');
+}
+
+function buildCard(m){
+  if(!S.pools[m.id])S.pools[m.id]={r:m.rp||0,b:m.bp||0};
+  const p=S.pools[m.id];const tot=p.r+p.b;
+  const rp=tot>0?Math.round(p.r/tot*100):50;const bp=100-rp;
+  const inS=S.slip.find(s=>s.mid===m.id);
+  const isc=m.cat==='crypto';
+
+  let body='';
+  if(isc){
+    const u=(m.chg||0)>=0;
+    body=`<div class="mcrypto"><div class="mci">${m.icon}</div><div>
+      <div class="mcp">$${fp(m.cp||0)}</div>
+      <div class="mcc ${u?'tup':'tdn'}">${u?'▲':'▼'} ${Math.abs(m.chg||0).toFixed(2)}% (24h)</div>
+      <div class="mcq">Will price be HIGHER or LOWER in 1 hour?</div>
+    </div></div>`;
+  }else{
+    body=`<div class="mfight">
+      <div class="mf"><div class="mav avr">${m.ri}</div><div class="mn mnr">${m.rn}</div>
+        <div class="md">${m.rs||''}</div>${tot>0?`<div class="mpl">${p.r.toLocaleString()} QUFC</div>`:''}</div>
+      <div class="mvsec"><div class="mvs">VS</div><div class="mrw">🏆 ${m.reward}</div></div>
+      <div class="mf"><div class="mav avb">${m.bi}</div><div class="mn mnb">${m.bn}</div>
+        <div class="md">${m.bs||''}</div>${tot>0?`<div class="mpl">${p.b.toLocaleString()} QUFC</div>`:''}</div>
+    </div>`;
+  }
+
+  const pb=tot>0?`<div class="pbar-w"><div class="pbar">
+    <div class="pbr" style="width:${rp}%"></div><div class="pbb" style="width:${bp}%"></div></div>
+    <div class="ppcts"><span style="color:${isc?'var(--lgreen)':'var(--red)'}">${isc?'📈':'🔴'} ${rp}%</span>
+    <span style="color:${isc?'var(--red)':'var(--lblue)'}"> ${bp}% ${isc?'📉':'🔵'}</span></div></div>`:'';
+
+  let mkts='';
+  Object.entries(m.mkt).forEach(([mk,data])=>{
+    const keys=Object.keys(data);
+    mkts+=`<div class="odds-lbl">${mk}</div><div class="og ${keys.length===3?'og3':'og2'}">`;
+    keys.forEach(k=>{
+      const o=data[k];const sel=inS&&inS.mkt===mk&&inS.key===k;
+      mkts+=`<div class="odd${sel?' sel':''}" onclick="selOdd('${m.id}','${mk}','${k}',${o.o},'${esc(o.l)}','${m.icon||m.ri||'🎯'}','${esc((m.rn||m.sym||'')+'vs'+(m.bn||''))}')">
+        <div class="ol">${o.l}</div>${o.hc?`<div class="ohc">${o.hc}</div>`:''}
+        <div class="ov" id="ov-${m.id}-${mk}-${k}">${(+o.o).toFixed(2)}</div></div>`;
+    });
+    mkts+='</div>';
+  });
+
+  return `<div class="mc${m.feat?' feat':''}" id="mc-${m.id}">
+    ${m.feat?'<div class="mc-rib">⭐ FEATURED MARKET</div>':''}
+    <div class="mc-top"><div class="mc-lg">${m.league}</div>
+      <div class="mc-r">${m.live?'<span class="blive">● LIVE</span>':'<span class="bsoon">UPCOMING</span>'}
+        <span class="mc-t">${m.time}</span></div></div>
+    ${body}${pb}<div class="odds-sec">${mkts}</div></div>`;
+}
+
+// ════════════════════════════════════════════════════════
+// LEADERBOARD
+// ════════════════════════════════════════════════════════
+function renderLeaderboard(){
+  const data=LB_DATA[S.lbPeriod]||LB_DATA.week;
+
+  // PODIUM top 3
+  const top3=data.slice(0,3);
+  const podOrder=[1,0,2];// 2nd, 1st, 3rd
+  const podClass=['pod-2','pod-1','pod-3'];
+  const podBlkH=[60,80,45];
+  document.getElementById('podium').innerHTML=podOrder.map((i,pi)=>{
+    const p=top3[i];if(!p)return'';
+    const medals=['🥇','🥈','🥉'];
+    return`<div class="pod ${podClass[pi]}">
+      <div class="pod-avatar">${p.emoji}${pi===1?'<div class="pod-crown">👑</div>':''}</div>
+      <div class="pod-name">${p.name}</div>
+      <div class="pod-amount">${p.earned} QUFC</div>
+      <div class="pod-acc">${p.acc}% accuracy</div>
+      <div class="pod-block"><div class="pod-rank">${medals[i]}</div></div>
+    </div>`;
+  }).join('');
+
+  // TABLE
+  document.getElementById('lbRows').innerHTML=data.map((p,i)=>{
+    const rankCls=i===0?'top1':i===1?'top2':i===2?'top3':'';
+    const medals=['🥇','🥈','🥉'];
+    const rankDisplay=i<3?medals[i]:i+1;
+    const accCls=p.acc>=70?'good':p.acc>=55?'avg':'low';
+    return`<div class="lb-row${p.isMe?' me':''}">
+      <div class="lb-rank ${rankCls}">${rankDisplay}</div>
+      <div class="lb-user">
+        <div class="lb-avatar">${p.emoji}</div>
+        <div class="lb-name">${p.name}${p.isMe?'<span class="lb-you">YOU</span>':''}</div>
+      </div>
+      <div class="lb-val" style="color:var(--gold)">${p.earned}</div>
+      <div class="lb-acc ${accCls}">${p.acc}%</div>
+      <div class="lb-val" style="color:var(--muted)">${p.preds}</div>
+    </div>`;
+  }).join('');
+}
+
+function setLbPeriod(p,el){
+  S.lbPeriod=p;
+  document.querySelectorAll('.lbp').forEach(x=>x.classList.remove('a'));
+  if(el)el.classList.add('a');
+  renderLeaderboard();
+}
+
+// ════════════════════════════════════════════════════════
+// TOURNAMENTS
+// ════════════════════════════════════════════════════════
+function renderTournaments(){
+  // Bracket
+  document.getElementById('bracketEl').innerHTML=BRACKET_DATA.map((b,i)=>`
+    <div class="bracket-row">
+      <div class="bslot ${b.done?(b.s1>b.s2?'winner':'loser'):'active'}">
+        <div class="bslot-rank">#${i*2+1}</div>
+        <div class="bslot-name">${b.p1}</div>
+        ${b.done?`<div class="bslot-score">${b.s1}</div>`:''}
+      </div>
+      <div class="bvs">VS</div>
+      <div class="bslot ${b.done?(b.s2>b.s1?'winner':'loser'):'active'}">
+        <div class="bslot-rank">#${i*2+2}</div>
+        <div class="bslot-name">${b.p2==='You'?b.p2+'⚡':b.p2}</div>
+        ${b.done?`<div class="bslot-score">${b.s2}</div>`:''}
+      </div>
+    </div>`).join('');
+
+  // Upcoming
+  document.getElementById('tourGrid').innerHTML=TOURS.map(t=>`
+    <div class="tour-card">
+      <div class="tc-top">
+        <div class="tc-name">${t.name}</div>
+        <span class="tc-status ${t.status==='open'?'tc-open':'tc-soon'}">${t.status==='open'?'OPEN':'COMING SOON'}</span>
+      </div>
+      <div class="tc-body">
+        <div class="tc-prize">${t.prize}</div>
+        <div class="tc-meta">
+          <div class="tc-m">Entry: <span>${t.entry} QUFC</span></div>
+          <div class="tc-m">Players: <span>${t.players}</span></div>
+          <div class="tc-m">Type: <span>${t.cat}</span></div>
+          <div class="tc-m">Starts: <span>${t.starts}</span></div>
+        </div>
+        <button class="tc-btn" onclick="joinTournament('${t.name}')">${t.status==='open'?'⚔️ JOIN NOW':'🔔 NOTIFY ME'}</button>
+      </div>
+    </div>`).join('');
+
+  // Timer
+  let tourSec=8073;
+  setInterval(()=>{
+    tourSec=Math.max(0,tourSec-1);
+    const h=Math.floor(tourSec/3600),m=Math.floor(tourSec%3600/60),s=tourSec%60;
+    const el=document.getElementById('tourTimer');
+    if(el)el.textContent=`${pad(h)}:${pad(m)}:${pad(s)}`;
+  },1000);
+}
+
+function joinTournament(name){
+  if(!S.connected){showNotif('⚠️ Wallet Required','Connect your Qubic wallet to join tournaments');return;}
+  const fee=name?500:500;
+  if(S.balance<fee){showNotif('💸 Insufficient QUFC',`Need ${fee} QUFC to enter`);return;}
+  S.balance-=fee;
+  document.getElementById('balChip').textContent=`⚡ ${S.balance.toLocaleString()} QUFC`;
+  showNotif('⚔️ JOINED!',`You're in the ${name||'Weekly Octagon Cup'}! Good luck!`);
+}
+
+// ════════════════════════════════════════════════════════
+// RANKS
+// ════════════════════════════════════════════════════════
+function renderRanks(){
+  const myRank=getMyRank();
+  const nextRank=RANKS[RANKS.indexOf(myRank)+1];
+  const progress=nextRank?Math.round((S.myPoints-myRank.min)/(nextRank.min-myRank.min)*100):100;
+
+  document.getElementById('myRankIcon').textContent=myRank.icon;
+  document.getElementById('myRankName').textContent=myRank.name.toUpperCase();
+  document.getElementById('myRankName').style.color=myRank.color;
+  document.getElementById('myRankWallet').textContent=S.connected?S.wallet:'Connect wallet to see your rank';
+  document.getElementById('progFrom').textContent=myRank.name;
+  document.getElementById('progTo').textContent=nextRank?`${nextRank.name} · ${nextRank.min-S.myPoints} pts needed`:'MAX RANK';
+  document.getElementById('progFill').style.width=progress+'%';
+  document.getElementById('progFill').style.background=`linear-gradient(90deg,${myRank.color},${nextRank?.color||myRank.color})`;
+  document.getElementById('myPts').textContent=S.myPoints.toLocaleString();
+  document.getElementById('myWins').textContent=S.myWins;
+  document.getElementById('myAcc').textContent=Math.round(S.myWins/S.myTotal*100)+'%';
+  document.getElementById('myStreak').textContent=S.myStreak;
+
+  // Update rank badge in topbar
+  if(S.connected){
+    const rb=document.getElementById('rankBadge');
+    rb.style.display='flex';
+    rb.style.background=`rgba(${hexToRgb(myRank.color)},.1)`;
+    rb.style.border=`1px solid rgba(${hexToRgb(myRank.color)},.3)`;
+    rb.style.color=myRank.color;
+    rb.textContent=`${myRank.icon} ${myRank.name}`;
+  }
+
+  // Tiers
+  document.getElementById('rankTiers').innerHTML=RANKS.map(r=>`
+    <div class="rt-row${myRank.name===r.name?' current':''}">
+      <div class="rt-icon">${r.icon}</div>
+      <div class="rt-info">
+        <div class="rt-name" style="color:${r.color}">${r.name}</div>
+        <div class="rt-req">${r.min.toLocaleString()} – ${r.max===99999?'∞':r.max.toLocaleString()} points</div>
+        <div class="rt-perks">${r.perks.map(p=>`<span class="rt-perk">${p}</span>`).join('')}</div>
+      </div>
+      <div class="rt-bonus" style="color:${r.color}">${r.bonus}</div>
+    </div>`).join('');
+
+  // History
+  document.getElementById('rankHist').innerHTML=HIST_DATA.map(h=>`
+    <div class="rh-row">
+      <div class="rh-icon">${h.icon}</div>
+      <div class="rh-info">
+        <div class="rh-match">${h.match}</div>
+        <div class="rh-time">${h.pred} · ${h.time}</div>
+      </div>
+      <div>
+        <div class="rh-result ${h.result==='win'?'rh-w':'rh-l'}">${h.result==='win'?'✓ WIN':'✗ LOSS'}</div>
+        <div class="rh-pts" style="color:${h.result==='win'?'var(--lgreen)':'var(--red)'}">${h.pts}</div>
+      </div>
+    </div>`).join('');
+}
+
+// ════════════════════════════════════════════════════════
+// SLIP
+// ════════════════════════════════════════════════════════
+function selOdd(mid,mkt,key,odd,lbl,icon,matchName){
+  const ex=S.slip.findIndex(s=>s.mid===mid);
+  if(ex>=0&&S.slip[ex].mkt===mkt&&S.slip[ex].key===key)S.slip.splice(ex,1);
+  else if(ex>=0)S.slip[ex]={mid,mkt,key,odd:+odd,lbl,icon,matchName};
+  else S.slip.push({mid,mkt,key,odd:+odd,lbl,icon,matchName});
+  renderSlip();renderAll();
+  if(S.slip.length&&!document.getElementById('slipEl').classList.contains('open'))toggleSlip();
+}
+
+function rmSlip(mid){S.slip=S.slip.filter(s=>s.mid!==mid);renderSlip();renderAll();}
+
+function renderSlip(){
+  document.getElementById('fabct').textContent=S.slip.length;
+  const body=document.getElementById('slipBody');
+  const foot=document.getElementById('slipFoot');
+  if(!S.slip.length){
+    body.innerHTML='<div class="slip-empty">Select a market to predict</div>';
+    foot.style.display='none';document.getElementById('pbtn').disabled=true;return;
+  }
+  body.innerHTML=S.slip.map(s=>`
+    <div class="si"><div class="si-i">${s.icon}</div>
+      <div class="si-d"><div class="si-m">${s.matchName}</div><div class="si-s">${s.lbl}</div></div>
+      <div class="si-o">${s.odd.toFixed(2)}</div>
+      <div class="si-r" onclick="rmSlip('${s.mid}')">✕</div></div>`).join('');
+  foot.style.display='block';
+  document.getElementById('pbtn').disabled=!S.connected;
+  updateSlip();
+}
+
+function updateSlip(){
+  const stake=parseFloat(document.getElementById('stakeIn').value)||0;
+  const odd=S.slip.length?S.slip[S.slip.length-1].odd:1;
+  const pay=Math.round(stake*odd);
+  document.getElementById('stOdds').textContent=odd.toFixed(2)+'x';
+  document.getElementById('stStake').textContent=stake.toLocaleString()+' QUFC';
+  document.getElementById('stPay').textContent=pay.toLocaleString()+' QUFC';
+}
+
+function addS(n){const i=document.getElementById('stakeIn');i.value=(+i.value||0)+n;updateSlip();}
+function setS(n){document.getElementById('stakeIn').value=n;updateSlip();}
+
+function confirmPred(){
+  if(!S.connected){showNotif('⚠️ Wallet Required','Connect first');return;}
+  const stake=parseFloat(document.getElementById('stakeIn').value)||0;
+  if(stake<100){showNotif('⚠️ Min 100 QUFC','');return;}
+  if(stake>S.balance){showNotif('💸 Insufficient QUFC','');return;}
+  const odd=S.slip[S.slip.length-1].odd;
+  S.balance-=stake;
+  S.myTotal++;
+  const ptsEarned=Math.floor(stake/50)+5;
+  S.myPoints+=ptsEarned;
+  document.getElementById('balChip').textContent=`⚡ ${S.balance.toLocaleString()} QUFC`;
+  document.getElementById('wearn').textContent=`${stake.toLocaleString()} QUFC staked · Max earn ${Math.round(stake*odd).toLocaleString()} QUFC`;
+  document.getElementById('wpts').textContent=`+${ptsEarned} Rank Points · ${getMyRank().icon} ${getMyRank().name}`;
+  document.getElementById('wpop').classList.add('show');
+  S.slip=[];renderSlip();renderAll();renderRanks();
+  document.getElementById('slipEl').classList.remove('open');
+}
+
+// ════════════════════════════════════════════════════════
+// LIVE ODDS FLICKER
+// ════════════════════════════════════════════════════════
+setInterval(()=>{
+  document.querySelectorAll('.ov').forEach(el=>{
+    const cur=parseFloat(el.textContent);if(isNaN(cur))return;
+    const nw=Math.max(1.01,+(cur+(Math.random()-.5)*.08).toFixed(2));
+    const d=nw>cur?'ou':nw<cur?'od':'';
+    el.textContent=nw.toFixed(2);
+    if(d){el.classList.add(d);setTimeout(()=>el.classList.remove(d),500);}
+  });updateSlip();
+},4000);
+
+setInterval(()=>{
+  (S.allMatches.length?S.allMatches:MD).filter(m=>m.live).forEach(m=>{
+    if(!S.pools[m.id])S.pools[m.id]={r:m.rp||0,b:m.bp||0};
+    S.pools[m.id].r+=rnd(500);S.pools[m.id].b+=rnd(700);
+  });
+},3000);
+
+// ════════════════════════════════════════════════════════
+// UI
+// ════════════════════════════════════════════════════════
+function showPage(id,el){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.tnl').forEach(t=>t.classList.remove('a'));
+  document.getElementById('page-'+id).classList.add('active');
+  if(el)el.classList.add('a');
+  if(id==='leaderboard')renderLeaderboard();
+  if(id==='tournaments')renderTournaments();
+  if(id==='ranks')renderRanks();
+}
+
+function toggleSlip(){document.getElementById('slipEl').classList.toggle('open');}
+function openModal(){document.getElementById('mbg').classList.add('open');}
+function closeModal(){document.getElementById('mbg').classList.remove('open');}
+
+function doConnect(){
+  S.connected=true;
+  document.getElementById('cbtn').textContent='✓ '+S.wallet.substring(0,12)+'...';
+  document.getElementById('cbtn').classList.add('on');
+  document.getElementById('balChip').style.display='block';
+  document.getElementById('balChip').textContent=`⚡ ${S.balance.toLocaleString()} QUFC`;
+  document.getElementById('pbtn').disabled=!S.slip.length;
+  const r=getMyRank();
+  document.getElementById('mcontent').innerHTML=`
+    <div class="micon">✅</div>
+    <div class="mtitle">Connected!</div>
+    <div class="maddr">${S.wallet}</div>
+    <div style="font-size:9px;letter-spacing:3px;color:var(--muted);margin-bottom:4px;">$QUFC BALANCE</div>
+    <div class="mbal">${S.balance.toLocaleString()}</div>
+    <div style="font-size:12px;color:${r.color};margin-top:10px;letter-spacing:2px;">${r.icon} ${r.name.toUpperCase()} RANK · ${S.myPoints} pts</div>
+    <button class="mbtn" onclick="closeModal()">ENTER THE ARENA →</button>`;
+  renderRanks();
+  showNotif('🎉 Wallet Connected!',`${S.balance.toLocaleString()} QUFC · ${r.icon} ${r.name} Rank`);
+}
+
+function setCat(cat,el){
+  S.cat=cat;
+  document.querySelectorAll('.ctab').forEach(t=>t.classList.remove('a'));
+  if(el)el.classList.add('a');renderAll();
+}
+
+let ntimer;
+function showNotif(t,m){
+  document.getElementById('nt').textContent=t;
+  document.getElementById('nm').textContent=m;
+  const n=document.getElementById('notif');n.style.display='block';
+  clearTimeout(ntimer);ntimer=setTimeout(()=>n.style.display='none',3800);
+}
+
+// UTILS
+function fp(p){return p>=1000?p.toLocaleString('en',{maximumFractionDigits:0}):p>=1?p.toFixed(2):p.toFixed(4);}
+function rnd(n){return Math.floor(Math.random()*n);}
+function pad(n){return String(n).padStart(2,'0');}
+function esc(s){return(s||'').replace(/'/g,"\\'").substring(0,42);}
+function hexToRgb(hex){const r=parseInt(hex.slice(1,3),16),g=parseInt(hex.slice(3,5),16),b=parseInt(hex.slice(5,7),16);return`${r},${g},${b}`;}
+
+// INIT
+renderAll(MD);
+loadPrices();
+</script>
+</body>
+</html>
