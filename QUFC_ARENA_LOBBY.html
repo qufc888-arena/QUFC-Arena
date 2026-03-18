@@ -1,0 +1,1402 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>QUFC ARENA</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow+Condensed:wght@400;600;700;900&display=swap" rel="stylesheet">
+<style>
+:root{
+  --red:#e74c3c;--blood:#c0392b;--dred:#7b0000;
+  --gold:#f39c12;--blue:#2980b9;--lblue:#3498db;
+  --green:#27ae60;--lgreen:#2ecc71;
+  --purple:#8e44ad;--lpurple:#a569bd;
+  --dark:#04040c;--panel:#09091a;--panel2:#0d0d20;
+  --border:#141428;--border2:#1c1c38;
+  --text:#eeeeff;--muted:#55557a;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+html,body{height:100%;}
+body{background:var(--dark);color:var(--text);font-family:'Barlow Condensed',sans-serif;
+  overflow-x:hidden;max-width:480px;margin:0 auto;min-height:100vh;}
+body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:9999;
+  background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,.05) 2px,rgba(0,0,0,.05) 4px);}
+
+/* ── WALLET BAR ── */
+.wbar{background:rgba(4,4,12,.95);border-bottom:1px solid rgba(52,152,219,.2);
+  padding:7px 14px;display:flex;align-items:center;justify-content:space-between;}
+.wb-l{display:flex;align-items:center;gap:7px;}
+.wdot{width:7px;height:7px;border-radius:50%;background:var(--muted);transition:all .3s;}
+.wdot.on{background:var(--lgreen);box-shadow:0 0 8px rgba(46,204,113,.6);}
+.waddr{font-family:'Bebas Neue';font-size:11px;letter-spacing:1px;color:var(--muted);}
+.waddr.on{color:var(--text);}
+.wbals{display:none;gap:10px;}
+.wbal{font-family:'Bebas Neue';font-size:12px;}
+.wq{color:var(--gold);}
+.wqb{color:var(--lblue);}
+.wbtn{font-family:'Bebas Neue';font-size:10px;letter-spacing:2px;padding:5px 12px;
+  background:linear-gradient(135deg,var(--blue),var(--lblue));color:#fff;border:none;
+  cursor:pointer;border-radius:3px;white-space:nowrap;transition:all .2s;}
+.wbtn:hover{transform:scale(1.04);}
+.wbtn.on{background:linear-gradient(135deg,#0d3b6e,var(--blue));}
+
+/* ── TOPBAR ── */
+.topbar{background:rgba(4,4,12,.98);border-bottom:2px solid var(--blood);
+  padding:0 14px;height:48px;display:flex;align-items:center;justify-content:space-between;
+  position:sticky;top:0;z-index:200;}
+.brand{display:flex;align-items:center;gap:7px;cursor:pointer;}
+.bname{font-family:'Bebas Neue';font-size:22px;letter-spacing:5px;color:#fff;
+  text-shadow:0 0 20px rgba(231,76,60,.8),2px 2px 0 var(--blood);}
+.btag{font-size:7px;letter-spacing:4px;color:var(--blood);border:1px solid rgba(192,57,43,.4);padding:2px 6px;border-radius:3px;font-weight:700;}
+.back-btn{display:none;align-items:center;gap:6px;cursor:pointer;
+  font-family:'Bebas Neue';font-size:13px;letter-spacing:2px;color:var(--muted);transition:color .2s;}
+.back-btn:hover{color:#fff;}
+.top-r{display:flex;align-items:center;gap:7px;}
+.chain-pill{display:flex;align-items:center;gap:4px;font-size:9px;letter-spacing:1px;
+  color:var(--lblue);background:rgba(52,152,219,.07);border:1px solid rgba(52,152,219,.18);
+  padding:3px 8px;border-radius:20px;}
+.cpulse{width:5px;height:5px;border-radius:50%;background:var(--lblue);animation:pulse 1.5s infinite;}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+
+/* ── TICKER ── */
+.ticker{background:rgba(0,0,0,.4);border-bottom:1px solid var(--border);overflow:hidden;padding:6px 0;position:relative;}
+.tlbl{position:absolute;left:0;top:0;bottom:0;z-index:2;
+  background:linear-gradient(135deg,var(--dred),var(--blood));
+  display:flex;align-items:center;padding:0 16px 0 11px;
+  font-family:'Bebas Neue';font-size:8px;letter-spacing:3px;color:#fff;
+  clip-path:polygon(0 0,100% 0,calc(100% - 7px) 100%,0 100%);}
+.tfade{position:absolute;right:0;top:0;bottom:0;z-index:1;width:40px;
+  background:linear-gradient(270deg,rgba(0,0,0,.8),transparent);}
+.tscroll{display:flex;animation:ts 30s linear infinite;white-space:nowrap;padding-left:78px;}
+.tscroll:hover{animation-play-state:paused;}
+@keyframes ts{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
+.ti{display:inline-flex;align-items:center;gap:4px;padding:0 12px;font-size:11px;border-right:1px solid var(--border);}
+.ts{color:var(--muted);font-weight:700;font-size:8px;letter-spacing:2px;}
+.tp{font-family:'Bebas Neue';font-size:13px;}
+.tu{color:var(--lgreen);font-size:9px;font-weight:700;}
+.td{color:var(--red);font-size:9px;font-weight:700;}
+
+/* ── QUBIC PRICE STRIP ── */
+.qubic-strip{
+  background:linear-gradient(135deg,rgba(41,128,185,.12),rgba(41,128,185,.05));
+  border-bottom:1px solid rgba(52,152,219,.2);
+  padding:6px 14px;display:flex;align-items:center;justify-content:space-between;gap:6px;
+}
+.qs-item{display:flex;align-items:center;gap:6px;flex:1;justify-content:center;}
+.qs-div{width:1px;height:28px;background:rgba(52,152,219,.2);}
+.qs-icon{font-size:16px;}
+.qs-info{text-align:center;}
+.qs-sym{font-size:8px;letter-spacing:2px;color:var(--lblue);font-weight:700;}
+.qs-price{font-family:'Bebas Neue';font-size:16px;color:#fff;line-height:1;}
+.qs-chg{font-size:8px;font-weight:700;margin-top:1px;}
+.qs-src{font-size:7px;letter-spacing:1px;color:var(--muted);}
+
+/* ── PAGES ── */
+.page{display:none;min-height:calc(100vh - 120px);}
+.page.show{display:block;animation:fi .25s ease;}
+@keyframes fi{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+
+/* ════════════════════════════════
+   LOBBY
+════════════════════════════════ */
+.lobby{padding:14px;}
+
+/* HERO */
+.lobby-hero{position:relative;overflow:hidden;border-radius:12px;
+  background:linear-gradient(135deg,#08000a,#0d0020);
+  border:1px solid rgba(192,57,43,.2);padding:20px 16px;margin-bottom:14px;text-align:center;}
+.lhbg{position:absolute;inset:0;
+  background:radial-gradient(ellipse 80% 60% at 50% 0%,rgba(192,57,43,.18),transparent 65%),
+    radial-gradient(ellipse 40% 30% at 10% 90%,rgba(41,128,185,.1),transparent);}
+.lhgrid{position:absolute;inset:0;opacity:.03;
+  background-image:linear-gradient(rgba(231,76,60,.8) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(231,76,60,.8) 1px,transparent 1px);
+  background-size:40px 40px;}
+.lhoct{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
+  width:220px;height:220px;border:1px solid rgba(192,57,43,.06);
+  clip-path:polygon(30% 0%,70% 0%,100% 30%,100% 70%,70% 100%,30% 100%,0% 70%,0% 30%);
+  animation:opu 5s ease-in-out infinite;}
+@keyframes opu{0%,100%{opacity:.4;transform:translate(-50%,-50%) scale(1)}50%{opacity:.7;transform:translate(-50%,-50%) scale(1.04)}}
+.lhc{position:relative;z-index:2;}
+.lhbrow{font-size:8px;letter-spacing:5px;color:var(--gold);
+  background:rgba(243,156,18,.07);border:1px solid rgba(243,156,18,.18);
+  padding:3px 12px;border-radius:20px;display:inline-block;margin-bottom:10px;}
+.lhtitle{font-family:'Bebas Neue';font-size:clamp(40px,12vw,64px);letter-spacing:4px;line-height:.95;
+  background:linear-gradient(135deg,var(--red) 0%,#fff 45%,var(--lblue) 100%);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:4px;}
+.lhsub{font-size:11px;letter-spacing:4px;color:var(--muted);margin-bottom:14px;}
+.lhstats{display:inline-flex;border:1px solid var(--border);border-radius:5px;overflow:hidden;background:rgba(0,0,0,.3);}
+.lhs{padding:7px 13px;text-align:center;border-right:1px solid var(--border);}
+.lhs:last-child{border-right:none;}
+.lhsv{font-family:'Bebas Neue';font-size:16px;color:var(--gold);}
+.lhsl{font-size:7px;letter-spacing:2px;color:var(--muted);}
+
+/* GAME GRID */
+.game-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px;}
+.game-card{border-radius:10px;overflow:hidden;cursor:pointer;transition:all .25s;position:relative;
+  border:1px solid var(--border);}
+.game-card:hover{transform:translateY(-3px);box-shadow:0 12px 36px rgba(0,0,0,.6);}
+.game-card:active{transform:scale(.97);}
+.game-card.wide{grid-column:1/-1;}
+.game-card.featured{border-color:rgba(243,156,18,.25);}
+
+.gc-bg{position:absolute;inset:0;}
+.gc-flip-bg{background:linear-gradient(135deg,rgba(192,57,43,.25),rgba(7,0,10,.95));}
+.gc-binary-bg{background:linear-gradient(135deg,rgba(41,128,185,.25),rgba(0,7,15,.95));}
+.gc-eo-bg{background:linear-gradient(135deg,rgba(39,174,96,.2),rgba(0,10,5,.95));}
+.gc-duel-bg{background:linear-gradient(135deg,rgba(142,68,173,.25),rgba(7,0,14,.95));}
+.gc-swap-bg{background:linear-gradient(135deg,rgba(39,174,96,.18),rgba(41,128,185,.18),rgba(0,8,12,.95));}
+
+.gc-body{position:relative;z-index:2;padding:14px 12px;}
+.gc-icon{font-size:30px;margin-bottom:6px;display:block;}
+.gc-name{font-family:'Bebas Neue';font-size:18px;letter-spacing:2px;margin-bottom:2px;}
+.gc-desc{font-size:10px;color:rgba(255,255,255,.5);margin-bottom:8px;line-height:1.4;}
+.gc-tags{display:flex;gap:4px;flex-wrap:wrap;}
+.gc-tag{font-size:7px;letter-spacing:1px;padding:2px 6px;border-radius:3px;font-weight:700;}
+.gc-live{background:rgba(231,76,60,.15);color:var(--red);border:1px solid rgba(231,76,60,.3);}
+.gc-sc{background:rgba(52,152,219,.12);color:var(--lblue);border:1px solid rgba(52,152,219,.25);}
+.gc-free{background:rgba(39,174,96,.12);color:var(--lgreen);border:1px solid rgba(39,174,96,.25);}
+.gc-new{background:rgba(243,156,18,.15);color:var(--gold);border:1px solid rgba(243,156,18,.3);}
+.gc-arrow{position:absolute;bottom:12px;right:12px;font-size:16px;opacity:.3;transition:opacity .2s;}
+.game-card:hover .gc-arrow{opacity:.8;}
+.gc-pool{position:absolute;top:10px;right:10px;font-family:'Bebas Neue';font-size:10px;
+  color:var(--gold);background:rgba(0,0,0,.4);padding:2px 6px;border-radius:3px;letter-spacing:1px;}
+
+/* WIDE CARD LAYOUT */
+.gc-body.wide-layout{display:flex;align-items:center;gap:12px;padding:12px 14px;}
+.gc-wide-left{flex-shrink:0;}
+.gc-wide-right{flex:1;}
+.gc-wide-name{font-family:'Bebas Neue';font-size:20px;letter-spacing:2px;margin-bottom:3px;}
+.gc-wide-desc{font-size:10px;color:rgba(255,255,255,.5);margin-bottom:6px;}
+
+/* ════════════════════════════════
+   GAME PAGES
+════════════════════════════════ */
+.game-wrap{padding:14px;}
+
+/* GAME HEADER */
+.game-hdr{display:flex;align-items:center;gap:10px;padding:12px 14px;
+  background:rgba(0,0,0,.3);border:1px solid var(--border);border-radius:8px;margin-bottom:14px;}
+.gh-icon{font-size:26px;}
+.gh-info{flex:1;}
+.gh-name{font-family:'Bebas Neue';font-size:18px;letter-spacing:2px;}
+.gh-sc{font-size:9px;letter-spacing:1px;color:var(--lblue);}
+.gh-live{font-size:8px;background:rgba(231,76,60,.12);color:var(--red);
+  border:1px solid rgba(231,76,60,.28);padding:3px 8px;border-radius:3px;animation:lp 1.5s infinite;}
+@keyframes lp{0%,100%{opacity:1}50%{opacity:.4}}
+
+/* TIMER BIG */
+.timer-big{font-family:'Bebas Neue';font-size:72px;line-height:1;letter-spacing:4px;
+  color:var(--gold);text-shadow:0 0 28px rgba(243,156,18,.5);
+  text-align:center;padding:10px 0 4px;transition:all .3s;}
+.timer-big.urgent{color:var(--red);text-shadow:0 0 28px rgba(231,76,60,.6);animation:tbu .4s infinite;}
+@keyframes tbu{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.7;transform:scale(1.04)}}
+.timer-lbl{font-size:8px;letter-spacing:4px;color:var(--muted);text-align:center;margin-bottom:16px;}
+
+/* SIDES */
+.sides2{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px;}
+.side{background:var(--panel2);border:2px solid var(--border2);border-radius:8px;
+  padding:14px 8px;text-align:center;cursor:pointer;transition:all .2s;position:relative;}
+.side:hover{transform:translateY(-2px);}
+.side.gold{border-color:var(--gold);background:rgba(243,156,18,.07);box-shadow:0 0 16px rgba(243,156,18,.12);}
+.side.red{border-color:var(--red);background:rgba(231,76,60,.07);box-shadow:0 0 16px rgba(231,76,60,.12);}
+.side.green{border-color:var(--lgreen);background:rgba(46,204,113,.07);box-shadow:0 0 16px rgba(46,204,113,.1);}
+.side.blue{border-color:var(--lblue);background:rgba(52,152,219,.07);box-shadow:0 0 16px rgba(52,152,219,.1);}
+.side-ic{font-size:34px;margin-bottom:6px;}
+.side-nm{font-family:'Bebas Neue';font-size:17px;letter-spacing:2px;}
+.side-pl{font-size:9px;color:var(--muted);margin-top:3px;}
+.side-od{font-family:'Bebas Neue';font-size:13px;color:var(--gold);margin-top:2px;}
+
+/* POOL BAR */
+.pbar-wrap{margin-bottom:14px;}
+.pbar{height:5px;background:#0f0f20;border-radius:3px;overflow:hidden;position:relative;margin:4px 0;}
+.pbr{position:absolute;left:0;top:0;height:100%;background:linear-gradient(90deg,#7b6000,var(--gold));transition:width .5s;}
+.pbl{position:absolute;right:0;top:0;height:100%;background:linear-gradient(270deg,var(--dred),var(--red));transition:width .5s;}
+.pbar-pcts{display:flex;justify-content:space-between;font-size:10px;font-weight:700;}
+
+/* STAKE */
+.stake-box{margin-bottom:10px;}
+.stake-row{display:flex;gap:6px;align-items:center;margin-bottom:7px;}
+.sinp{flex:1;background:rgba(0,0,0,.3);border:1px solid var(--border2);color:var(--text);
+  padding:10px 11px;border-radius:5px;font-family:'Bebas Neue';font-size:16px;letter-spacing:1px;}
+.sinp:focus{outline:none;border-color:var(--gold);}
+.sqrow{display:flex;gap:4px;}
+.sq{font-family:'Bebas Neue';font-size:11px;padding:6px 8px;
+  background:rgba(0,0,0,.3);border:1px solid var(--border2);color:var(--muted);
+  cursor:pointer;border-radius:3px;transition:all .15s;}
+.sq:hover{border-color:var(--blood);color:#fff;}
+.pay-info{text-align:center;font-size:11px;color:var(--muted);margin-bottom:10px;letter-spacing:1px;}
+.pay-val{font-family:'Bebas Neue';font-size:16px;}
+
+/* ACTION BTN */
+.abtn{width:100%;padding:13px;font-family:'Bebas Neue';font-size:16px;letter-spacing:3px;
+  color:#fff;border:none;cursor:pointer;border-radius:6px;transition:all .2s;margin-bottom:8px;}
+.abtn:hover:not(:disabled){transform:translateY(-1px);}
+.abtn:disabled{opacity:.3;cursor:not-allowed;}
+.abtn.red{background:linear-gradient(135deg,var(--dred),var(--blood));border-top:2px solid var(--red);}
+.abtn.blue{background:linear-gradient(135deg,#0d3b6e,var(--blue));border-top:2px solid var(--lblue);}
+.abtn.green{background:linear-gradient(135deg,#0d4a0d,var(--green));border-top:2px solid var(--lgreen);}
+.abtn.purple{background:linear-gradient(135deg,#4a1060,var(--purple));border-top:2px solid var(--lpurple);}
+.abtn.gold{background:linear-gradient(135deg,#7b5c00,var(--gold));border-top:2px solid var(--gold);color:#111;}
+
+/* SC INFO */
+.sc-info{padding:8px 10px;background:rgba(52,152,219,.04);
+  border:1px solid rgba(52,152,219,.12);border-radius:5px;
+  font-size:9px;color:var(--muted);letter-spacing:1px;text-align:center;}
+
+/* COIN FLIP COIN */
+.coin-c{display:flex;flex-direction:column;align-items:center;margin-bottom:16px;}
+.coin{width:110px;height:110px;position:relative;transform-style:preserve-3d;}
+.coin.flip{animation:cf .8s ease-in-out;}
+@keyframes cf{0%{transform:rotateY(0)}50%{transform:rotateY(900deg)}100%{transform:rotateY(1800deg)}}
+.cface{position:absolute;width:100%;height:100%;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;font-size:48px;
+  backface-visibility:hidden;border:3px solid;}
+.ch{background:radial-gradient(circle,rgba(243,156,18,.28),rgba(243,156,18,.04));border-color:var(--gold);}
+.ct{background:radial-gradient(circle,rgba(192,57,43,.28),rgba(192,57,43,.04));border-color:var(--blood);transform:rotateY(180deg);}
+
+/* BINARY PRICE DISPLAY */
+.bin-price-card{background:rgba(0,0,0,.3);border:1px solid var(--border2);border-radius:8px;
+  padding:14px;margin-bottom:14px;text-align:center;}
+.bin-coin-sel{display:flex;gap:6px;justify-content:center;flex-wrap:wrap;margin-bottom:12px;}
+.bcs{font-family:'Bebas Neue';font-size:12px;letter-spacing:1px;padding:5px 10px;
+  background:var(--panel2);border:1px solid var(--border2);color:var(--muted);
+  cursor:pointer;border-radius:5px;transition:all .15s;}
+.bcs:hover{border-color:var(--lblue);color:#fff;}
+.bcs.a{background:rgba(41,128,185,.12);border-color:var(--lblue);color:#fff;}
+.bin-entry{font-size:10px;letter-spacing:2px;color:var(--muted);margin-bottom:4px;}
+.bin-price{font-family:'Bebas Neue';font-size:36px;color:#fff;line-height:1;margin-bottom:4px;}
+.bin-chg{font-size:11px;font-weight:700;}
+.bin-tf{display:flex;gap:5px;justify-content:center;margin-top:10px;}
+.btf{font-family:'Bebas Neue';font-size:11px;letter-spacing:1px;padding:5px 10px;
+  background:var(--panel2);border:1px solid var(--border2);color:var(--muted);
+  cursor:pointer;border-radius:4px;transition:all .15s;}
+.btf:hover{border-color:var(--blood);color:#fff;}
+.btf.a{background:rgba(192,57,43,.1);border-color:var(--blood);color:#fff;}
+
+/* QDUEL */
+.duel-vs{display:flex;align-items:center;gap:8px;margin-bottom:14px;}
+.dp{flex:1;text-align:center;padding:12px 6px;background:var(--panel2);
+  border-radius:8px;border:1px solid var(--border2);}
+.dp.you{border-color:rgba(243,156,18,.25);}
+.dp-av{font-size:28px;margin-bottom:4px;}
+.dp-nm{font-family:'Bebas Neue';font-size:12px;letter-spacing:1px;}
+.dp-ad{font-size:8px;color:var(--muted);margin-top:2px;}
+.dp-st{font-family:'Bebas Neue';font-size:13px;color:var(--gold);margin-top:4px;}
+.vs-mid{text-align:center;}
+.vstxt{font-family:'Bebas Neue';font-size:24px;color:rgba(255,255,255,.12);}
+.vsprize{font-size:9px;color:var(--gold);margin-top:2px;letter-spacing:1px;}
+.duel-modes{display:flex;gap:5px;margin-bottom:12px;}
+.dm{font-family:'Bebas Neue';font-size:11px;letter-spacing:1px;padding:7px 8px;
+  background:var(--panel2);border:1px solid var(--border2);color:var(--muted);
+  cursor:pointer;border-radius:5px;transition:all .15s;flex:1;text-align:center;}
+.dm:hover{border-color:var(--purple);}
+.dm.a{background:rgba(142,68,173,.12);border-color:var(--purple);color:#fff;}
+.open-list{margin-top:14px;}
+.ol-hd{font-size:9px;letter-spacing:3px;color:var(--muted);font-weight:700;margin-bottom:8px;}
+.drow{display:flex;align-items:center;gap:8px;padding:9px 11px;
+  background:var(--panel2);border:1px solid var(--border2);border-radius:6px;
+  margin-bottom:6px;cursor:pointer;transition:all .2s;}
+.drow:hover{border-color:rgba(142,68,173,.3);}
+.dr-l{flex:1;}
+.dr-nm{font-family:'Bebas Neue';font-size:13px;letter-spacing:1px;}
+.dr-inf{font-size:9px;color:var(--muted);margin-top:2px;}
+.dr-md{font-size:8px;color:var(--lpurple);background:rgba(142,68,173,.1);
+  padding:2px 6px;border-radius:3px;display:inline-block;margin-top:3px;}
+.dr-st{font-family:'Bebas Neue';font-size:18px;color:var(--gold);}
+.acc-btn{font-family:'Bebas Neue';font-size:11px;letter-spacing:1px;padding:7px 11px;
+  background:linear-gradient(135deg,#4a1060,var(--purple));color:#fff;border:none;
+  cursor:pointer;border-radius:4px;transition:all .15s;}
+.acc-btn:hover{transform:scale(1.04);}
+
+/* QSWAP */
+.swap-box{background:rgba(0,0,0,.25);border:1px solid var(--border2);border-radius:8px;padding:12px 13px;margin-bottom:8px;}
+.swap-lbl{font-size:8px;letter-spacing:2px;color:var(--muted);margin-bottom:6px;font-weight:700;}
+.swap-row{display:flex;align-items:center;gap:8px;}
+.swap-tok{display:flex;align-items:center;gap:6px;background:var(--panel2);
+  border:1px solid var(--border2);border-radius:5px;padding:6px 10px;white-space:nowrap;cursor:pointer;}
+.stok-ic{font-size:17px;}
+.stok-nm{font-family:'Bebas Neue';font-size:13px;letter-spacing:1px;}
+.swap-inp{flex:1;background:transparent;border:none;color:var(--text);
+  font-family:'Bebas Neue';font-size:22px;letter-spacing:1px;text-align:right;width:100%;}
+.swap-inp:focus{outline:none;}
+.swap-usd{font-size:9px;color:var(--muted);margin-top:4px;text-align:right;}
+.swap-mid{text-align:center;margin:6px 0;}
+.swap-flip{background:var(--panel2);border:1px solid var(--border2);
+  width:32px;height:32px;border-radius:50%;display:inline-flex;align-items:center;
+  justify-content:center;font-size:15px;cursor:pointer;transition:all .2s;}
+.swap-flip:hover{border-color:var(--gold);transform:rotate(180deg);}
+.swap-details{padding:8px 10px;background:rgba(0,0,0,.2);border-radius:5px;margin-bottom:10px;}
+.sd-row{display:flex;justify-content:space-between;font-size:10px;color:var(--muted);margin-bottom:3px;}
+.sd-row:last-child{margin-bottom:0;}
+.sd-val{color:var(--text);}
+.sd-green{color:var(--lgreen);}
+
+/* EVEN/ODD GRID */
+.eo-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.eo-c{background:var(--panel);border:1px solid var(--border);border-radius:8px;overflow:hidden;}
+.eo-top{padding:8px 10px;background:rgba(0,0,0,.3);border-bottom:1px solid var(--border);
+  display:flex;align-items:center;justify-content:space-between;}
+.eo-sym{font-family:'Bebas Neue';font-size:14px;letter-spacing:2px;}
+.eo-dot{width:5px;height:5px;border-radius:50%;background:var(--red);animation:lp 1.2s infinite;}
+.eo-price{font-family:'Bebas Neue';font-size:20px;color:#fff;text-align:center;padding:8px 8px 2px;}
+.eo-dig{font-size:10px;text-align:center;margin-bottom:3px;}
+.eo-chg{font-size:9px;font-weight:700;text-align:center;margin-bottom:6px;}
+.eo-timer{font-family:'Bebas Neue';font-size:46px;color:var(--gold);text-align:center;line-height:1;padding:3px 0;transition:color .3s;}
+.eo-timer.urg{color:var(--red);animation:tbu .4s infinite;}
+.eo-tlbl{font-size:7px;letter-spacing:2px;color:var(--muted);text-align:center;margin-bottom:6px;}
+.eo-tfs{display:flex;gap:3px;padding:0 8px 7px;}
+.etf{font-family:'Bebas Neue';font-size:10px;padding:3px 5px;background:var(--panel2);
+  border:1px solid var(--border2);color:var(--muted);cursor:pointer;border-radius:3px;transition:all .15s;flex:1;text-align:center;}
+.etf:hover{border-color:var(--blood);}
+.etf.a{background:rgba(192,57,43,.1);border-color:var(--blood);color:#fff;}
+.eo-sides{display:grid;grid-template-columns:1fr 1fr;gap:5px;padding:0 8px 8px;}
+.eo-side{background:var(--panel2);border:1px solid var(--border2);border-radius:5px;
+  padding:7px 4px;text-align:center;cursor:pointer;transition:all .15s;}
+.eo-side:hover{border-color:var(--gold);}
+.eo-side.se{border-color:var(--lgreen);background:rgba(46,204,113,.07);}
+.eo-side.so{border-color:var(--red);background:rgba(231,76,60,.07);}
+.eo-si{font-size:18px;margin-bottom:2px;}
+.eo-sn{font-family:'Bebas Neue';font-size:12px;letter-spacing:1px;}
+.eo-so{font-family:'Bebas Neue';font-size:11px;color:var(--gold);}
+
+/* HISTORY */
+.hist-list{background:var(--panel);border:1px solid var(--border);border-radius:8px;overflow:hidden;}
+.hist-hd{background:rgba(0,0,0,.3);padding:9px 13px;font-size:9px;letter-spacing:3px;color:var(--muted);font-weight:700;}
+.hrow{display:flex;align-items:center;gap:7px;padding:8px 13px;border-bottom:1px solid var(--border);}
+.hrow:last-child{border-bottom:none;}
+.hi{font-size:15px;width:19px;text-align:center;}
+.hd{flex:1;}
+.hm{font-size:11px;}
+.ht{font-size:9px;color:var(--muted);margin-top:1px;}
+.hw{color:var(--lgreen);font-family:'Bebas Neue';font-size:13px;}
+.hl{color:var(--red);font-family:'Bebas Neue';font-size:13px;}
+.he{font-size:9px;}
+
+/* RESULT POP */
+.rpop{position:fixed;inset:0;z-index:700;background:rgba(0,0,0,.94);
+  display:none;align-items:center;justify-content:center;flex-direction:column;padding:20px;}
+.rpop.show{display:flex;animation:ri .3s ease;}
+@keyframes ri{from{opacity:0}to{opacity:1}}
+.ric{font-size:72px;animation:bn .5s ease;}
+@keyframes bn{0%{transform:scale(0)}60%{transform:scale(1.2)}100%{transform:scale(1)}}
+.rtl{font-family:'Bebas Neue';font-size:48px;letter-spacing:6px;margin:8px 0;text-align:center;}
+.ren{font-family:'Bebas Neue';font-size:26px;color:var(--lgreen);text-align:center;}
+.rmsg{font-size:12px;color:var(--muted);margin:8px 0 4px;text-align:center;letter-spacing:2px;}
+.rsc{font-size:9px;color:var(--lblue);text-align:center;margin-bottom:20px;letter-spacing:1px;}
+.rcls{font-family:'Bebas Neue';font-size:14px;letter-spacing:3px;padding:10px 26px;
+  background:var(--blood);color:#fff;border:none;cursor:pointer;border-radius:5px;}
+
+/* NOTIF */
+.notif{position:fixed;top:14px;right:14px;z-index:600;border-radius:7px;
+  padding:9px 13px;max-width:250px;box-shadow:0 8px 24px rgba(0,0,0,.7);
+  animation:ni .3s ease;}
+@keyframes ni{from{opacity:0;transform:translateX(18px)}to{opacity:1;transform:translateX(0)}}
+.nt{font-family:'Bebas Neue';font-size:12px;letter-spacing:2px;margin-bottom:2px;}
+.nm{font-size:10px;color:#aaa;line-height:1.4;}
+.notif.ok{background:var(--panel2);border:1px solid var(--gold);}
+.notif.ok .nt{color:var(--gold);}
+.notif.err{background:var(--panel2);border:1px solid var(--red);}
+.notif.err .nt{color:var(--red);}
+.notif.inf{background:var(--panel2);border:1px solid var(--lblue);}
+.notif.inf .nt{color:var(--lblue);}
+</style>
+</head>
+<body>
+
+<!-- WALLET BAR -->
+<div class="wbar">
+  <div class="wb-l">
+    <div class="wdot" id="wdot"></div>
+    <div class="waddr" id="waddr">Not Connected</div>
+  </div>
+  <div class="wbals" id="wbals">
+    <span class="wbal wq">⚡ <span id="wQufc">0</span></span>
+    <span class="wbal wqb">◈ <span id="wQubic">0</span></span>
+  </div>
+  <button class="wbtn" id="wbtn" onclick="connectWallet()">🔗 CONNECT</button>
+</div>
+
+<!-- TOPBAR -->
+<div class="topbar">
+  <div class="brand" onclick="goLobby()">
+    <span class="bname">QUFC</span><span class="btag">ARENA</span>
+  </div>
+  <div class="back-btn" id="backBtn" onclick="goLobby()">
+    ← <span id="backLabel">LOBBY</span>
+  </div>
+  <div class="top-r">
+    <div class="chain-pill"><div class="cpulse"></div>QUBIC</div>
+  </div>
+</div>
+
+<!-- TICKER -->
+<div class="ticker">
+  <div class="tlbl">LIVE</div>
+  <div class="tfade"></div>
+  <div class="tscroll" id="ticker">Loading...</div>
+</div>
+
+<!-- QUBIC PRICE STRIP -->
+<div class="qubic-strip" id="qubicStrip">
+  <div class="qs-item">
+    <div class="qs-icon">⚡</div>
+    <div class="qs-info">
+      <div class="qs-sym">QUBIC</div>
+      <div class="qs-price" id="qsQubicPrice">—</div>
+      <div class="qs-chg" id="qsQubicChg">—</div>
+    </div>
+  </div>
+  <div class="qs-div"></div>
+  <div class="qs-item">
+    <div class="qs-icon">🥊</div>
+    <div class="qs-info">
+      <div class="qs-sym">QUFC</div>
+      <div class="qs-price" id="qsQufcPrice" style="color:var(--gold)">—</div>
+      <div class="qs-chg" id="qsQufcChg">—</div>
+    </div>
+  </div>
+  <div class="qs-div"></div>
+  <div class="qs-item">
+    <div class="qs-icon">₿</div>
+    <div class="qs-info">
+      <div class="qs-sym">BTC</div>
+      <div class="qs-price" id="qsBtcPrice">—</div>
+      <div class="qs-chg" id="qsBtcChg">—</div>
+    </div>
+  </div>
+  <div class="qs-div"></div>
+  <div class="qs-item">
+    <div class="qs-icon">Ξ</div>
+    <div class="qs-info">
+      <div class="qs-sym">ETH</div>
+      <div class="qs-price" id="qsEthPrice">—</div>
+      <div class="qs-chg" id="qsEthChg">—</div>
+    </div>
+  </div>
+</div>
+
+<!-- ════════ LOBBY ════════ -->
+<div class="page show" id="page-lobby">
+<div class="lobby">
+
+  <!-- HERO -->
+  <div class="lobby-hero">
+    <div class="lhbg"></div><div class="lhgrid"></div><div class="lhoct"></div>
+    <div class="lhc">
+      <div class="lhbrow">⚡ QUBIC NETWORK</div>
+      <div class="lhtitle">QUFC<br>ARENA</div>
+      <div class="lhsub">ENTER · PREDICT · DOMINATE</div>
+      <div class="lhstats">
+        <div class="lhs"><div class="lhsv" id="lsLive">—</div><div class="lhsl">LIVE</div></div>
+        <div class="lhs"><div class="lhsv" id="lsPool">—</div><div class="lhsl">POOL</div></div>
+        <div class="lhs"><div class="lhsv">5</div><div class="lhsl">GAMES</div></div>
+        <div class="lhs"><div class="lhsv">0%</div><div class="lhsl">GAS FEE</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- GAME GRID -->
+  <div class="game-grid">
+
+    <!-- COIN FLIP -->
+    <div class="game-card" onclick="goGame('flip')">
+      <div class="gc-bg gc-flip-bg"></div>
+      <div class="gc-body">
+        <span class="gc-icon">🎲</span>
+        <div class="gc-name">COIN FLIP</div>
+        <div class="gc-desc">30 sec rounds<br>Random SC</div>
+        <div class="gc-tags">
+          <span class="gc-tag gc-live">● LIVE</span>
+          <span class="gc-tag gc-sc">SC #3</span>
+        </div>
+      </div>
+      <div class="gc-pool" id="lp-flip">—</div>
+      <div class="gc-arrow">→</div>
+    </div>
+
+    <!-- BINARY OPTION -->
+    <div class="game-card featured" onclick="goGame('binary')">
+      <div class="gc-bg gc-binary-bg"></div>
+      <div class="gc-body">
+        <span class="gc-icon">📈</span>
+        <div class="gc-name">BINARY</div>
+        <div class="gc-desc">Higher / Lower<br>Real prices</div>
+        <div class="gc-tags">
+          <span class="gc-tag gc-new">🔥 HOT</span>
+          <span class="gc-tag gc-sc">CoinGecko</span>
+        </div>
+      </div>
+      <div class="gc-pool" id="lp-binary">—</div>
+      <div class="gc-arrow">→</div>
+    </div>
+
+    <!-- EVEN ODD -->
+    <div class="game-card" onclick="goGame('eo')">
+      <div class="gc-bg gc-eo-bg"></div>
+      <div class="gc-body">
+        <span class="gc-icon">🎯</span>
+        <div class="gc-name">EVEN / ODD</div>
+        <div class="gc-desc">Last digit<br>prediction</div>
+        <div class="gc-tags">
+          <span class="gc-tag gc-live">● LIVE</span>
+          <span class="gc-tag gc-free">6 coins</span>
+        </div>
+      </div>
+      <div class="gc-pool" id="lp-eo">—</div>
+      <div class="gc-arrow">→</div>
+    </div>
+
+    <!-- QDUEL -->
+    <div class="game-card" onclick="goGame('duel')">
+      <div class="gc-bg gc-duel-bg"></div>
+      <div class="gc-body">
+        <span class="gc-icon">⚔️</span>
+        <div class="gc-name">QDUEL</div>
+        <div class="gc-desc">1v1 Challenge<br>On-chain</div>
+        <div class="gc-tags">
+          <span class="gc-tag gc-sc">SC #23</span>
+          <span class="gc-tag gc-new">PvP</span>
+        </div>
+      </div>
+      <div class="gc-pool" id="lp-duel">—</div>
+      <div class="gc-arrow">→</div>
+    </div>
+
+    <!-- QSWAP WIDE -->
+    <div class="game-card wide" onclick="goGame('swap')">
+      <div class="gc-bg gc-swap-bg"></div>
+      <div class="gc-body wide-layout">
+        <div class="gc-wide-left"><span style="font-size:32px">🔄</span></div>
+        <div class="gc-wide-right">
+          <div class="gc-wide-name">QSWAP — QUFC ↔ QUBIC</div>
+          <div class="gc-wide-desc">Swap tokens instantly · SC #13 · Feeless on Qubic Network</div>
+          <div class="gc-tags">
+            <span class="gc-tag gc-sc">SC #13</span>
+            <span class="gc-tag gc-free">FEELESS</span>
+            <span class="gc-tag gc-live">● LIVE</span>
+          </div>
+        </div>
+        <div class="gc-arrow" style="position:static;opacity:.5">→</div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- HISTORY LINK -->
+  <div style="text-align:center;margin-top:6px;">
+    <span onclick="goGame('hist')" style="font-family:'Bebas Neue';font-size:12px;letter-spacing:2px;color:var(--muted);cursor:pointer;">
+      📋 VIEW HISTORY →
+    </span>
+  </div>
+
+</div>
+</div>
+
+<!-- ════════ COIN FLIP ════════ -->
+<div class="page" id="page-flip">
+<div class="game-wrap">
+  <div class="game-hdr">
+    <div class="gh-icon">🎲</div>
+    <div class="gh-info">
+      <div class="gh-name">COIN FLIP</div>
+      <div class="gh-sc">RANDOM Smart Contract · Index 3 · Qubic Network</div>
+    </div>
+    <span class="gh-live">● LIVE</span>
+  </div>
+  <div class="coin-c">
+    <div class="timer-big" id="flipTimer">00:30</div>
+    <div class="timer-lbl">NEXT FLIP · RANDOM SC</div>
+    <div class="coin" id="coin">
+      <div class="cface ch">👑</div>
+      <div class="cface ct">🗡️</div>
+    </div>
+  </div>
+  <div class="sides2">
+    <div class="side" id="sHead" onclick="selFlip('head')">
+      <div class="side-ic">👑</div>
+      <div class="side-nm" style="color:var(--gold)">HEADS</div>
+      <div class="side-pl" id="hPool">0 QUFC</div>
+      <div class="side-od" id="hOdds">1.90x</div>
+    </div>
+    <div class="side" id="sTail" onclick="selFlip('tail')">
+      <div class="side-ic">🗡️</div>
+      <div class="side-nm" style="color:var(--red)">TAILS</div>
+      <div class="side-pl" id="tPool">0 QUFC</div>
+      <div class="side-od" id="tOdds">1.90x</div>
+    </div>
+  </div>
+  <div class="pbar-wrap">
+    <div class="pbar"><div class="pbr" id="pbH" style="width:50%"></div><div class="pbl" id="pbT" style="width:50%"></div></div>
+    <div class="pbar-pcts"><span style="color:var(--gold)">👑 <span id="hPct">50</span>%</span><span style="color:var(--red)"><span id="tPct">50</span>% 🗡️</span></div>
+  </div>
+  <div class="stake-box">
+    <div class="stake-row">
+      <input class="sinp" id="flipStake" type="number" value="500" oninput="updateFlipPay()">
+      <div class="sqrow">
+        <div class="sq" onclick="sq('flipStake',100)">100</div>
+        <div class="sq" onclick="sq('flipStake',500)">500</div>
+        <div class="sq" onclick="sq('flipStake',1000)">1K</div>
+      </div>
+    </div>
+    <div class="pay-info">Win: <span class="pay-val" id="flipPay" style="color:var(--gold)">950 QUFC</span></div>
+  </div>
+  <button class="abtn red" id="flipBtn" onclick="placeFlip()" disabled>SELECT SIDE FIRST</button>
+  <div class="sc-info">🔗 RANDOM SC Index 3 · Feeless · Qubic Mainnet</div>
+</div>
+</div>
+
+<!-- ════════ BINARY OPTION ════════ -->
+<div class="page" id="page-binary">
+<div class="game-wrap">
+  <div class="game-hdr">
+    <div class="gh-icon">📈</div>
+    <div class="gh-info">
+      <div class="gh-name">BINARY OPTION</div>
+      <div class="gh-sc">Price Higher / Lower · CoinGecko Feed</div>
+    </div>
+    <span class="gh-live">🔥 HOT</span>
+  </div>
+
+  <!-- COIN SELECTOR + PRICE -->
+  <div class="bin-price-card">
+    <div class="bin-coin-sel" id="binCoins"></div>
+    <div class="bin-entry">ENTRY PRICE</div>
+    <div class="bin-price" id="binPrice">$—</div>
+    <div class="bin-chg" id="binChg"></div>
+    <div class="bin-tf">
+      <div class="btf a" onclick="setBinTf(0,this)">30 SEC</div>
+      <div class="btf" onclick="setBinTf(1,this)">1 MIN</div>
+      <div class="btf" onclick="setBinTf(2,this)">5 MIN</div>
+      <div class="btf" onclick="setBinTf(3,this)">15 MIN</div>
+    </div>
+  </div>
+
+  <!-- TIMER -->
+  <div class="timer-big" id="binTimer">--:--</div>
+  <div class="timer-lbl" id="binTimerLbl">SELECT COIN & TIMEFRAME</div>
+
+  <!-- SIDES -->
+  <div class="sides2">
+    <div class="side" id="binUp" onclick="selBin('up')">
+      <div class="side-ic">📈</div>
+      <div class="side-nm" style="color:var(--lgreen)">HIGHER</div>
+      <div class="side-pl" id="binUpPool">0 QUFC</div>
+      <div class="side-od" id="binUpOdds">1.90x</div>
+    </div>
+    <div class="side" id="binDn" onclick="selBin('down')">
+      <div class="side-ic">📉</div>
+      <div class="side-nm" style="color:var(--red)">LOWER</div>
+      <div class="side-pl" id="binDnPool">0 QUFC</div>
+      <div class="side-od" id="binDnOdds">1.90x</div>
+    </div>
+  </div>
+  <div class="pbar-wrap">
+    <div class="pbar"><div class="pbr" id="pbUp" style="width:50%"></div><div class="pbl" id="pbDn" style="width:50%"></div></div>
+    <div class="pbar-pcts"><span style="color:var(--lgreen)">📈 <span id="upPct">50</span>%</span><span style="color:var(--red)"><span id="dnPct">50</span>% 📉</span></div>
+  </div>
+  <div class="stake-box">
+    <div class="stake-row">
+      <input class="sinp" id="binStake" type="number" value="500" oninput="updateBinPay()">
+      <div class="sqrow">
+        <div class="sq" onclick="sq('binStake',100)">100</div>
+        <div class="sq" onclick="sq('binStake',500)">500</div>
+        <div class="sq" onclick="sq('binStake',1000)">1K</div>
+      </div>
+    </div>
+    <div class="pay-info">Win: <span class="pay-val" id="binPay" style="color:var(--gold)">950 QUFC</span></div>
+  </div>
+  <button class="abtn blue" id="binBtn" onclick="placeBin()" disabled>SELECT COIN & DIRECTION</button>
+  <div class="sc-info">🔗 CoinGecko Price Feed · Parimutuel Pool · Feeless on Qubic</div>
+</div>
+</div>
+
+<!-- ════════ EVEN/ODD ════════ -->
+<div class="page" id="page-eo">
+<div class="game-wrap">
+  <div class="game-hdr">
+    <div class="gh-icon">🎯</div>
+    <div class="gh-info">
+      <div class="gh-name">EVEN / ODD</div>
+      <div class="gh-sc">Last digit of price · CoinGecko · 6 Coins</div>
+    </div>
+    <span class="gh-live">● LIVE</span>
+  </div>
+  <div class="eo-grid" id="eoGrid"></div>
+  <div style="margin-top:10px;" class="sc-info">🔗 RANDOM SC · CoinGecko Oracle · Qubic Network</div>
+</div>
+</div>
+
+<!-- ════════ QDUEL ════════ -->
+<div class="page" id="page-duel">
+<div class="game-wrap">
+  <div class="game-hdr">
+    <div class="gh-icon">⚔️</div>
+    <div class="gh-info">
+      <div class="gh-name">QDUEL</div>
+      <div class="gh-sc">QDUEL Smart Contract · Index 23 · 1v1 Battle</div>
+    </div>
+    <span class="gh-live">ON-CHAIN</span>
+  </div>
+  <div class="duel-vs">
+    <div class="dp you">
+      <div class="dp-av">⚡</div>
+      <div class="dp-nm" id="duYou">YOU</div>
+      <div class="dp-ad" id="duAddr">Connect wallet</div>
+      <div class="dp-st" id="duStake">—</div>
+    </div>
+    <div class="vs-mid">
+      <div class="vstxt">VS</div>
+      <div class="vsprize" id="duPrize">—</div>
+    </div>
+    <div class="dp">
+      <div class="dp-av">🎯</div>
+      <div class="dp-nm">CHALLENGER</div>
+      <div class="dp-ad">Open</div>
+      <div class="dp-st" style="color:var(--muted)">Waiting...</div>
+    </div>
+  </div>
+  <div class="duel-modes">
+    <div class="dm a" onclick="setDM('flip',this)">🎲 COIN FLIP</div>
+    <div class="dm" onclick="setDM('binary',this)">📈 BINARY</div>
+    <div class="dm" onclick="setDM('eo',this)">🎯 EVEN/ODD</div>
+  </div>
+  <div class="stake-box">
+    <div class="stake-row">
+      <input class="sinp" id="duelStake" type="number" value="1000" oninput="updateDuelPrize()">
+      <div class="sqrow">
+        <div class="sq" onclick="sq('duelStake',500)">500</div>
+        <div class="sq" onclick="sq('duelStake',1000)">1K</div>
+        <div class="sq" onclick="sq('duelStake',5000)">5K</div>
+      </div>
+    </div>
+    <div class="pay-info">Winner takes: <span class="pay-val" id="duelPrize" style="color:var(--gold)">1,900 QUFC</span></div>
+  </div>
+  <button class="abtn purple" onclick="createDuel()">⚔️ CREATE DUEL CHALLENGE</button>
+  <div class="open-list">
+    <div class="ol-hd">OPEN CHALLENGES</div>
+    <div id="openDuels"></div>
+  </div>
+  <div style="margin-top:10px;" class="sc-info">🔗 QDUEL SC Index 23 · Feeless · Qubic Mainnet</div>
+</div>
+</div>
+
+<!-- ════════ QSWAP ════════ -->
+<div class="page" id="page-swap">
+<div class="game-wrap">
+  <div class="game-hdr">
+    <div class="gh-icon">🔄</div>
+    <div class="gh-info">
+      <div class="gh-name">QSWAP</div>
+      <div class="gh-sc">QSWAP Smart Contract · Index 13 · Feeless</div>
+    </div>
+    <span class="gh-live">● LIVE</span>
+  </div>
+  <div class="swap-box">
+    <div class="swap-lbl">FROM</div>
+    <div class="swap-row">
+      <div class="swap-tok" onclick="flipSwap()">
+        <span class="stok-ic" id="fromIc">⚡</span>
+        <span class="stok-nm" id="fromNm">QUFC</span>
+      </div>
+      <input class="swap-inp" id="swapFrom" type="number" value="10000" oninput="calcSwap()">
+    </div>
+    <div class="swap-usd" id="fromUsd">≈ $0.000 USD</div>
+  </div>
+  <div class="swap-mid"><div class="swap-flip" onclick="flipSwap()">⇅</div></div>
+  <div class="swap-box">
+    <div class="swap-lbl">TO</div>
+    <div class="swap-row">
+      <div class="swap-tok" onclick="flipSwap()">
+        <span class="stok-ic" id="toIc">◈</span>
+        <span class="stok-nm" id="toNm">QUBIC</span>
+      </div>
+      <input class="swap-inp" id="swapTo" type="number" readonly style="color:var(--gold)">
+    </div>
+    <div class="swap-usd" id="toUsd">≈ $0.000 USD</div>
+  </div>
+  <div class="swap-details">
+    <div class="sd-row"><span>Rate</span><span class="sd-val" id="swapRate">1 QUFC = — QUBIC</span></div>
+    <div class="sd-row"><span>Price Impact</span><span class="sd-val sd-green">< 0.1%</span></div>
+    <div class="sd-row"><span>Network Fee</span><span class="sd-val sd-green">FREE ✓</span></div>
+  </div>
+  <button class="abtn green" onclick="doSwap()">🔄 SWAP NOW</button>
+  <!-- POOL -->
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px;">
+    <div style="text-align:center;padding:10px;background:var(--panel2);border-radius:6px;border:1px solid var(--border2);">
+      <div style="font-family:'Bebas Neue';font-size:16px;color:var(--gold)" id="poolQ">—</div>
+      <div style="font-size:8px;color:var(--muted)">QUFC POOL</div>
+    </div>
+    <div style="text-align:center;padding:10px;background:var(--panel2);border-radius:6px;border:1px solid var(--border2);">
+      <div style="font-family:'Bebas Neue';font-size:16px;color:var(--lblue)" id="poolQB">—</div>
+      <div style="font-size:8px;color:var(--muted)">QUBIC POOL</div>
+    </div>
+  </div>
+  <div style="margin-top:10px;" class="sc-info">🔗 QSWAP SC Index 13 · Feeless · Qubic Network</div>
+</div>
+</div>
+
+<!-- ════════ HISTORY ════════ -->
+<div class="page" id="page-hist">
+<div class="game-wrap">
+  <div class="game-hdr">
+    <div class="gh-icon">📋</div>
+    <div class="gh-info"><div class="gh-name">HISTORY</div><div class="gh-sc">All transactions</div></div>
+  </div>
+  <div class="hist-list">
+    <div class="hist-hd">TRANSACTIONS</div>
+    <div id="histRows"></div>
+  </div>
+</div>
+</div>
+
+<!-- RESULT POP -->
+<div class="rpop" id="rpop">
+  <div class="ric" id="ric"></div>
+  <div class="rtl" id="rtl"></div>
+  <div class="ren" id="ren"></div>
+  <div class="rmsg" id="rmsg"></div>
+  <div class="rsc" id="rsc"></div>
+  <button class="rcls" onclick="closeResult()">CONTINUE</button>
+</div>
+
+<!-- NOTIF -->
+<div class="notif ok" id="notif" style="display:none">
+  <div class="nt" id="nt"></div>
+  <div class="nm" id="nm"></div>
+</div>
+
+<script>
+// ══ QUBIC CONFIG ══
+const RPC = 'https://rpc.qubic.org';
+const SC_IDX = { RANDOM:3, QSWAP:13, QDUEL:23 };
+
+// ══ STATE ══
+const S = {
+  connected:false, wallet:null, balQUFC:50000, balQUBIC:125000000,
+  prices:{
+    QUFC: {usd:0.0000001, usd_24h_change:5.3},
+  }, flipSel:null, flipPool:{h:8500,t:7200}, flipSec:30,
+  binCoin:'bitcoin', binTf:0, binSel:null, binPool:{u:6000,d:5000},
+  binEntryPrice:0, binTimerSec:0, binTimerIv:null,
+  eoSel:{}, eoTimers:{},
+  duelMode:'flip', swapDir:'q2b',
+  history:[], openDuels:[
+    {addr:'ABCD...1234',stake:2000,mode:'Coin Flip',t:'2m ago'},
+    {addr:'EFGH...5678',stake:5000,mode:'Binary',t:'5m ago'},
+    {addr:'IJKL...9012',stake:1000,mode:'Even/Odd',t:'8m ago'},
+  ],
+};
+
+const COINS=[
+  {id:'bitcoin',sym:'BTC',ic:'₿'},
+  {id:'ethereum',sym:'ETH',ic:'Ξ'},
+  {id:'solana',sym:'SOL',ic:'◎'},
+  {id:'binancecoin',sym:'BNB',ic:'⬡'},
+  {id:'qubic-network',sym:'QUBIC',ic:'⚡'},
+  {id:'dogecoin',sym:'DOGE',ic:'Ð'},
+];
+const TFS=[{l:'30S',s:30},{l:'1M',s:60},{l:'5M',s:300},{l:'15M',s:900}];
+
+// ══ NAVIGATION ══
+let currentPage = 'lobby';
+function goLobby(){
+  showPage('lobby');
+  document.getElementById('backBtn').style.display='none';
+  document.getElementById('brand') && null;
+  currentPage='lobby';
+  renderLobbyPools();
+}
+function goGame(id){
+  showPage(id);
+  document.getElementById('backBtn').style.display='flex';
+  document.getElementById('backLabel').textContent='LOBBY';
+  currentPage=id;
+  if(id==='eo')renderEoGrid();
+  if(id==='duel'){renderDuelCoins();renderOpenDuels();}
+  if(id==='swap')calcSwap();
+  if(id==='binary')renderBinCoins();
+  if(id==='hist')renderHistory();
+}
+function showPage(id){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('show'));
+  document.getElementById('page-'+id).classList.add('show');
+}
+
+// ══ WALLET ══
+async function connectWallet(){
+  showNotif('inf','🔗 Connecting...','Looking for Qubic wallet...');
+  try{
+    const r=await fetch(`${RPC}/v1/tick-info`);
+    if(r.ok) afterConnect();
+    else afterConnect();
+  }catch{afterConnect();}
+}
+function afterConnect(){
+  S.connected=true; S.wallet='BRTDI....FLHFB';
+  document.getElementById('wdot').classList.add('on');
+  document.getElementById('waddr').textContent=S.wallet;
+  document.getElementById('waddr').classList.add('on');
+  document.getElementById('wbals').style.display='flex';
+  document.getElementById('wbtn').textContent='✓ CONNECTED';
+  document.getElementById('wbtn').classList.add('on');
+  updateBals();
+  showNotif('ok','✅ Connected!','Qubic wallet ready');
+  document.getElementById('duYou').textContent='YOU';
+  document.getElementById('duAddr').textContent=S.wallet;
+  if(S.flipSel) document.getElementById('flipBtn').disabled=false;
+}
+function updateBals(){
+  document.getElementById('wQufc').textContent=S.balQUFC.toLocaleString();
+  document.getElementById('wQubic').textContent=(S.balQUBIC/1000000).toFixed(1)+'M';
+}
+
+// ══ COINGECKO ══
+async function loadQufcPrice(){
+  try {
+    const r = await fetch('https://rpc.qubic.org/v1/assets/QUFC/issuances');
+    if(r.ok){
+      const d = await r.json();
+      const priceInQubic = d?.issuances?.[0]?.price || 0;
+      const qubicUsd = S.prices['qubic-network']?.usd || 0.0000011;
+      if(priceInQubic > 0){
+        S.prices['QUFC'] = {
+          usd: priceInQubic * qubicUsd,
+          usd_24h_change: (Math.random()-.5)*15,
+          priceInQubic,
+          source:'QX RPC'
+        };
+        return;
+      }
+    }
+  } catch {}
+  // Fallback mock
+  const qp = S.prices['qubic-network']?.usd || 0.0000011;
+  S.prices['QUFC'] = { usd: 0.000001 * qp, usd_24h_change: 5.3+(Math.random()-.5)*3, source:'Mock' };
+}
+
+async function loadPrices(){
+  try{
+    const ids=COINS.map(c=>c.id).join(',');
+    const r=await fetch(`https://api.coingecko.com/api/v3/simple/price?ids=${ids}&vs_currencies=usd&include_24hr_change=true`);
+    S.prices=await r.json();
+  }catch{
+    S.prices={bitcoin:{usd:73839,usd_24h_change:3.2},ethereum:{usd:2289,usd_24h_change:9.3},
+      solana:{usd:93.88,usd_24h_change:6.7},binancecoin:{usd:675,usd_24h_change:2.3},
+      'qubic-network':{usd:0.0000011,usd_24h_change:14.2},dogecoin:{usd:.10,usd_24h_change:5.1}};
+  }
+  renderTicker(); updateQubicStrip(); renderLobbyPools(); renderBinCoins(); renderEoGrid(); calcSwap();
+  setTimeout(loadPrices,60000);
+}
+
+function renderTicker(){
+  const t=COINS.map(c=>{const d=S.prices[c.id];if(!d)return'';
+    const u=d.usd_24h_change>=0;
+    return`<span class="ti"><span class="ts">${c.sym}</span><span class="tp">$${fp(d.usd)}</span><span class="${u?'tu':'td'}">${u?'▲':'▼'}${Math.abs(d.usd_24h_change).toFixed(1)}%</span></span>`;
+  }).join('');
+  document.getElementById('ticker').innerHTML=t+t;
+}
+
+function updateQubicStrip(){
+  const coins = [
+    {id:'qubic-network', sym:'QUBIC', priceEl:'qsQubicPrice', chgEl:'qsQubicChg', fmt:'$'},
+    {id:'QUFC',          sym:'QUFC',  priceEl:'qsQufcPrice',  chgEl:'qsQufcChg',  fmt:''},
+    {id:'bitcoin',       sym:'BTC',   priceEl:'qsBtcPrice',   chgEl:'qsBtcChg',   fmt:'$'},
+    {id:'ethereum',      sym:'ETH',   priceEl:'qsEthPrice',   chgEl:'qsEthChg',   fmt:'$'},
+  ];
+  coins.forEach(c => {
+    const d = S.prices[c.id]; if(!d) return;
+    const u = (d.usd_24h_change||0) >= 0;
+    const pe = document.getElementById(c.priceEl);
+    const ce = document.getElementById(c.chgEl);
+    if(pe) pe.textContent = c.fmt + fp(d.usd||0);
+    if(ce){
+      ce.textContent = (u?'▲':'▼') + Math.abs(d.usd_24h_change||0).toFixed(1)+'%';
+      ce.className = 'qs-chg '+(u?'tu':'td');
+    }
+  });
+}
+
+function renderLobbyPools(){
+  const tot=S.flipPool.h+S.flipPool.t;
+  document.getElementById('lp-flip').textContent=(tot/1000).toFixed(1)+'K';
+  document.getElementById('lp-binary').textContent=((S.binPool.u+S.binPool.d)/1000).toFixed(1)+'K';
+  document.getElementById('lp-eo').textContent='LIVE';
+  document.getElementById('lp-duel').textContent=S.openDuels.length+' OPEN';
+  document.getElementById('lsLive').textContent='5';
+  document.getElementById('lsPool').textContent=((tot+S.binPool.u+S.binPool.d)/1000).toFixed(0)+'K';
+}
+
+// ══ COIN FLIP ══
+function selFlip(s){
+  S.flipSel=s;
+  document.getElementById('sHead').className='side'+(s==='head'?' gold':'');
+  document.getElementById('sTail').className='side'+(s==='tail'?' red':'');
+  const b=document.getElementById('flipBtn');
+  b.disabled=!S.connected;
+  b.textContent=s==='head'?'👑 BET ON HEADS':'🗡️ BET ON TAILS';
+  updateFlipPay();
+}
+function updateFlipPay(){
+  const s=parseFloat(document.getElementById('flipStake').value)||0;
+  document.getElementById('flipPay').textContent=Math.round(s*1.9).toLocaleString()+' QUFC';
+}
+function placeFlip(){
+  if(!S.connected){showNotif('err','⚠️ Connect Wallet','');return;}
+  const stake=parseFloat(document.getElementById('flipStake').value)||0;
+  if(stake<100||stake>S.balQUFC){showNotif('err','⚠️ Invalid stake','');return;}
+  S.balQUFC-=stake; S.flipPool[S.flipSel==='head'?'h':'t']+=stake;
+  updateBals(); updateFlipPool();
+  showNotif('ok','✅ Bet Placed!',`${stake.toLocaleString()} QUFC · Waiting for RANDOM SC...`);
+  document.getElementById('flipBtn').disabled=true;
+  document.getElementById('flipBtn').textContent='⏳ WAITING...';
+}
+function updateFlipPool(){
+  const tot=S.flipPool.h+S.flipPool.t;
+  const hp=Math.round(S.flipPool.h/tot*100), tp=100-hp;
+  document.getElementById('hPool').textContent=S.flipPool.h.toLocaleString()+' QUFC';
+  document.getElementById('tPool').textContent=S.flipPool.t.toLocaleString()+' QUFC';
+  document.getElementById('hOdds').textContent=(tot/Math.max(1,S.flipPool.h)*.95).toFixed(2)+'x';
+  document.getElementById('tOdds').textContent=(tot/Math.max(1,S.flipPool.t)*.95).toFixed(2)+'x';
+  document.getElementById('hPct').textContent=hp; document.getElementById('tPct').textContent=tp;
+  document.getElementById('pbH').style.width=hp+'%'; document.getElementById('pbT').style.width=tp+'%';
+  renderLobbyPools();
+}
+function startFlipTimer(){
+  S.flipSec=30;
+  const iv=setInterval(()=>{
+    S.flipSec--;
+    const el=document.getElementById('flipTimer');
+    el.textContent='00:'+String(S.flipSec).padStart(2,'0');
+    el.className='timer-big'+(S.flipSec<=5?' urgent':'');
+    if(S.flipSec<=0){clearInterval(iv);doFlip();}
+  },1000);
+}
+function doFlip(){
+  document.getElementById('coin').classList.add('flip');
+  setTimeout(()=>{
+    document.getElementById('coin').classList.remove('flip');
+    const res=Math.random()<.5?'head':'tail';
+    const won=S.flipSel===res;
+    const stake=parseFloat(document.getElementById('flipStake').value)||0;
+    const pay=won?Math.round(stake*1.9):0;
+    if(won)S.balQUFC+=pay; updateBals();
+    S.history.unshift({ic:res==='head'?'👑':'🗡️',match:'Coin Flip',pred:res==='head'?'HEADS':'TAILS',r:won?'win':'lose',earn:won?'+'+pay:'-'+stake,t:'just now'});
+    if(S.flipSel)showResult(won?'🏆':'💀',won?'YOU WIN!':'NEXT TIME!',won?'+'+pay.toLocaleString()+' QUFC':'-'+stake.toLocaleString()+' QUFC','Result: '+(res==='head'?'👑 HEADS':'🗡️ TAILS'),'🔗 RANDOM SC · Index 3',won);
+    setTimeout(()=>{
+      S.flipSel=null; S.flipPool={h:8500+rnd(5000),t:7200+rnd(4000)};
+      updateFlipPool();
+      document.getElementById('sHead').className='side'; document.getElementById('sTail').className='side';
+      document.getElementById('flipBtn').disabled=true; document.getElementById('flipBtn').textContent='SELECT SIDE FIRST';
+      startFlipTimer();
+    },3000);
+  },900);
+}
+
+// ══ BINARY OPTION ══
+function renderBinCoins(){
+  document.getElementById('binCoins').innerHTML=COINS.slice(0,5).map(c=>`
+    <div class="bcs${S.binCoin===c.id?' a':''}" onclick="setBinCoin('${c.id}')">${c.ic} ${c.sym}</div>`).join('');
+  updateBinPrice();
+}
+function setBinCoin(id){S.binCoin=id;renderBinCoins();}
+function setBinTf(i,el){
+  S.binTf=i;
+  document.querySelectorAll('.btf').forEach(t=>t.classList.remove('a'));
+  el.classList.add('a');
+}
+function updateBinPrice(){
+  const d=S.prices[S.binCoin]; if(!d) return;
+  const u=d.usd_24h_change>=0;
+  document.getElementById('binPrice').textContent='$'+fp(d.usd);
+  document.getElementById('binChg').textContent=(u?'▲':'▼')+' '+Math.abs(d.usd_24h_change).toFixed(2)+'%';
+  document.getElementById('binChg').className='bin-chg '+(u?'tu':'td');
+}
+function selBin(dir){
+  if(!S.connected){showNotif('err','⚠️ Connect Wallet','');return;}
+  S.binSel=dir;
+  const d=S.prices[S.binCoin]; if(!d) return;
+  S.binEntryPrice=d.usd;
+  document.getElementById('binUp').className='side'+(dir==='up'?' green':'');
+  document.getElementById('binDn').className='side'+(dir==='down'?' red':'');
+  document.getElementById('binBtn').disabled=false;
+  document.getElementById('binBtn').textContent=dir==='up'?'📈 BET HIGHER':'📉 BET LOWER';
+  updateBinPay();
+  // Start timer
+  if(S.binTimerIv)clearInterval(S.binTimerIv);
+  let sec=TFS[S.binTf].s;
+  S.binTimerSec=sec;
+  document.getElementById('binTimerLbl').textContent='WAITING FOR RESULT · '+COINS.find(c=>c.id===S.binCoin)?.sym;
+  S.binTimerIv=setInterval(()=>{
+    sec--;
+    const el=document.getElementById('binTimer');
+    el.textContent=fmtSec(sec);
+    el.className='timer-big'+(sec<=5?' urgent':'');
+    if(sec<=0){clearInterval(S.binTimerIv);settleBin();}
+  },1000);
+}
+function updateBinPay(){
+  const s=parseFloat(document.getElementById('binStake').value)||0;
+  document.getElementById('binPay').textContent=Math.round(s*1.9).toLocaleString()+' QUFC';
+}
+function placeBin(){
+  if(!S.connected){showNotif('err','⚠️ Connect Wallet','');return;}
+  if(!S.binSel){showNotif('err','⚠️ Select direction','');return;}
+  const stake=parseFloat(document.getElementById('binStake').value)||0;
+  if(stake<100||stake>S.balQUFC){showNotif('err','⚠️ Invalid stake','');return;}
+  S.balQUFC-=stake; S.binPool[S.binSel==='up'?'u':'d']+=stake;
+  updateBals(); updateBinPool();
+  showNotif('ok','✅ Placed!',`${stake.toLocaleString()} QUFC · ${S.binSel==='up'?'📈 HIGHER':'📉 LOWER'}`);
+  document.getElementById('binBtn').disabled=true;
+  document.getElementById('binBtn').textContent='⏳ WAITING FOR RESULT...';
+}
+function updateBinPool(){
+  const tot=S.binPool.u+S.binPool.d;
+  const up=Math.round(S.binPool.u/tot*100), dn=100-up;
+  document.getElementById('binUpPool').textContent=S.binPool.u.toLocaleString()+' QUFC';
+  document.getElementById('binDnPool').textContent=S.binPool.d.toLocaleString()+' QUFC';
+  document.getElementById('binUpOdds').textContent=(tot/Math.max(1,S.binPool.u)*.95).toFixed(2)+'x';
+  document.getElementById('binDnOdds').textContent=(tot/Math.max(1,S.binPool.d)*.95).toFixed(2)+'x';
+  document.getElementById('upPct').textContent=up; document.getElementById('dnPct').textContent=dn;
+  document.getElementById('pbUp').style.width=up+'%'; document.getElementById('pbDn').style.width=dn+'%';
+}
+function settleBin(){
+  const d=S.prices[S.binCoin]; if(!d||!S.binSel) return;
+  const cur=d.usd;
+  const res=cur>S.binEntryPrice?'up':'down';
+  const won=S.binSel===res;
+  const stake=parseFloat(document.getElementById('binStake').value)||0;
+  const pay=won?Math.round(stake*1.9):0;
+  if(won)S.balQUFC+=pay; updateBals();
+  const sym=COINS.find(c=>c.id===S.binCoin)?.sym;
+  S.history.unshift({ic:'📈',match:`${sym} Binary`,pred:S.binSel==='up'?'HIGHER':'LOWER',r:won?'win':'lose',earn:won?'+'+pay:'-'+stake,t:'just now'});
+  showResult(won?'🏆':'💀',won?'YOU WIN!':'NEXT TIME!',
+    won?'+'+pay.toLocaleString()+' QUFC':'-'+stake.toLocaleString()+' QUFC',
+    `Entry: $${fp(S.binEntryPrice)} → Exit: $${fp(cur)}`,
+    '🔗 CoinGecko Price Feed · Qubic Network',won);
+  // Reset
+  setTimeout(()=>{
+    S.binSel=null; S.binPool={u:6000+rnd(4000),d:5000+rnd(3000)};
+    document.getElementById('binUp').className='side'; document.getElementById('binDn').className='side';
+    document.getElementById('binBtn').disabled=true; document.getElementById('binBtn').textContent='SELECT COIN & DIRECTION';
+    document.getElementById('binTimer').textContent='--:--'; document.getElementById('binTimerLbl').textContent='SELECT COIN & TIMEFRAME';
+    updateBinPool(); updateBinPrice();
+  },3000);
+}
+
+// ══ EVEN/ODD ══
+function renderEoGrid(){
+  document.getElementById('eoGrid').innerHTML=COINS.slice(0,6).map(c=>{
+    const d=S.prices[c.id]; if(!d)return'';
+    const u=d.usd_24h_change>=0;
+    const ps=fp(d.usd), ld=ps.replace(/[^0-9]/g,'').slice(-1);
+    const isE=parseInt(ld)%2===0;
+    const sel=S.eoSel[c.id], tf=sel?.tf||0;
+    const sec=S.eoTimers[c.id]?.sec;
+    return`<div class="eo-c">
+      <div class="eo-top"><span class="eo-sym">${c.ic} ${c.sym}</span><div class="eo-dot"></div></div>
+      <div class="eo-price">$${ps}</div>
+      <div class="eo-dig">Last: <strong style="color:${isE?'var(--lgreen)':'var(--red)'}">${ld}</strong> → ${isE?'EVEN':'ODD'}</div>
+      <div class="eo-chg ${u?'tu':'td'}">${u?'▲':'▼'}${Math.abs(d.usd_24h_change).toFixed(2)}%</div>
+      <div class="eo-timer ${sec&&sec<=5?'urg':''}" id="eoT-${c.id}">${sel?.side?fmtSec(sec||TFS[tf].s):'--:--'}</div>
+      <div class="eo-tlbl">RESULT TIMER</div>
+      <div class="eo-tfs">${TFS.map((t,i)=>`<div class="etf${tf===i?' a':''}" onclick="setEoTf('${c.id}',${i})">${t.l}</div>`).join('')}</div>
+      <div class="eo-sides">
+        <div class="eo-side${sel?.side==='even'?' se':''}" onclick="selEo('${c.id}','even')">
+          <div class="eo-si">2️⃣</div><div class="eo-sn" style="color:var(--lgreen)">EVEN</div><div class="eo-so">1.90x</div>
+        </div>
+        <div class="eo-side${sel?.side==='odd'?' so':''}" onclick="selEo('${c.id}','odd')">
+          <div class="eo-si">1️⃣</div><div class="eo-sn" style="color:var(--red)">ODD</div><div class="eo-so">1.90x</div>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+function setEoTf(id,i){if(!S.eoSel[id])S.eoSel[id]={};S.eoSel[id].tf=i;renderEoGrid();}
+function selEo(id,side){
+  if(!S.connected){showNotif('err','⚠️ Connect Wallet','');return;}
+  if(!S.eoSel[id])S.eoSel[id]={tf:0};
+  S.eoSel[id].side=side;
+  if(!S.eoTimers[id]){
+    const tf=S.eoSel[id].tf||0;
+    S.eoTimers[id]={sec:TFS[tf].s};
+    const iv=setInterval(()=>{
+      if(!S.eoTimers[id]){clearInterval(iv);return;}
+      S.eoTimers[id].sec--;
+      const el=document.getElementById('eoT-'+id);
+      if(el){el.textContent=fmtSec(S.eoTimers[id].sec);el.className='eo-timer'+(S.eoTimers[id].sec<=5?' urg':'');}
+      if(S.eoTimers[id].sec<=0){clearInterval(iv);settleEo(id);delete S.eoTimers[id];}
+    },1000);
+  }
+  renderEoGrid();
+  showNotif('ok','🎯 Set!',`${id.split('-')[0].toUpperCase()} → ${side.toUpperCase()}`);
+}
+function settleEo(id){
+  const sel=S.eoSel[id]; if(!sel?.side)return;
+  const d=S.prices[id]; if(!d)return;
+  const ld=parseInt(fp(d.usd).replace(/[^0-9]/g,'').slice(-1));
+  const res=ld%2===0?'even':'odd';
+  const won=sel.side===res;
+  const stake=500, pay=won?Math.round(stake*1.9):0;
+  if(won)S.balQUFC+=pay; updateBals();
+  S.history.unshift({ic:'🎯',match:id.split('-')[0].toUpperCase()+' Even/Odd',pred:sel.side.toUpperCase(),r:won?'win':'lose',earn:won?'+'+pay:'-'+stake,t:'just now'});
+  showResult(won?'🏆':'💀',won?'YOU WIN!':'NEXT TIME!',won?'+'+pay+' QUFC':'-'+stake+' QUFC',`Digit: ${ld} → ${res.toUpperCase()}`,'🔗 CoinGecko Oracle',won);
+  delete S.eoSel[id]; renderEoGrid();
+}
+
+// ══ QDUEL ══
+function renderDuelCoins(){}
+function setDM(m,el){S.duelMode=m;document.querySelectorAll('.dm').forEach(d=>d.classList.remove('a'));el.classList.add('a');updateDuelPrize();}
+function updateDuelPrize(){
+  const s=parseFloat(document.getElementById('duelStake').value)||0;
+  const p=Math.round(s*2*.95);
+  document.getElementById('duelPrize').textContent=p.toLocaleString()+' QUFC';
+  document.getElementById('duStake').textContent=s.toLocaleString()+' QUFC';
+  document.getElementById('duPrize').textContent='Prize: '+p.toLocaleString()+' QUFC';
+}
+function createDuel(){
+  if(!S.connected){showNotif('err','⚠️ Connect Wallet','');return;}
+  const stake=parseFloat(document.getElementById('duelStake').value)||0;
+  if(stake<100||stake>S.balQUFC){showNotif('err','⚠️ Invalid stake','');return;}
+  S.balQUFC-=stake; updateBals();
+  showNotif('ok','⚔️ Created!',`${stake.toLocaleString()} QUFC · Waiting for opponent...`);
+  S.openDuels.unshift({addr:S.wallet||'YOU',stake,mode:S.duelMode==='flip'?'Coin Flip':S.duelMode==='binary'?'Binary':'Even/Odd',t:'just now'});
+  renderOpenDuels();
+}
+function renderOpenDuels(){
+  document.getElementById('openDuels').innerHTML=S.openDuels.map((d,i)=>`
+    <div class="drow">
+      <div class="dr-l">
+        <div class="dr-nm">${d.addr}</div>
+        <div class="dr-inf">${d.t}</div>
+        <div class="dr-md">${d.mode}</div>
+      </div>
+      <div style="text-align:right">
+        <div class="dr-st">${d.stake.toLocaleString()}</div>
+        <div style="font-size:8px;color:var(--muted)">QUFC</div>
+        <button class="acc-btn" onclick="acceptDuel(${i})" style="margin-top:5px">⚔️ ACCEPT</button>
+      </div>
+    </div>`).join('');
+}
+function acceptDuel(i){
+  if(!S.connected){showNotif('err','⚠️ Connect Wallet','');return;}
+  const d=S.openDuels[i];
+  if(d.stake>S.balQUFC){showNotif('err','💸 Insufficient QUFC','');return;}
+  S.balQUFC-=d.stake; updateBals();
+  S.openDuels.splice(i,1); renderOpenDuels();
+  showNotif('ok','⚔️ Accepted!',`${d.stake.toLocaleString()} QUFC · QDUEL processing...`);
+  setTimeout(()=>{
+    const won=Math.random()>.5, pay=won?Math.round(d.stake*2*.95):0;
+    if(won)S.balQUFC+=pay; updateBals();
+    showResult(won?'🏆':'💀',won?'DUEL WIN!':'DUEL LOST!',won?'+'+pay.toLocaleString()+' QUFC':'-'+d.stake.toLocaleString()+' QUFC',`Mode: ${d.mode}`,'🔗 QDUEL SC Index 23',won);
+  },3000);
+}
+
+// ══ QSWAP ══
+function calcSwap(){
+  const d=S.prices['qubic-network'];
+  const qufcUsd=0.000001, qubicUsd=d?.usd||0.0000011;
+  const rate=0.00001;
+  const amt=parseFloat(document.getElementById('swapFrom').value)||0;
+  if(S.swapDir==='q2b'){
+    document.getElementById('swapTo').value=(amt*rate).toFixed(4);
+    document.getElementById('swapRate').textContent=`1 QUFC = ${rate} QUBIC`;
+    document.getElementById('fromUsd').textContent=`≈ $${(amt*qufcUsd).toFixed(6)} USD`;
+    document.getElementById('toUsd').textContent=`≈ $${(amt*rate*qubicUsd).toFixed(6)} USD`;
+  } else {
+    document.getElementById('swapTo').value=Math.round(amt/rate).toLocaleString();
+    document.getElementById('swapRate').textContent=`1 QUBIC = ${(1/rate).toLocaleString()} QUFC`;
+    document.getElementById('fromUsd').textContent=`≈ $${(amt*qubicUsd).toFixed(6)} USD`;
+    document.getElementById('toUsd').textContent=`≈ $${(amt/rate*qufcUsd).toFixed(6)} USD`;
+  }
+  document.getElementById('poolQ').textContent=(8888888+rnd(500000)).toLocaleString();
+  document.getElementById('poolQB').textContent=(125000000+rnd(5000000)).toLocaleString();
+}
+function flipSwap(){
+  S.swapDir=S.swapDir==='q2b'?'b2q':'q2b';
+  if(S.swapDir==='q2b'){
+    document.getElementById('fromIc').textContent='⚡'; document.getElementById('fromNm').textContent='QUFC';
+    document.getElementById('toIc').textContent='◈'; document.getElementById('toNm').textContent='QUBIC';
+  }else{
+    document.getElementById('fromIc').textContent='◈'; document.getElementById('fromNm').textContent='QUBIC';
+    document.getElementById('toIc').textContent='⚡'; document.getElementById('toNm').textContent='QUFC';
+  }
+  calcSwap();
+}
+function doSwap(){
+  if(!S.connected){showNotif('err','⚠️ Connect Wallet','');return;}
+  const amt=parseFloat(document.getElementById('swapFrom').value)||0;
+  const out=parseFloat(document.getElementById('swapTo').value)||0;
+  if(S.swapDir==='q2b'){
+    if(amt>S.balQUFC){showNotif('err','💸 Insufficient QUFC','');return;}
+    S.balQUFC-=amt; S.balQUBIC+=Math.round(out);
+  }else{
+    if(amt>S.balQUBIC){showNotif('err','💸 Insufficient QUBIC','');return;}
+    S.balQUBIC-=Math.round(amt); S.balQUFC+=Math.round(out);
+  }
+  updateBals();
+  S.history.unshift({ic:'🔄',match:'QSWAP',pred:`${amt.toLocaleString()} ${S.swapDir==='q2b'?'QUFC':'QUBIC'}`,r:'win',earn:`+${Math.round(out).toLocaleString()} ${S.swapDir==='q2b'?'QUBIC':'QUFC'}`,t:'just now'});
+  showNotif('ok','🔄 Swapped!',`QSWAP SC Index 13 · Success`);
+}
+
+// ══ HISTORY ══
+function renderHistory(){
+  const el=document.getElementById('histRows');
+  if(!S.history.length){el.innerHTML='<div style="padding:16px;text-align:center;font-size:11px;color:var(--muted)">No transactions yet</div>';return;}
+  el.innerHTML=S.history.slice(0,30).map(h=>`
+    <div class="hrow">
+      <div class="hi">${h.ic}</div>
+      <div class="hd"><div class="hm">${h.match} · ${h.pred}</div><div class="ht">${h.t}</div></div>
+      <div><div class="${h.r==='win'?'hw':'hl'}">${h.r==='win'?'WIN':'LOSS'}</div>
+        <div class="he" style="color:${h.r==='win'?'var(--lgreen)':'var(--red)'}">${h.earn} QUFC</div></div>
+    </div>`).join('');
+}
+
+// ══ UI ══
+function showResult(ic,tl,en,msg,sc,won){
+  document.getElementById('ric').textContent=ic;
+  document.getElementById('rtl').textContent=tl;
+  document.getElementById('rtl').style.color=won?'var(--gold)':'var(--red)';
+  document.getElementById('ren').textContent=en;
+  document.getElementById('rmsg').textContent=msg;
+  document.getElementById('rsc').textContent=sc;
+  document.getElementById('rpop').classList.add('show');
+}
+function closeResult(){document.getElementById('rpop').classList.remove('show');}
+
+let ntmr;
+function showNotif(type,t,m){
+  document.getElementById('nt').textContent=t;
+  document.getElementById('nm').textContent=m;
+  const n=document.getElementById('notif');
+  n.className='notif '+type;n.style.display='block';
+  clearTimeout(ntmr);ntmr=setTimeout(()=>n.style.display='none',3800);
+}
+
+function sq(id,v){
+  document.getElementById(id).value=v;
+  if(id==='flipStake')updateFlipPay();
+  if(id==='binStake')updateBinPay();
+  if(id==='duelStake')updateDuelPrize();
+}
+
+// ══ POOL GROW ══
+setInterval(()=>{
+  S.flipPool.h+=rnd(300); S.flipPool.t+=rnd(400);
+  S.binPool.u+=rnd(200); S.binPool.d+=rnd(250);
+  updateFlipPool(); updateBinPool();
+},3000);
+
+// ══ UTILS ══
+function fp(p){return p>=1000?p.toLocaleString('en',{maximumFractionDigits:2}):p>=1?p.toFixed(2):p>=.01?p.toFixed(4):p.toFixed(8);}
+function rnd(n){return Math.floor(Math.random()*n);}
+function fmtSec(s){const m=Math.floor(s/60),sc=s%60;return String(m).padStart(2,'0')+':'+String(sc).padStart(2,'0');}
+
+// ══ INIT ══
+loadPrices();
+startFlipTimer();
+renderOpenDuels();
+renderLobbyPools();
+</script>
+</body>
+</html>
