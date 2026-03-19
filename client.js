@@ -1,0 +1,2 @@
+const BACKEND_WS  = 'ws://110.164.203.237:3001';
+const BACKEND_API = 'http://110.164.203.237:3001';
